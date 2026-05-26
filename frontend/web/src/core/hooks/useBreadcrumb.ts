@@ -6,8 +6,8 @@
 import type { RouteLocationMatched, RouteLocationNormalized } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTabsStore } from '../stores/useTabsStore'
 import { HOME_PATH } from '../config'
+import { useTabsStore } from '../stores/useTabsStore'
 import { useRouteListener } from './useRouteListener'
 
 export interface BreadcrumbItem {

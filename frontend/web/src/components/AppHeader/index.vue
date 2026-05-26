@@ -11,9 +11,8 @@ import {
 import { useFullscreen } from '@vueuse/core'
 import { ElMessageBox, ElSpace } from 'element-plus'
 import { appConfig } from '@/config'
-import { useTheme } from '@/core/hooks'
+import { useBreadcrumb, useTheme } from '@/core/hooks'
 import { useAppStore } from '@/core/stores'
-import { useBreadcrumb } from '@/hooks/useBreadcrumb'
 import { useUserStore } from '@/stores/modules/user'
 
 interface Props {
@@ -58,9 +57,9 @@ async function handleLogout() {
       />
       <el-breadcrumb v-if="breadcrumbs.length" separator="/">
         <el-breadcrumb-item
-          v-for="(item, index) in breadcrumbs"
+          v-for="item in breadcrumbs"
           :key="item.path"
-          :to="index < breadcrumbs.length - 1 ? item.path : undefined"
+          :to="item.to"
         >
           {{ item.title }}
         </el-breadcrumb-item>

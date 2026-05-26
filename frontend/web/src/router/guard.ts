@@ -1,6 +1,7 @@
 import type { Router } from 'vue-router'
 import NProgress from 'nprogress'
-import { appConfig, isTabWhiteList } from '@/config'
+import { appConfig } from '@/config'
+import { setRouteEmitter } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStore } from '@/stores/modules/user'
@@ -48,11 +49,8 @@ export function setupRouterGuard(router: Router) {
     }
   })
 
-  router.afterEach((to) => {
-    if (!isTabWhiteList(to.path)) {
-      const tabsStore = useTabsStore()
-      tabsStore.addTabItem(to)
-    }
+  router.afterEach((to, from) => {
+    setRouteEmitter(to, from)
     NProgress.done()
   })
 }

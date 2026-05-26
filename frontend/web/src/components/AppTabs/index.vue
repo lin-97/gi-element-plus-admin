@@ -8,13 +8,17 @@ import {
   Minus,
   Refresh,
 } from '@element-plus/icons-vue'
-import { GiTag } from 'gi-component'
-import { appConfig, isTabWhiteList } from '@/config'
+import { useRouteListener } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
 
 const router = useRouter()
 const route = useRoute()
 const tabsStore = useTabsStore()
+const { listenerRouteChange } = useRouteListener()
+
+listenerRouteChange(({ to }) => {
+  tabsStore.addTabItem(to)
+}, true)
 
 const activeValue = computed({
   get: () => route.path,
@@ -26,7 +30,6 @@ const activeValue = computed({
 
 const tabList = computed<NavTabItem[]>(() =>
   tabsStore.tabList
-    .filter(tab => !isTabWhiteList(tab.path))
     .map(tab => ({
       label: (tab.meta?.title as string) || '未命名',
       value: tab.path,
@@ -52,44 +55,6 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
       inst.handleClose()
   })
 }
-
-function ensureActiveRoute() {
-  if (!tabsStore.tabList.some(t => t.path === route.path)) {
-    const target = tabsStore.tabList.at(-1)
-    if (target)
-      router.push(target.fullPath || target.path)
-    else
-      router.push(appConfig.homePath)
-  }
-}
-
-function handleClose(path: string | number, e?: Event) {
-  e?.stopPropagation()
-  tabsStore.close('current', String(path))
-}
-
-function handleCloseLeft(path: string | number) {
-  tabsStore.close('left', String(path))
-  ensureActiveRoute()
-}
-
-function handleCloseRight(path: string | number) {
-  tabsStore.close('right', String(path))
-  ensureActiveRoute()
-}
-
-function handleCloseOther(path: string | number) {
-  tabsStore.close('other', String(path))
-  ensureActiveRoute()
-}
-
-function handleCloseAll() {
-  tabsStore.close('all')
-}
-
-function handleRefresh() {
-  tabsStore.reloadPage()
-}
 </script>
 
 <template>
@@ -108,22 +73,22 @@ function handleRefresh() {
             size="large"
             :closable="!disabled"
             style="height: 26px;"
-            @close="handleClose(item.value, $event)"
+            @close="tabsStore.close('current', item.value)"
           >
             {{ item.label }}
           </GiTag>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item :icon="ArrowLeft" @click="handleCloseLeft(item.value)">
+              <el-dropdown-item :icon="ArrowLeft" @click="tabsStore.close('left', item.value)">
                 关闭左侧
               </el-dropdown-item>
-              <el-dropdown-item :icon="ArrowRight" @click="handleCloseRight(item.value)">
+              <el-dropdown-item :icon="ArrowRight" @click="tabsStore.close('right', item.value)">
                 关闭右侧
               </el-dropdown-item>
-              <el-dropdown-item :icon="Minus" @click="handleCloseOther(item.value)">
+              <el-dropdown-item :icon="Minus" @click="tabsStore.close('other', item.value)">
                 关闭其他
               </el-dropdown-item>
-              <el-dropdown-item :icon="Close" @click="handleCloseAll()">
+              <el-dropdown-item :icon="Close" @click="tabsStore.close('all')">
                 关闭所有
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -131,7 +96,7 @@ function handleRefresh() {
         </el-dropdown>
       </template>
       <template #right-extra>
-        <el-button text circle bg :icon="Refresh" @click="handleRefresh" />
+        <el-button text circle bg :icon="Refresh" @click="tabsStore.reloadPage" />
       </template>
     </gi-nav-tabs>
   </div>

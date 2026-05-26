@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useBreadcrumb } from '@/hooks/useBreadcrumb'
+import { useBreadcrumb } from '@/core/hooks'
 
-const { breadcrumbs } = useBreadcrumb()
+const { breadcrumbList } = useBreadcrumb()
 </script>
 
 <template>
-  <el-breadcrumb v-if="breadcrumbs.length" class="app-breadcrumb" separator="/">
+  <el-breadcrumb v-if="breadcrumbList.length" class="app-breadcrumb" separator="/">
     <el-breadcrumb-item
-      v-for="(item, index) in breadcrumbs"
+      v-for="item in breadcrumbList"
       :key="item.path"
-      :to="index < breadcrumbs.length - 1 ? item.path : undefined"
+      :to="item.path"
     >
-      {{ item.title }}
+      {{ item.meta?.title }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>

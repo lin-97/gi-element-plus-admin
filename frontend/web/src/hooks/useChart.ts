@@ -1,6 +1,6 @@
 import type { EChartsOption } from 'echarts'
 import { computed } from 'vue'
-import { useTheme } from './useTheme'
+import { useTheme } from '@/core/hooks'
 
 interface Options {
   (isDark?: boolean): EChartsOption
