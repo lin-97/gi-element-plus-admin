@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { GiForm } from 'gi-component'
 import type { FormColumnItem } from 'gi-component'
 import { ElMessage } from 'element-plus'
+import { GiForm } from 'gi-component'
 import { useUserStore } from '@/stores/modules/user'
 
 defineOptions({ name: 'Profile' })

@@ -44,6 +44,22 @@ export const useTabsStore = defineStore('tabs', () => {
     return tabs.value[index] || tabs.value[index - 1]
   }
 
+  /** 关闭左侧 */
+  function closeLeft(path: string) {
+    const index = tabs.value.findIndex(t => t.path === path)
+    if (index === -1)
+      return
+    tabs.value = tabs.value.filter((t, i) => t.affix || i >= index)
+  }
+
+  /** 关闭右侧 */
+  function closeRight(path: string) {
+    const index = tabs.value.findIndex(t => t.path === path)
+    if (index === -1)
+      return
+    tabs.value = tabs.value.filter((t, i) => t.affix || i <= index)
+  }
+
   /** 关闭其他 */
   function closeOther(path: string) {
     tabs.value = tabs.value.filter(t => t.affix || t.path === path)
@@ -60,5 +76,5 @@ export const useTabsStore = defineStore('tabs', () => {
     activeTab.value = ''
   }
 
-  return { tabs, activeTab, addTab, closeTab, closeOther, closeAll, reset }
+  return { tabs, activeTab, addTab, closeTab, closeLeft, closeRight, closeOther, closeAll, reset }
 })

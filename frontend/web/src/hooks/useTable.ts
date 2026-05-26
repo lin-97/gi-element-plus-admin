@@ -1,8 +1,8 @@
 import type { Ref } from 'vue'
+import type { PageResult } from '@/types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, reactive, ref } from 'vue'
 import { appConfig } from '@/config'
-import type { PageResult } from '@/types/api'
 
 export interface UseTablePaginationParams {
   page: number

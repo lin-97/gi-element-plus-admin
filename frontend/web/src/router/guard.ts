@@ -1,10 +1,10 @@
 import type { Router } from 'vue-router'
 import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
 import { appConfig } from '@/config'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useTabsStore } from '@/stores/modules/tabs'
 import { useUserStore } from '@/stores/modules/user'
+import 'nprogress/nprogress.css'
 
 NProgress.configure({ showSpinner: false })
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { GiForm, GiPageLayout, GiTable } from 'gi-component'
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
+import type { UserInfo } from '@/types/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { GiForm, GiPageLayout, GiTable } from 'gi-component'
 import { deleteUserApi, getUserListApi } from '@/apis/user'
 import { appConfig } from '@/config'
 import { formatDate } from '@/utils/date'
-import type { UserInfo } from '@/types/user'
 
 defineOptions({ name: 'SystemUser' })
 

@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { EChartsOption } from 'echarts'
-import GiChart from '@/components/GiChart/index.vue'
+import { GiCard } from 'gi-component'
+import VChart from 'vue-echarts'
+import { useChart } from '@/hooks/useChart'
 import { formatDate } from '@/utils/date'
 
 defineOptions({ name: 'Dashboard' })
 
 /** 统计卡片数据 */
 const stats = shallowRef([
-  { title: '访问量', value: '12,846', trend: '+12%', color: '#165dff' },
-  { title: '用户数', value: '3,256', trend: '+8%', color: '#00b42a' },
-  { title: '订单量', value: '1,892', trend: '+5%', color: '#ff7d00' },
-  { title: '收入', value: '¥86,420', trend: '+18%', color: '#f53f3f' },
+  { title: '访问量', value: 12846, trend: '+12%', color: '#165dff' },
+  { title: '用户数', value: 3256, trend: '+8%', color: '#00b42a' },
+  { title: '订单量', value: 1892, trend: '+5%', color: '#ff7d00' },
+  { title: '收入', value: 86420, trend: '+18%', color: '#f53f3f', prefix: '¥' },
 ])
 
-/** 折线图配置 */
-const lineOption = computed<EChartsOption>(() => ({
+const { option: lineOption, theme: lineTheme } = useChart(() => ({
   tooltip: { trigger: 'axis' },
   grid: { left: 40, right: 20, top: 30, bottom: 30 },
   xAxis: {
@@ -34,8 +34,7 @@ const lineOption = computed<EChartsOption>(() => ({
   ],
 }))
 
-/** 饼图配置 */
-const pieOption = computed<EChartsOption>(() => ({
+const { option: pieOption, theme: pieTheme } = useChart(() => ({
   tooltip: { trigger: 'item' },
   legend: { bottom: 0 },
   series: [
@@ -59,37 +58,49 @@ const updateTime = formatDate(new Date())
   <div class="dashboard">
     <el-row :gutter="16">
       <el-col v-for="item in stats" :key="item.title" :xs="24" :sm="12" :lg="6">
-        <el-card class="dashboard__stat" shadow="hover">
-          <div class="dashboard__stat-value" :style="{ color: item.color }">
-            {{ item.value }}
-          </div>
-          <div class="dashboard__stat-title">
-            {{ item.title }}
-            <el-tag size="small" type="success">
-              {{ item.trend }}
-            </el-tag>
-          </div>
-        </el-card>
+        <GiCard class="dashboard__stat" bordered>
+          <el-statistic
+            :title="item.title"
+            :value="item.value"
+            :prefix="item.prefix"
+            group-separator=","
+            :value-style="{ color: item.color, fontWeight: 600 }"
+          >
+            <template #suffix>
+              <el-tag size="small" type="success" class="dashboard__stat-trend">
+                {{ item.trend }}
+              </el-tag>
+            </template>
+          </el-statistic>
+        </GiCard>
       </el-col>
     </el-row>
 
     <el-row :gutter="16" class="dashboard__charts">
       <el-col :xs="24" :lg="14">
-        <el-card shadow="hover">
-          <template #header>
-            <span>访问趋势</span>
+        <GiCard bordered title="访问趋势">
+          <template #extra>
             <span class="dashboard__time">{{ updateTime }}</span>
           </template>
-          <GiChart :option="lineOption" height="360px" />
-        </el-card>
+          <VChart
+            :key="lineTheme"
+            class="dashboard__chart"
+            :option="lineOption"
+            :theme="lineTheme"
+            autoresize
+          />
+        </GiCard>
       </el-col>
       <el-col :xs="24" :lg="10">
-        <el-card shadow="hover">
-          <template #header>
-            流量来源
-          </template>
-          <GiChart :option="pieOption" height="360px" />
-        </el-card>
+        <GiCard bordered title="流量来源">
+          <VChart
+            :key="pieTheme"
+            class="dashboard__chart"
+            :option="pieOption"
+            :theme="pieTheme"
+            autoresize
+          />
+        </GiCard>
       </el-col>
     </el-row>
   </div>
@@ -100,17 +111,17 @@ const updateTime = formatDate(new Date())
   &__stat {
     margin-bottom: 16px;
 
-    &-value {
-      font-size: 28px;
-      font-weight: 600;
+    :deep(.gi-card-header) {
+      display: none;
     }
 
-    &-title {
-      display: flex;
+    :deep(.el-statistic__content) {
+      flex-wrap: wrap;
       gap: 8px;
-      align-items: center;
-      margin-top: 8px;
-      color: var(--el-text-color-regular);
+    }
+
+    &-trend {
+      margin-left: 4px;
     }
   }
 
@@ -118,8 +129,12 @@ const updateTime = formatDate(new Date())
     margin-top: 8px;
   }
 
+  &__chart {
+    width: 100%;
+    height: 360px;
+  }
+
   &__time {
-    float: right;
     font-size: 12px;
     color: var(--el-text-color-regular);
   }

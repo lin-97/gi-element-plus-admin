@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { GiForm, GiPageLayout, GiTable } from 'gi-component'
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
-import { deleteStudentApi, getStudentListApi } from '@/apis/student'
 import type { StudentInfo } from '@/apis/student'
-import FormDialog from './FormDialog.vue'
+import { GiForm, GiPageLayout, GiTable } from 'gi-component'
+import { deleteStudentApi, getStudentListApi } from '@/apis/student'
 import { useTable } from '@/hooks/useTable'
+import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'Crud' })
 
@@ -79,7 +79,9 @@ function handleEdit(row: StudentInfo) {
     </template>
 
     <template #tool>
-      <el-button type="primary" @click="handleAdd">新增</el-button>
+      <el-button type="primary" @click="handleAdd">
+        新增
+      </el-button>
     </template>
 
     <GiTable

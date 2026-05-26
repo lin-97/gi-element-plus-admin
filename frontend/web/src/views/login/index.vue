@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { User, Lock } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
 import type { FormInstance, FormRules } from 'element-plus'
+import type { LoginParams } from '@/types/user'
+import { Lock, User } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { appConfig } from '@/config'
 import { useUserStore } from '@/stores/modules/user'
-import type { LoginParams } from '@/types/user'
 
 const router = useRouter()
 const route = useRoute()

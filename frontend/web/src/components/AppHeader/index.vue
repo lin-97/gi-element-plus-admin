@@ -9,9 +9,9 @@ import {
   User,
 } from '@element-plus/icons-vue'
 import { ElMessageBox, ElSpace } from 'element-plus'
-import { useFullscreen } from '@/hooks/useFullscreen'
-import { useBreadcrumb } from '@/hooks/useBreadcrumb'
 import { appConfig } from '@/config'
+import { useBreadcrumb } from '@/hooks/useBreadcrumb'
+import { useFullscreen } from '@/hooks/useFullscreen'
 import { useAppStore } from '@/stores/modules/app'
 import { useUserStore } from '@/stores/modules/user'
 
@@ -46,6 +46,7 @@ async function handleLogout() {
     <div class="app-header__left">
       <el-button
         v-if="mode === 'side'"
+        bg
         text
         circle
         :icon="appStore.collapsed ? Expand : Fold"
@@ -62,12 +63,13 @@ async function handleLogout() {
       </el-breadcrumb>
     </div>
     <div class="app-header__right">
-      <el-space :size="8">
+      <ElSpace :size="8">
         <el-tooltip content="全屏">
-          <el-button text circle :icon="FullScreen" @click="toggleFullscreen" />
+          <el-button bg text circle :icon="FullScreen" @click="toggleFullscreen" />
         </el-tooltip>
         <el-tooltip :content="appStore.isDark ? '亮色模式' : '暗黑模式'">
           <el-button
+            bg
             text
             circle
             :icon="appStore.isDark ? Sunny : Moon"
@@ -93,7 +95,7 @@ async function handleLogout() {
             </el-dropdown-menu>
           </template>
         </el-dropdown>
-      </el-space>
+      </ElSpace>
     </div>
   </header>
 </template>

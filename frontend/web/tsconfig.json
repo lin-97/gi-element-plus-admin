@@ -7,7 +7,11 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "resolveJsonModule": true,
+    "types": ["vite/client", "element-plus/global"],
     "allowImportingTsExtensions": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
@@ -15,11 +19,7 @@
     "noUnusedParameters": true,
     "noEmit": true,
     "isolatedModules": true,
-    "skipLibCheck": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "types": ["vite/client", "element-plus/global"]
+    "skipLibCheck": true
   },
   "include": [
     "src/**/*.ts",

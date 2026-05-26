@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { GiDialog, GiForm } from 'gi-component'
-import type { FormColumnItem, FormInstance } from 'gi-component'
-import { ElMessage } from 'element-plus'
 import type { FormRules } from 'element-plus'
-import { createStudentApi, getStudentDetailApi, updateStudentApi } from '@/apis/student'
+import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { StudentInfo } from '@/apis/student'
+import { ElMessage } from 'element-plus'
+import { GiDialog, GiForm } from 'gi-component'
+import { createStudentApi, getStudentDetailApi, updateStudentApi } from '@/apis/student'
 
 defineOptions({ name: 'FormDialog' })
 

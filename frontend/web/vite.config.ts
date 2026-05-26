@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => {
       alias: {
         '~': fileURLToPath(new URL('./', import.meta.url)),
         '@': fileURLToPath(new URL('./src', import.meta.url)),
+        // 使 echarts/theme/*.js 在按需引入时也能注册到 echarts/core
+        'echarts/lib/echarts': 'echarts/core',
       },
       dedupe: ['vue', 'element-plus'],
     },
