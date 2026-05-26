@@ -37,7 +37,8 @@ import PageTransition from '@/components/PageTransition/index.vue'
 
 .layout__content {
   flex: 1;
-  padding: 16px;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 </style>

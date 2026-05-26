@@ -2,7 +2,7 @@
 import { GiCard } from 'gi-component'
 import VChart from 'vue-echarts'
 import { useChart } from '@/hooks/useChart'
-import { formatDate } from '@/utils/date'
+import dayjs from 'dayjs'
 
 defineOptions({ name: 'Dashboard' })
 
@@ -51,7 +51,7 @@ const { option: pieOption, theme: pieTheme } = useChart(() => ({
   ],
 }))
 
-const updateTime = formatDate(new Date())
+const updateTime = dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss')
 </script>
 
 <template>
@@ -108,6 +108,10 @@ const updateTime = formatDate(new Date())
 
 <style lang="scss" scoped>
 .dashboard {
+  height: 100%;
+  padding: 16px;
+  overflow: hidden;
+  overflow-y: auto;
   &__stat {
     margin-bottom: 16px;
 

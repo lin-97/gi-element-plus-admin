@@ -82,31 +82,6 @@ MOCK_ASYNC_ROUTES: list[AsyncRouteItem] = [
             ),
         ],
     ),
-    _route(
-        id="3",
-        path="/system",
-        title="系统管理",
-        type=1,
-        component="Layout",
-        redirect="/system/user",
-        icon="setting",
-        permission="system",
-        sort=2,
-        always_show=True,
-        children=[
-            _route(
-                id="4",
-                parent_id="3",
-                path="user",
-                title="用户管理",
-                type=2,
-                component="system/user/index",
-                permission="system:user",
-                sort=1,
-                keep_alive=True,
-            ),
-        ],
-    ),
 ]
 
 

@@ -1,10 +1,9 @@
 import type { Router } from 'vue-router'
 import NProgress from 'nprogress'
-import { appConfig } from '@/config'
+import { appConfig, isTabWhiteList } from '@/config'
 import { useTabsStore } from '@/core/stores/useTabsStore'
 import { usePermissionStore } from '@/stores/modules/permission'
 import { useUserStore } from '@/stores/modules/user'
-import { isTabWhiteList } from '@/utils/routeWhiteList'
 import 'nprogress/nprogress.css'
 
 NProgress.configure({ showSpinner: false })

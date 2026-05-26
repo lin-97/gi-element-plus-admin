@@ -9,9 +9,8 @@ import {
   Refresh,
 } from '@element-plus/icons-vue'
 import { GiTag } from 'gi-component'
-import { appConfig } from '@/config'
+import { appConfig, isTabWhiteList } from '@/config'
 import { useTabsStore } from '@/core/stores/useTabsStore'
-import { isTabWhiteList } from '@/utils/routeWhiteList'
 
 const router = useRouter()
 const route = useRoute()

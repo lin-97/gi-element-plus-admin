@@ -1,11 +1,11 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { ApiResponse } from '@/types/api'
 import axios from 'axios'
 import qs from 'qs'
 import { appConfig } from '@/config'
 import { HttpCode } from '@/enums'
 import router from '@/router'
 import { useUserStore } from '@/stores/modules/user'
-import type { ApiResponse } from '@/types/api'
 
 /** 创建 axios 实例 */
 const service: AxiosInstance = axios.create({

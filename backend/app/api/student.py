@@ -5,9 +5,9 @@ from app.core.database import get_db
 from app.core.deps import get_current_user, require_admin
 from app.crud.student_crud import (
     get_student, get_students, create_student,
-    update_student, delete_student
+    update_student, delete_student, delete_students,
 )
-from app.schemas.schemas import StudentCreate, StudentUpdate, StudentResponse
+from app.schemas.schemas import StudentCreate, StudentUpdate, StudentBatchDelete, StudentResponse
 
 router = APIRouter(prefix="/student", tags=["学生管理"])
 
@@ -47,6 +47,22 @@ def list_students(
             "page": result["page"],
             "size": result["size"]
         }
+    }
+
+
+@router.post("/delete", response_model=dict)
+def batch_remove_students(
+    data: StudentBatchDelete,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin),
+):
+    deleted_count = delete_students(db, data.ids)
+    if deleted_count == 0:
+        raise HTTPException(status_code=404, detail="学生不存在")
+    return {
+        "code": 200,
+        "message": "删除成功",
+        "data": {"count": deleted_count},
     }
 
 

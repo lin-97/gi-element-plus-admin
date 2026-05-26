@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
-import type { GenderValue, StudentInfo } from '@/apis/student'
-import { deleteStudentApi, formatGender, GENDER_OPTIONS, getStudentListApi } from '@/apis/student'
+import type { GenderValue, StudentItem } from '@/apis/student'
+import { deleteStudentApi, GENDER_OPTIONS, getStudentListApi } from '@/apis/student'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'Crud' })
 
-const formDialogRef = ref<InstanceType<typeof FormDialog>>()
+const FormDialogRef = useTemplateRef('FormDialogRef')
 
 const queryForm = reactive({
   name: '',
@@ -33,7 +33,7 @@ const tableColumns: TableColumnItem[] = [
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
   { prop: 'student_no', label: '学号' },
-  { prop: 'gender', label: '性别', render: ({ row }) => formatGender(row.gender) },
+  { prop: 'gender', label: '性别', render: ({ row }) => row.gender === '1' ? '男' : '女' },
   { prop: 'age', label: '年龄' },
   { prop: 'phone', label: '电话' },
   {
@@ -55,18 +55,17 @@ const {
   onDelete,
   onBatchDelete,
   onSelectionChange,
-} = useTable<StudentInfo>(
-  params => getStudentListApi({
-    page: params.page,
-    size: params.size,
-    name: queryForm.name || undefined,
-    student_no: queryForm.student_no || undefined,
-    gender: queryForm.gender,
-    age: queryForm.age ? Number(queryForm.age) : undefined,
-  }),
+} = useTable(
   {
     rowKey: 'id',
-    deleteAPI: ids => Promise.all(ids.map(id => deleteStudentApi(Number(id)))),
+    listAPI: p => getStudentListApi({
+      ...p,
+      name: queryForm.name || undefined,
+      student_no: queryForm.student_no || undefined,
+      gender: queryForm.gender,
+      age: queryForm.age ? Number(queryForm.age) : undefined,
+    }),
+    deleteAPI: ids => deleteStudentApi(ids),
   },
 )
 
@@ -83,16 +82,16 @@ function handleReset() {
 }
 
 function handleAdd() {
-  formDialogRef.value?.openAdd()
+  FormDialogRef.value?.openAdd()
 }
 
-function handleEdit(row: StudentInfo) {
-  formDialogRef.value?.openEdit(row)
+function handleEdit(row: StudentItem) {
+  FormDialogRef.value?.openEdit(row)
 }
 </script>
 
 <template>
-  <GiPageLayout class="page-container">
+  <GiPageLayout>
     <template #header>
       <GiForm
         :model-value="queryForm" :columns="formColumns" search :grid-item-props="{
@@ -103,9 +102,9 @@ function handleEdit(row: StudentInfo) {
 
     <template #tool>
       <el-space>
-        <el-button type="primary" @click="handleAdd">
+        <gi-button type="add" @click="handleAdd">
           新增
-        </el-button>
+        </gi-button>
         <el-button
           type="danger"
           :disabled="!selectedKeys.length"
@@ -135,12 +134,9 @@ function handleEdit(row: StudentInfo) {
       </template>
     </GiTable>
 
-    <FormDialog ref="formDialogRef" @success="refresh" />
+    <FormDialog ref="FormDialogRef" @success="refresh" />
   </GiPageLayout>
 </template>
 
 <style lang="scss" scoped>
-.page-container {
-  height: 100%;
-}
 </style>

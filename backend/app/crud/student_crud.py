@@ -91,3 +91,15 @@ def delete_student(db: Session, student_id: int):
     db.delete(db_student)
     db.commit()
     return True
+
+
+def delete_students(db: Session, student_ids: list[int]) -> int:
+    if not student_ids:
+        return 0
+    rows = db.query(Student).filter(Student.id.in_(student_ids)).all()
+    if not rows:
+        return 0
+    for row in rows:
+        db.delete(row)
+    db.commit()
+    return len(rows)

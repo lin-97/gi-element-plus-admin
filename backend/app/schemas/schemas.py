@@ -178,6 +178,10 @@ class StudentUpdate(BaseModel):
         return _validate_address(v)
 
 
+class StudentBatchDelete(BaseModel):
+    ids: list[int] = Field(..., min_length=1)
+
+
 class StudentResponse(StudentBase):
     id: int
     created_at: Optional[datetime] = None

@@ -1,5 +1,3 @@
-import type { PageParams, PageResult } from '@/types/api'
-import { normalizePageResult } from '@/utils/page'
 import { request } from './request'
 
 /** 性别：1-男 2-女（与后端存储一致） */
@@ -9,31 +7,7 @@ export const GENDER_OPTIONS: { label: string, value: GenderValue }[] = [
   { label: '男', value: '1' },
   { label: '女', value: '2' },
 ]
-
-export function normalizeGender(gender?: string | number | null): GenderValue | undefined {
-  const value = String(gender ?? '')
-  return value === '1' || value === '2' ? value : undefined
-}
-
-const GENDER_LABEL_MAP: Record<GenderValue, string> = {
-  1: '男',
-  2: '女',
-}
-
-export function formatGender(gender?: number | string | null): string {
-  if (gender === '男')
-    return '男'
-  if (gender === '女')
-    return '女'
-  const value = Number(gender)
-  if (value === 1)
-    return GENDER_LABEL_MAP[1]
-  if (value === 2)
-    return GENDER_LABEL_MAP[2]
-  return ''
-}
-
-export interface StudentInfo {
+export interface StudentItem {
   id: number
   name: string
   student_no?: string
@@ -54,22 +28,22 @@ export interface StudentListQuery extends PageParams {
 }
 
 export function getStudentListApi(params: StudentListQuery) {
-  return request<PageResult<StudentInfo>>({ url: '/student/list', method: 'get', params })
-    .then(res => normalizePageResult<StudentInfo>(res))
+  return request<StudentItem[]>({ url: '/student/list', method: 'get', params })
 }
 
 export function getStudentDetailApi(id: number) {
-  return request<StudentInfo>({ url: `/student/${id}`, method: 'get' })
+  return request<StudentItem>({ url: `/student/${id}`, method: 'get' })
 }
 
-export function createStudentApi(data: Partial<StudentInfo>) {
+export function createStudentApi(data: Partial<StudentItem>) {
   return request({ url: '/student', method: 'post', data })
 }
 
-export function updateStudentApi(id: number, data: Partial<StudentInfo>) {
+export function updateStudentApi(id: number, data: Partial<StudentItem>) {
   return request({ url: `/student/${id}`, method: 'put', data })
 }
 
-export function deleteStudentApi(id: number) {
-  return request({ url: `/student/${id}`, method: 'delete' })
+/** 批量删除学生（支持单条：传 [id]） */
+export function deleteStudentApi(ids: string[]) {
+  return request({ url: '/student/delete', method: 'post', data: { ids } })
 }

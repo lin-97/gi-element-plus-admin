@@ -30,13 +30,10 @@ src/apis/{module}.ts # 类型 + 列表/详情/增删改 API
 - 组件库：`gi-component`（`GiPageLayout`、`GiForm`、`GiTable`、`GiDialog`）
 - 列表逻辑：`@/hooks/useTable`
 - 请求：`@/apis/request`，分页类型 `PageResult<T>`（`list` + `total`）
-- 枚举/格式化放 API 文件（如 `GENDER_OPTIONS`、`formatGender`）
 
 ## API 层模板
 
 ```typescript
-import type { PageParams, PageResult } from '@/types/api'
-import { normalizePageResult } from '@/utils/page'
 import { request } from './request'
 
 export interface XxxInfo {
@@ -50,7 +47,6 @@ export interface XxxListQuery extends PageParams {
 
 export function getXxxListApi(params: XxxListQuery) {
   return request<PageResult<XxxInfo>>({ url: '/xxx/list', method: 'get', params })
-    .then(res => normalizePageResult<XxxInfo>(res))
 }
 
 export function createXxxApi(data: Partial<XxxInfo>) {
@@ -197,9 +193,6 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
 ### 表格列扩展
 
 ```typescript
-// 自定义渲染
-{ prop: 'gender', label: '性别', render: ({ row }) => formatGender(row.gender) }
-
 // 插槽列
 { prop: 'action', label: '操作', slotName: 'action', width: 120, align: 'center' }
 ```
@@ -320,7 +313,7 @@ defineExpose({ openAdd, openEdit })
 
 ## 生成检查清单
 
-- [ ] API：类型、`ListQuery`、`normalizePageResult`、增删改查
+- [ ] API：类型、`ListQuery`、`PageResult`、增删改查
 - [ ] `index.vue`：`useTable` + 查询重置 + 操作列插槽
 - [ ] `FormDialog.vue`：`openAdd`/`openEdit`、`handleBeforeOk` 返回 boolean
 - [ ] 删除走 `onDelete`，不手写 `ElMessageBox`（除非特殊流程）

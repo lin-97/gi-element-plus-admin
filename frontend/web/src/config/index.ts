@@ -23,3 +23,10 @@ export const appConfig = {
   /** 页签白名单路径前缀 */
   tabWhitePrefixList: ['/redirect'],
 }
+
+/** 是否属于页签白名单路由（不展示在系统页签中） */
+export function isTabWhiteList(path: string) {
+  if (appConfig.tabWhiteList.includes(path))
+    return true
+  return appConfig.tabWhitePrefixList.some(prefix => path.startsWith(prefix))
+}

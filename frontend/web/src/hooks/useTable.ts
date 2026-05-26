@@ -1,63 +1,64 @@
+import type { AxiosResponse } from 'axios'
 import type { Ref } from 'vue'
-import type { PageResult } from '@/types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { computed, reactive, ref } from 'vue'
-import { appConfig } from '@/config'
+import { reactive, ref } from 'vue'
 
-export interface UseTablePaginationParams {
-  page: number
-  size: number
+/** 删除操作的配置选项 */
+export interface DeleteOptions {
+  /** 确认框标题 */
+  title?: string
+  /** 确认框内容 */
+  content?: string
+  /** 成功提示信息 */
+  successTip?: string
 }
 
-export interface UseTableOptions<T> {
-  /** 行主键字段，默认 id */
-  rowKey?: keyof T
-  /** 是否立即加载 */
-  immediate?: boolean
-  /** 默认每页条数 */
-  defaultPageSize?: number
-  /** 删除接口，接收主键数组 */
-  deleteAPI?: (ids: Array<string | number>) => Promise<unknown>
+interface Options<T> {
   onSuccess?: () => void
-  onError?: (error: Error) => void
+  onError?: (_error: Error) => void
+  immediate?: boolean
+  /** 行数据的唯一键（如表格 row-key） */
+  rowKey?: keyof T
+  listAPI: (_p: PageParams) => Promise<PageResult<T>> | Promise<T[]>
+  deleteAPI?: (_pks: string[]) => Promise<any>
+  exportAPI?: () => Promise<any>
 }
 
-export type UseTableApi<T, Q = Record<string, unknown>> = (
-  params: UseTablePaginationParams & Q,
-) => Promise<PageResult<T>>
-
-export function useTable<T extends object = object, Q = Record<string, unknown>>(
-  api: UseTableApi<T, Q>,
-  options: UseTableOptions<T> = {},
-) {
-  const {
-    rowKey = 'id' as keyof T,
-    immediate = true,
-    defaultPageSize = appConfig.pageSize,
-    deleteAPI,
-    onSuccess,
-    onError,
-  } = options
+export function useTable<F>(options: Options<F>) {
+  const { onSuccess, onError, immediate = true } = options
 
   const loading = ref(false)
-  const tableData: Ref<T[]> = ref([])
-  const selectedKeys = ref<Array<string | number>>([])
+  const tableData: Ref<F[]> = ref([])
 
-  const paginationState = reactive({
+  const pagination = reactive({
     currentPage: 1,
-    pageSize: defaultPageSize,
+    pageSize: 10,
     total: 0,
+    onCurrentChange: (size: number) => {
+      pagination.currentPage = size
+      getTableData()
+    },
+    onSizeChange: (size: number) => {
+      pagination.pageSize = size
+      getTableData()
+    },
   })
+
+  function setTotal(total: number) {
+    pagination.total = total
+  }
 
   async function getTableData() {
     try {
       loading.value = true
-      const res = await api({
-        page: paginationState.currentPage,
-        size: paginationState.pageSize,
-      } as UseTablePaginationParams & Q)
-      tableData.value = res.list
-      paginationState.total = res.total
+      const res = await options.listAPI({ page: pagination.currentPage, size: pagination.pageSize })
+      console.log(res, 'res')
+      // 处理返回的数据结构可能是分页或数组的情况
+      const data = !Array.isArray(res) ? res.list : res
+      tableData.value = data as F[]
+      // 设置总数据量
+      const total = !Array.isArray(res) ? res.total : data.length
+      setTotal(total)
       onSuccess?.()
     }
     catch (error) {
@@ -68,8 +69,11 @@ export function useTable<T extends object = object, Q = Record<string, unknown>>
     }
   }
 
+  // 是否立即触发请求
+  immediate && getTableData()
+
   function search() {
-    paginationState.currentPage = 1
+    pagination.currentPage = 1
     getTableData()
   }
 
@@ -77,121 +81,103 @@ export function useTable<T extends object = object, Q = Record<string, unknown>>
     getTableData()
   }
 
-  function handlePageChange(page: number) {
-    paginationState.currentPage = page
-    getTableData()
-  }
-
-  function handleSizeChange(pageSize: number) {
-    paginationState.pageSize = pageSize
-    paginationState.currentPage = 1
-    getTableData()
-  }
-
-  /** 供 GiTable 使用的分页配置（字段名与 Element Plus 一致） */
-  const pagination = computed(() => ({
-    currentPage: paginationState.currentPage,
-    pageSize: paginationState.pageSize,
-    total: paginationState.total,
-    pageSizes: appConfig.pageSizes,
-    layout: 'total, prev, pager, next, sizes',
-    background: true,
-    onCurrentChange: handlePageChange,
-    onSizeChange: handleSizeChange,
-  }))
-
-  const onSelectionChange = (rows: T[]) => {
-    selectedKeys.value = rows.map(row => row[rowKey] as string | number)
-  }
-
-  interface DeleteOptions {
-    title?: string
-    content?: string
-    successTip?: string
-  }
-
+  /**
+   * 处理删除操作
+   * @description 弹出确认框，点击确定后确认框内显示 loading 并执行删除，成功后关闭并刷新表格
+   * @param deleteApi - 删除操作的 API 函数（如 () => CmBearingService.delete(id)）
+   * @param options - 删除操作的配置选项
+   * @returns Promise<boolean | undefined> 用户取消为 undefined，执行结果为 true/false
+   */
   function handleDelete(
-    deleteFn: () => Promise<unknown>,
-    deleteOptions?: DeleteOptions,
+    deleteApi: () => Promise<AxiosResponse<unknown>>,
+    options?: DeleteOptions,
   ): Promise<boolean | undefined> {
     return new Promise((resolve) => {
-      ElMessageBox.confirm(
-        deleteOptions?.content ?? '是否确认删除？',
-        deleteOptions?.title ?? '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-          beforeClose: (action, instance, done) => {
-            if (action === 'cancel') {
+      ElMessageBox.confirm(options?.content ?? '是否确认删除？', options?.title ?? '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'cancel') {
+            done()
+            resolve(undefined)
+            return
+          }
+          instance.confirmButtonLoading = true
+          deleteApi()
+            .then(() => {
+              ElMessage.success(options?.successTip ?? '删除成功')
+              getTableData()
+              instance.confirmButtonLoading = false
               done()
-              resolve(undefined)
-              return
-            }
-            instance.confirmButtonLoading = true
-            deleteFn()
-              .then(() => {
-                ElMessage.success(deleteOptions?.successTip ?? '删除成功')
-                getTableData()
-                instance.confirmButtonLoading = false
-                done()
-                resolve(true)
-              })
-              .catch((err) => {
-                console.error('删除失败', err)
-                instance.confirmButtonLoading = false
-                done()
-                resolve(false)
-              })
-          },
+              resolve(true)
+            })
+            .catch((err) => {
+              console.error('删除失败', err)
+              instance.confirmButtonLoading = false
+              done()
+              resolve(false)
+            })
         },
-      ).catch(() => resolve(undefined))
+      }).catch(() => resolve(undefined))
     })
   }
 
-  function onDelete(row: T) {
-    if (!deleteAPI) {
-      ElMessage.error('deleteAPI 未配置')
-      return
-    }
-    handleDelete(() => deleteAPI([row[rowKey] as string | number]))
+  const selectedKeys = ref<string[]>([])
+  const onSelectionChange = (rows: T[]) => {
+    selectedKeys.value = rows.map(row => row[options.rowKey as keyof T])
   }
 
-  function onBatchDelete() {
-    if (!deleteAPI) {
-      ElMessage.error('deleteAPI 未配置')
+  // 删除单个数据
+  const onDelete = (row: T) => {
+    if (!options.deleteAPI) {
+      ElMessage.error('deleteAPI没有配置')
+      return
+    }
+    const deleteAPI = options.deleteAPI
+    handleDelete(() => deleteAPI([row[options.rowKey as keyof T] as unknown as string]))
+  }
+
+  // 批量删除数据
+  const onBatchDelete = () => {
+    if (!options.deleteAPI) {
+      ElMessage.error('deleteAPI没有配置')
       return
     }
     if (!selectedKeys.value.length) {
       ElMessage.error('请选择要删除的数据')
       return
     }
-    handleDelete(
-      () => deleteAPI(selectedKeys.value),
-      {
-        title: '批量删除',
-        content: `确定要删除选中的 ${selectedKeys.value.length} 条数据吗？`,
-        successTip: '删除成功',
-      },
-    )
+    const deleteAPI = options.deleteAPI
+    handleDelete(() => deleteAPI(selectedKeys.value.map(key => key as unknown as string)), {
+      title: '批量删除',
+      content: `确定要删除选中的 ${selectedKeys.value.length} 条数据吗？`,
+      successTip: '删除成功',
+    })
   }
 
-  if (immediate)
-    getTableData()
-
   return {
+    /** 表格数据 */
     tableData,
-    loading,
-    pagination,
-    selectedKeys,
+    /** 获取表格数据 */
     getTableData,
+    /** 分页数据 */
+    pagination,
+    /** 加载状态 */
+    loading,
+    /** 搜索 */
     search,
+    /** 刷新 */
     refresh,
-    handlePageChange,
-    handleSizeChange,
-    onSelectionChange,
+    /** 处理删除（确认框、确定后 loading、成功提示与刷新） */
     handleDelete,
+    /** 选择项变化时触发 */
+    onSelectionChange,
+    /** 选择项 */
+    selectedKeys,
+    /** 删除单个数据 */
     onDelete,
+    /** 批量删除数据 */
     onBatchDelete,
   }
 }

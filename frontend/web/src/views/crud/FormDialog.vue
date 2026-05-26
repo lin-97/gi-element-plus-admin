@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { FormItemRule, FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
-import type { GenderValue, StudentInfo } from '@/apis/student'
+import type { GenderValue, StudentItem } from '@/apis/student'
 import { ElMessage } from 'element-plus'
-import { GiDialog, GiForm } from 'gi-component'
 import {
   createStudentApi,
   GENDER_OPTIONS,
-  normalizeGender,
   updateStudentApi,
 } from '@/apis/student'
 
@@ -33,15 +31,14 @@ const isEdit = ref(false)
 const currentId = ref<number>()
 const formRef = ref<FormInstance>()
 const formData = ref<StudentFormData>(createEmptyForm())
-
 const dialogTitle = computed(() => (isEdit.value ? '编辑学生' : '新增学生'))
 
 function createEmptyForm(): StudentFormData {
   return {
     name: '',
     student_no: '',
-    gender: undefined,
-    age: undefined,
+    gender: '1',
+    age: 18,
     phone: '',
     email: '',
     address: '',
@@ -100,11 +97,11 @@ const formColumns: FormColumnItem[] = [
   },
 ]
 
-function toFormData(student: StudentInfo): StudentFormData {
+function toFormData(student: StudentItem): StudentFormData {
   return {
     name: student.name ?? '',
     student_no: student.student_no ?? '',
-    gender: normalizeGender(student.gender),
+    gender: student.gender,
     age: student.age,
     phone: student.phone ?? '',
     email: student.email ?? '',
@@ -112,7 +109,7 @@ function toFormData(student: StudentInfo): StudentFormData {
   }
 }
 
-function toPayload(data: StudentFormData): Partial<StudentInfo> {
+function toPayload(data: StudentFormData): Partial<StudentItem> {
   const trim = (v: string) => v.trim()
   return {
     name: trim(data.name),
@@ -132,7 +129,7 @@ function openAdd() {
   visible.value = true
 }
 
-function openEdit(row: StudentInfo) {
+function openEdit(row: StudentItem) {
   isEdit.value = true
   currentId.value = row.id
   formData.value = toFormData(row)
