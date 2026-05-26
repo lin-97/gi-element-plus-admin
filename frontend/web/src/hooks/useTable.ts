@@ -6,7 +6,7 @@ import { appConfig } from '@/config'
 
 export interface UseTablePaginationParams {
   page: number
-  pageSize: number
+  size: number
 }
 
 export interface UseTableOptions<T> {
@@ -54,9 +54,9 @@ export function useTable<T extends object = object, Q = Record<string, unknown>>
       loading.value = true
       const res = await api({
         page: paginationState.currentPage,
-        pageSize: paginationState.pageSize,
+        size: paginationState.pageSize,
       } as UseTablePaginationParams & Q)
-      tableData.value = res.items
+      tableData.value = res.list
       paginationState.total = res.total
       onSuccess?.()
     }
@@ -94,7 +94,7 @@ export function useTable<T extends object = object, Q = Record<string, unknown>>
     pageSize: paginationState.pageSize,
     total: paginationState.total,
     pageSizes: appConfig.pageSizes,
-    layout: 'total, sizes, prev, pager, next',
+    layout: 'total, prev, pager, next, sizes',
     background: true,
     onCurrentChange: handlePageChange,
     onSizeChange: handleSizeChange,

@@ -8,6 +8,7 @@ import {
   Minus,
   Refresh,
 } from '@element-plus/icons-vue'
+import { GiTag } from 'gi-component'
 import { appConfig } from '@/config'
 import { useTabsStore } from '@/stores/modules/tabs'
 
@@ -63,8 +64,8 @@ function ensureActiveRoute() {
   }
 }
 
-function handleClose(path: string | number, e: Event) {
-  e.stopPropagation()
+function handleClose(path: string | number, e?: Event) {
+  e?.stopPropagation()
   const pathStr = String(path)
   const next = tabsStore.closeTab(pathStr)
   if (pathStr === route.path && next)
@@ -108,20 +109,16 @@ function handleRefresh() {
           :disabled="disabled"
           @visible-change="(visible) => handleContextMenuVisible(visible, item.value)"
         >
-          <el-check-tag :checked="active" :disabled="disabled">
-            <el-space :size="4">
-              <span>{{ item.label }}</span>
-              <div
-                v-if="!isAffix(item.value)"
-                class="app-tabs__close"
-                @click.stop="handleClose(item.value, $event)"
-              >
-                <el-icon>
-                  <Close />
-                </el-icon>
-              </div>
-            </el-space>
-          </el-check-tag>
+          <GiTag
+            :type="active ? 'dark' : 'light'"
+            :color="active ? 'primary' : 'info'"
+            size="large"
+            :closable="!disabled"
+            style="height: 26px;"
+            @close="handleClose(item.value, $event)"
+          >
+            {{ item.label }}
+          </GiTag>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item :icon="ArrowLeft" @click="handleCloseLeft(item.value)">
@@ -155,28 +152,8 @@ function handleRefresh() {
   background: var(--el-bg-color);
   border-bottom: 1px solid var(--el-border-color-light);
 
-  :deep(.el-check-tag) {
-    font-size: 12px;
-  }
-
-  :deep(.el-check-tag:not(.is-disabled):not(.is-checked)) {
-    color: var(--el-text-color-primary);
-  }
-}
-
-.app-tabs__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 15px;
-  height: 15px;
-  cursor: pointer;
-  background-color: transparent;
-  border-radius: 50%;
-
-  &:hover {
-    color: var(--el-color-white);
-    background-color: var(--el-color-info);
+  :deep(.gi-tag) {
+    cursor: pointer;
   }
 }
 </style>

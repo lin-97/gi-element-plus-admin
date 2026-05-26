@@ -9,7 +9,7 @@ import PageTransition from '@/components/PageTransition/index.vue'
 </script>
 
 <template>
-  <div class="layout layout--top">
+  <div class="layout">
     <AppHeader mode="top" />
     <AppTabs />
     <div class="layout__content">
@@ -19,8 +19,18 @@ import PageTransition from '@/components/PageTransition/index.vue'
 </template>
 
 <style lang="scss" scoped>
-.layout--top {
+.layout {
+  display: flex;
   flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background: var(--el-fill-color-light);
+}
+
+.layout__content {
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
 }
 </style>

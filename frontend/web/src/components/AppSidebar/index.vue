@@ -58,8 +58,8 @@ function handleSelect(path: string) {
     :class="{ 'app-sidebar--collapsed': appStore.collapsed }"
   >
     <div class="app-sidebar__logo">
-      <span v-if="!appStore.collapsed">GI Admin</span>
-      <span v-else>GI</span>
+      <span v-if="!appStore.collapsed" class="app-sidebar__logo-text">GI Admin</span>
+      <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
     <el-menu
       :default-active="route.path"
@@ -85,6 +85,7 @@ function handleSelect(path: string) {
   background: var(--el-bg-color);
   border-right: 1px solid var(--el-border-color);
   transition: width 0.2s;
+  overflow: hidden;
 
   &--collapsed {
     width: 64px;
@@ -103,6 +104,13 @@ function handleSelect(path: string) {
     font-weight: 600;
     color: var(--el-color-primary);
     border-bottom: 1px solid var(--el-border-color);
+
+    &-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--el-color-primary);
+      white-space: nowrap;
+    }
   }
 }
 </style>

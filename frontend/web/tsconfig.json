@@ -11,7 +11,7 @@
       "@/*": ["./src/*"]
     },
     "resolveJsonModule": true,
-    "types": ["vite/client", "element-plus/global"],
+    "types": ["vite/client", "element-plus/global", "gi-component/packages/components.d.ts"],
     "allowImportingTsExtensions": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,

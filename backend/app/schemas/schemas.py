@@ -1,6 +1,12 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional
+import re
 from datetime import datetime
+from typing import Any, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+PHONE_RE = re.compile(r"^1[3-9]\d{9}$")
+EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+GENDER_VALUES = frozenset({"1", "2"})
 
 
 class Token(BaseModel):
@@ -42,14 +48,90 @@ class UserResponse(UserBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+def _optional_str(v: Any) -> Optional[str]:
+    if v is None:
+        return None
+    s = str(v).strip()
+    return s or None
+
+
+def _validate_phone(v: Any) -> Optional[str]:
+    phone = _optional_str(v)
+    if phone is None:
+        return None
+    if not PHONE_RE.match(phone):
+        raise ValueError("电话格式不正确，请输入11位手机号")
+    return phone
+
+
+def _validate_email(v: Any) -> Optional[str]:
+    email = _optional_str(v)
+    if email is None:
+        return None
+    if not EMAIL_RE.match(email):
+        raise ValueError("邮箱格式不正确")
+    return email
+
+
+def _validate_address(v: Any) -> Optional[str]:
+    address = _optional_str(v)
+    if address is None:
+        return None
+    if len(address) > 200:
+        raise ValueError("地址不能超过200字")
+    return address
+
+
+def _validate_gender(v: Any) -> Optional[str]:
+    if v is None or v == "":
+        return None
+    if isinstance(v, int):
+        gender = str(v)
+    else:
+        gender = str(v).strip()
+        if not gender:
+            return None
+    if gender not in GENDER_VALUES:
+        raise ValueError("性别只能是1(男)或2(女)")
+    return gender
+
+
 class StudentBase(BaseModel):
-    name: str
-    student_no: Optional[str] = None
-    gender: Optional[str] = None
-    age: Optional[int] = None
+    name: str = Field(..., min_length=1, max_length=50)
+    student_no: str = Field(..., min_length=1, max_length=20)
+    gender: Optional[str] = Field(None, max_length=10)
+    age: Optional[int] = Field(None, ge=0, le=150)
     phone: Optional[str] = None
     email: Optional[str] = None
-    address: Optional[str] = None
+    address: Optional[str] = Field(None, max_length=200)
+
+    @field_validator("student_no", mode="before")
+    @classmethod
+    def validate_student_no(cls, v: Any) -> str:
+        student_no = _optional_str(v)
+        if not student_no:
+            raise ValueError("学号不能为空")
+        return student_no
+
+    @field_validator("gender", mode="before")
+    @classmethod
+    def validate_gender_field(cls, v: Any) -> Optional[str]:
+        return _validate_gender(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_field(cls, v: Any) -> Optional[str]:
+        return _validate_phone(v)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email_field(cls, v: Any) -> Optional[str]:
+        return _validate_email(v)
+
+    @field_validator("address", mode="before")
+    @classmethod
+    def validate_address_field(cls, v: Any) -> Optional[str]:
+        return _validate_address(v)
 
 
 class StudentCreate(StudentBase):
@@ -57,13 +139,43 @@ class StudentCreate(StudentBase):
 
 
 class StudentUpdate(BaseModel):
-    name: Optional[str] = None
-    student_no: Optional[str] = None
-    gender: Optional[str] = None
-    age: Optional[int] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=50)
+    student_no: Optional[str] = Field(None, min_length=1, max_length=20)
+    gender: Optional[str] = Field(None, max_length=10)
+    age: Optional[int] = Field(None, ge=0, le=150)
     phone: Optional[str] = None
     email: Optional[str] = None
-    address: Optional[str] = None
+    address: Optional[str] = Field(None, max_length=200)
+
+    @field_validator("student_no", mode="before")
+    @classmethod
+    def validate_student_no(cls, v: Any) -> Optional[str]:
+        if v is None:
+            return None
+        student_no = _optional_str(v)
+        if student_no is None:
+            return None
+        return student_no
+
+    @field_validator("gender", mode="before")
+    @classmethod
+    def validate_gender_field(cls, v: Any) -> Optional[str]:
+        return _validate_gender(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_field(cls, v: Any) -> Optional[str]:
+        return _validate_phone(v)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email_field(cls, v: Any) -> Optional[str]:
+        return _validate_email(v)
+
+    @field_validator("address", mode="before")
+    @classmethod
+    def validate_address_field(cls, v: Any) -> Optional[str]:
+        return _validate_address(v)
 
 
 class StudentResponse(StudentBase):
@@ -76,14 +188,14 @@ class StudentResponse(StudentBase):
 
 class PageParams(BaseModel):
     page: int = 1
-    page_size: int = 10
+    size: int = 10
 
 
 class PageResult(BaseModel):
-    items: list
+    list: list
     total: int
     page: int
-    page_size: int
+    size: int
 
 
 class ApiResponse(BaseModel):

@@ -22,7 +22,7 @@ class Student(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     student_no = Column(String(20), unique=True, index=True)
-    gender = Column(String(10))
+    gender = Column(String(10), comment="1-男 2-女")
     age = Column(Integer)
     phone = Column(String(20))
     email = Column(String(100))

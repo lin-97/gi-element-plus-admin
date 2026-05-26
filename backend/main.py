@@ -2,11 +2,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.api import auth, student, menu
-from app.core.database import Base, engine
+from app.core.database import Base, SessionLocal, engine
+from app.db.gender_migration import migrate_student_gender
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        migrate_student_gender(db)
+    finally:
+        db.close()
     yield
 
 app = FastAPI(title="学生信息管理系统", version="1.0.0", lifespan=lifespan)

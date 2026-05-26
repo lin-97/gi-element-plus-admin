@@ -8,14 +8,14 @@ export interface ApiResponse<T = unknown> {
 /** 分页请求参数 */
 export interface PageParams {
   page: number
-  pageSize: number
+  size: number
   [key: string]: unknown
 }
 
 /** 分页响应数据 */
 export interface PageResult<T> {
-  items: T[]
+  list: T[]
   total: number
   page: number
-  page_size: number
+  size: number
 }

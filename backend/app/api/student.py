@@ -15,17 +15,20 @@ router = APIRouter(prefix="/student", tags=["学生管理"])
 @router.get("/list", response_model=dict)
 def list_students(
     page: int = Query(1, ge=1),
-    page_size: int = Query(10, ge=1, le=100),
+    size: int = Query(10, ge=1, le=100),
     name: Optional[str] = None,
+    student_no: Optional[str] = None,
+    gender: Optional[str] = None,
+    age: Optional[int] = None,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
-    result = get_students(db, page, page_size, name)
+    result = get_students(db, page, size, name, student_no, gender, age)
     return {
         "code": 200,
         "message": "success",
         "data": {
-            "items": [
+            "list": [
                 {
                     "id": s.id,
                     "name": s.name,
@@ -38,11 +41,11 @@ def list_students(
                     "created_at": s.created_at.isoformat() if s.created_at else None,
                     "updated_at": s.updated_at.isoformat() if s.updated_at else None
                 }
-                for s in result["items"]
+                for s in result["list"]
             ],
             "total": result["total"],
             "page": result["page"],
-            "page_size": result["page_size"]
+            "size": result["size"]
         }
     }
 

@@ -20,6 +20,24 @@ import PageTransition from '@/components/PageTransition/index.vue'
 
 <style lang="scss" scoped>
 .layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background: var(--el-fill-color-light);
+}
+
+.layout__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.layout__content {
+  flex: 1;
+  padding: 16px;
+  overflow: hidden;
 }
 </style>

@@ -39,7 +39,7 @@ const tableColumns: TableColumnItem[] = [
 const loading = ref(false)
 const tableData = shallowRef<UserInfo[]>([])
 const total = ref(0)
-const pagination = reactive({ page: 1, pageSize: appConfig.pageSize })
+const pagination = reactive({ page: 1, size: appConfig.pageSize })
 
 /** 加载列表 */
 async function fetchList() {
@@ -111,7 +111,7 @@ onMounted(() => fetchList())
     <div class="user-page__pagination">
       <el-pagination
         v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
+        v-model:page-size="pagination.size"
         :total="total"
         :page-sizes="appConfig.pageSizes"
         layout="total, sizes, prev, pager, next"
@@ -123,6 +123,10 @@ onMounted(() => fetchList())
 </template>
 
 <style lang="scss" scoped>
+.page-container {
+  height: 100%;
+}
+
 .user-page__pagination {
   display: flex;
   justify-content: flex-end;

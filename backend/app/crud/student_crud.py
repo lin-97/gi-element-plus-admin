@@ -24,13 +24,27 @@ def get_student_by_no(db: Session, student_no: str):
     return db.query(Student).filter(Student.student_no == student_no).first()
 
 
-def get_students(db: Session, page: int = 1, page_size: int = 10, name: Optional[str] = None):
+def get_students(
+    db: Session,
+    page: int = 1,
+    size: int = 10,
+    name: Optional[str] = None,
+    student_no: Optional[str] = None,
+    gender: Optional[str] = None,
+    age: Optional[int] = None,
+):
     query = db.query(Student)
     if name:
         query = query.filter(Student.name.like(f"%{name}%"))
+    if student_no:
+        query = query.filter(Student.student_no.like(f"%{student_no}%"))
+    if gender:
+        query = query.filter(Student.gender == gender)
+    if age is not None:
+        query = query.filter(Student.age == age)
     total = query.count()
-    items = query.order_by(Student.id.desc()).offset((page - 1) * page_size).limit(page_size).all()
-    return {"items": items, "total": total, "page": page, "page_size": page_size}
+    rows = query.order_by(Student.id.desc()).offset((page - 1) * size).limit(size).all()
+    return {"list": rows, "total": total, "page": page, "size": size}
 
 
 def create_student(db: Session, student: StudentCreate):
