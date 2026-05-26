@@ -29,6 +29,7 @@ const formColumns: FormColumnItem[] = [
 ]
 
 const tableColumns: TableColumnItem[] = [
+  { type: 'selection', width: 48, align: 'center' },
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
   { prop: 'student_no', label: '学号' },
@@ -48,9 +49,12 @@ const {
   tableData,
   loading,
   pagination,
+  selectedKeys,
   search,
   refresh,
   onDelete,
+  onBatchDelete,
+  onSelectionChange,
 } = useTable<StudentInfo>(
   params => getStudentListApi({
     page: params.page,
@@ -98,9 +102,18 @@ function handleEdit(row: StudentInfo) {
     </template>
 
     <template #tool>
-      <el-button type="primary" @click="handleAdd">
-        新增
-      </el-button>
+      <el-space>
+        <el-button type="primary" @click="handleAdd">
+          新增
+        </el-button>
+        <el-button
+          type="danger"
+          :disabled="!selectedKeys.length"
+          @click="onBatchDelete"
+        >
+          批量删除
+        </el-button>
+      </el-space>
     </template>
 
     <GiTable
@@ -110,6 +123,7 @@ function handleEdit(row: StudentInfo) {
       :columns="tableColumns"
       row-key="id"
       :pagination="pagination"
+      @selection-change="onSelectionChange"
     >
       <template #action="{ row }">
         <el-button type="primary" link @click="handleEdit(row)">

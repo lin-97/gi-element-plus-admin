@@ -1,5 +1,5 @@
-@use './reset.scss';
-@use './transition.scss';
+@use '../core/styles/index.scss';
+@use '../core/styles/transition.scss';
 @use './var.scss';
 
 html,
@@ -13,4 +13,8 @@ body,
   font-size: 14px;
   color: var(--el-text-color-primary);
   background-color: var(--el-fill-color-light);
+}
+
+.gi-page-layout__tool {
+  justify-content: start;
 }
