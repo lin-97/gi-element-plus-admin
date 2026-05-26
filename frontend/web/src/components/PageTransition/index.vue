@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import { useTabsStore } from '@/stores/modules/tabs'
+import { useAppStore } from '@/core/stores/useAppStore'
+import { useTabsStore } from '@/core/stores/useTabsStore'
 
+const appStore = useAppStore()
 const tabsStore = useTabsStore()
 
 /** 需要缓存的组件名列表 */
-const cachedViews = computed(() => {
-  return tabsStore.tabs
-    .filter(t => t.keepAlive && t.name)
-    .map(t => String(t.name))
-})
+const cachedViews = computed(() => tabsStore.cacheList.map(String))
 </script>
 
 <template>
   <router-view v-slot="{ Component, route: currentRoute }">
-    <transition name="fade-slide" mode="out-in">
-      <keep-alive :include="cachedViews">
+    <transition :name="appStore.transitionName" mode="out-in">
+      <keep-alive v-if="tabsStore.reloadFlag" :include="cachedViews">
         <component
           :is="Component"
           v-if="Component"

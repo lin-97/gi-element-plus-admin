@@ -1,7 +1,7 @@
+import type { LoginParams, UserInfo } from '@/types/user'
 import { defineStore } from 'pinia'
 import { getUserInfoApi, loginApi, logoutApi } from '@/apis/auth'
 import { StorageKey } from '@/enums'
-import type { LoginParams, UserInfo } from '@/types/user'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref('')

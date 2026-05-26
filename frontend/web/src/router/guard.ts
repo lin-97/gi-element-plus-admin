@@ -1,9 +1,10 @@
 import type { Router } from 'vue-router'
 import NProgress from 'nprogress'
 import { appConfig } from '@/config'
+import { useTabsStore } from '@/core/stores/useTabsStore'
 import { usePermissionStore } from '@/stores/modules/permission'
-import { useTabsStore } from '@/stores/modules/tabs'
 import { useUserStore } from '@/stores/modules/user'
+import { isTabWhiteList } from '@/utils/routeWhiteList'
 import 'nprogress/nprogress.css'
 
 NProgress.configure({ showSpinner: false })
@@ -49,8 +50,10 @@ export function setupRouterGuard(router: Router) {
   })
 
   router.afterEach((to) => {
-    const tabsStore = useTabsStore()
-    tabsStore.addTab(to)
+    if (!isTabWhiteList(to.path)) {
+      const tabsStore = useTabsStore()
+      tabsStore.addTabItem(to)
+    }
     NProgress.done()
   })
 }

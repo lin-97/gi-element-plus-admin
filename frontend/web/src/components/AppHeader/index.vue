@@ -8,11 +8,12 @@ import {
   SwitchButton,
   User,
 } from '@element-plus/icons-vue'
+import { useFullscreen } from '@vueuse/core'
 import { ElMessageBox, ElSpace } from 'element-plus'
 import { appConfig } from '@/config'
+import { useTheme } from '@/core/hooks'
+import { useAppStore } from '@/core/stores'
 import { useBreadcrumb } from '@/hooks/useBreadcrumb'
-import { useFullscreen } from '@/hooks/useFullscreen'
-import { useAppStore } from '@/stores/modules/app'
 import { useUserStore } from '@/stores/modules/user'
 
 interface Props {
@@ -26,8 +27,10 @@ withDefaults(defineProps<Props>(), {
 
 const router = useRouter()
 const appStore = useAppStore()
+const { isDark, toggleDark } = useTheme()
 const userStore = useUserStore()
-const { toggle: toggleFullscreen } = useFullscreen()
+const fullscreenTarget = ref(document.documentElement)
+const { toggle: toggleFullscreen } = useFullscreen(fullscreenTarget)
 const { breadcrumbs } = useBreadcrumb()
 
 async function handleLogout() {
@@ -46,11 +49,12 @@ async function handleLogout() {
     <div class="app-header__left">
       <el-button
         v-if="mode === 'side'"
+        type="primary"
         bg
         text
         circle
-        :icon="appStore.collapsed ? Expand : Fold"
-        @click="appStore.toggleCollapsed"
+        :icon="appStore.isMenuAccordion ? Expand : Fold"
+        @click="appStore.setMenuCollapse(!appStore.isMenuAccordion)"
       />
       <el-breadcrumb v-if="breadcrumbs.length" separator="/">
         <el-breadcrumb-item
@@ -65,15 +69,16 @@ async function handleLogout() {
     <div class="app-header__right">
       <ElSpace :size="8">
         <el-tooltip content="全屏">
-          <el-button bg text circle :icon="FullScreen" @click="toggleFullscreen" />
+          <el-button type="primary" bg text circle :icon="FullScreen" @click="toggleFullscreen" />
         </el-tooltip>
-        <el-tooltip :content="appStore.isDark ? '亮色模式' : '暗黑模式'">
+        <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
           <el-button
+            type="primary"
             bg
             text
             circle
-            :icon="appStore.isDark ? Sunny : Moon"
-            @click="appStore.toggleDark()"
+            :icon="isDark ? Sunny : Moon"
+            @click="toggleDark()"
           />
         </el-tooltip>
         <el-dropdown trigger="click">

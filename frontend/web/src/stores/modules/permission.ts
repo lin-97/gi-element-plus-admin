@@ -1,6 +1,8 @@
 import type { RouteRecordRaw } from 'vue-router'
+import type { AsyncRouteItem } from '@/core/stores/useRouteStore'
 import { defineStore } from 'pinia'
 import { getRoutesApi } from '@/apis/menu'
+import { transformPathToName } from '@/core/utils'
 import { resolveGlobModule } from '@/utils/modules'
 
 const layoutModules = import.meta.glob('@/layouts/**/index.vue')
@@ -17,19 +19,44 @@ function resolveComponent(component: string) {
     ?? resolveGlobModule(viewModules, path => path.endsWith(`/views/${component}/index.vue`))
 }
 
-function transformRoutes(routes: any[]): RouteRecordRaw[] {
-  return routes.map((route) => {
-    const { component, children, ...rest } = route
-    const item = { ...rest } as RouteRecordRaw
-    if (component && typeof component === 'string') {
-      const resolved = resolveComponent(component) as RouteRecordRaw['component']
-      if (!resolved)
-        console.error(`[permission] 未找到路由组件: ${component}`)
-      item.component = resolved
+function transformAsyncRoutes(menus: AsyncRouteItem[]): RouteRecordRaw[] {
+  if (!menus.length)
+    return []
+
+  const sorted = [...menus].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+
+  return sorted.map((item) => {
+    const children = item.children?.length
+      ? transformAsyncRoutes([...item.children].sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)))
+      : undefined
+
+    const route: RouteRecordRaw = {
+      path: item.path,
+      name: transformPathToName(item.path),
+      redirect: item.redirect || undefined,
+      meta: {
+        title: item.title,
+        icon: item.icon,
+        hidden: item.hidden,
+        keepAlive: item.keepAlive,
+        affix: item.affix,
+        breadcrumb: item.breadcrumb,
+        showInTabs: item.showInTabs,
+        activeMenu: item.activeMenu,
+        alwaysShow: item.alwaysShow,
+        permission: item.permission || undefined,
+      },
+      children,
     }
-    if (children?.length)
-      item.children = transformRoutes(children)
-    return item
+
+    if (item.component) {
+      const resolved = resolveComponent(item.component) as RouteRecordRaw['component']
+      if (!resolved)
+        console.error(`[permission] 未找到路由组件: ${item.component}`)
+      route.component = resolved
+    }
+
+    return route
   })
 }
 
@@ -43,7 +70,7 @@ export const usePermissionStore = defineStore('permission', () => {
         {
           path: 'dashboard',
           component: () => import('@/views/dashboard/index.vue'),
-          meta: { title: '工作台', icon: 'house' },
+          meta: { title: '工作台', icon: 'house', affix: true },
         },
       ],
     },
@@ -56,7 +83,7 @@ export const usePermissionStore = defineStore('permission', () => {
     try {
       const data = await getRoutesApi()
       console.log('[permission] API routes data:', data)
-      const dynamicRoutes = transformRoutes(data)
+      const dynamicRoutes = transformAsyncRoutes(data)
       console.log('[permission] transformed routes:', dynamicRoutes)
       const allRoutes = [...staticRoutes, ...dynamicRoutes]
       console.log('[permission] all routes:', allRoutes)

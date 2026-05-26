@@ -42,6 +42,7 @@ declare module 'vue' {
     PageTransition: typeof import('./components/PageTransition/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SidebarMenuItem: typeof import('./components/AppSidebar/SidebarMenuItem.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
@@ -80,4 +81,5 @@ declare global {
   const PageTransition: typeof import('./components/PageTransition/index.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
   const RouterView: typeof import('vue-router')['RouterView']
+  const SidebarMenuItem: typeof import('./components/AppSidebar/SidebarMenuItem.vue')['default']
 }

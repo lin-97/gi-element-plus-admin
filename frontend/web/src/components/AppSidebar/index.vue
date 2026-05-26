@@ -2,7 +2,7 @@
 import type { Component } from 'vue'
 import * as ElementPlusIcons from '@element-plus/icons-vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAppStore } from '@/stores/modules/app'
+import { useAppStore } from '@/core/stores/useAppStore'
 import { usePermissionStore } from '@/stores/modules/permission'
 
 interface MenuItem {
@@ -55,15 +55,15 @@ function handleSelect(path: string) {
 <template>
   <aside
     class="app-sidebar"
-    :class="{ 'app-sidebar--collapsed': appStore.collapsed }"
+    :class="{ 'app-sidebar--collapsed': appStore.isMenuAccordion }"
   >
     <div class="app-sidebar__logo">
-      <span v-if="!appStore.collapsed" class="app-sidebar__logo-text">GI Admin</span>
+      <span v-if="!appStore.isMenuAccordion" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
     <el-menu
       :default-active="route.path"
-      :collapse="appStore.collapsed"
+      :collapse="appStore.isMenuAccordion"
       @select="handleSelect"
     >
       <template v-for="item in menus" :key="item.path">
