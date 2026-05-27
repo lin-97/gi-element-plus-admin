@@ -14,6 +14,7 @@
     "lint:style:fix": "stylelint \"**/*.{vue,scss,css}\" --cache --fix"
   },
   "dependencies": {
+    "@arco-design/color": "^0.4.0",
     "@element-plus/icons-vue": "^2.3.1",
     "@vueuse/core": "^13.6.0",
     "animate.css": "^4.1.1",

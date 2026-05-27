@@ -2,7 +2,7 @@ import type { StatusValue } from './role'
 import { request } from './request'
 
 export interface UserInfo {
-  id: number
+  id: string
   username: string
   nickname: string
   phone?: string

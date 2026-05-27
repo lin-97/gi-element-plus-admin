@@ -6,7 +6,7 @@ import { resetUserPasswordApi } from '@/apis/user'
 defineOptions({ name: 'ResetPasswordDialog' })
 
 const visible = ref(false)
-const userId = ref<number>()
+const userId = ref<string>()
 const username = ref('')
 const formRef = ref<FormInstance>()
 const formData = ref({ password: '', confirmPassword: '' })
@@ -30,7 +30,7 @@ const formRules: FormRules = {
   ],
 }
 
-function open(id: number, name: string) {
+function open(id: string, name: string) {
   userId.value = id
   username.value = name
   formData.value = { password: '', confirmPassword: '' }

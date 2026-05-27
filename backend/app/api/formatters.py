@@ -1,11 +1,12 @@
+from app.core.ids import to_id_str
 from app.core.rbac import is_system_role_code
 from app.core.serializers import format_create_time
-from app.models.models import Role, SysDictData, SysDictType, SysMenu, User
+from app.models.models import Role, Student, SysDictData, SysDictType, SysMenu, User
 
 
 def role_to_dict(role: Role) -> dict:
     return {
-        "id": role.id,
+        "id": to_id_str(role.id),
         "code": role.code,
         "name": role.name,
         "status": role.status,
@@ -17,13 +18,13 @@ def role_to_dict(role: Role) -> dict:
 
 
 def role_option_to_dict(role: Role) -> dict:
-    return {"id": role.id, "code": role.code, "name": role.name}
+    return {"id": to_id_str(role.id), "code": role.code, "name": role.name}
 
 
 def menu_to_dict(menu: SysMenu) -> dict:
     return {
-        "id": str(menu.id),
-        "parentId": str(menu.parent_id) if menu.parent_id else "0",
+        "id": to_id_str(menu.id),
+        "parentId": to_id_str(menu.parent_id) if menu.parent_id else "0",
         "type": menu.type,
         "title": menu.title,
         "path": menu.path or "",
@@ -48,7 +49,7 @@ def menu_to_dict(menu: SysMenu) -> dict:
 
 def dict_type_to_dict(row: SysDictType) -> dict:
     return {
-        "id": row.id,
+        "id": to_id_str(row.id),
         "name": row.name,
         "code": row.code,
         "status": row.status,
@@ -62,8 +63,8 @@ def dict_type_to_dict(row: SysDictType) -> dict:
 
 def dict_data_to_dict(row: SysDictData) -> dict:
     return {
-        "id": row.id,
-        "typeId": row.type_id,
+        "id": to_id_str(row.id),
+        "typeId": to_id_str(row.type_id),
         "label": row.label,
         "value": row.value,
         "status": row.status,
@@ -73,8 +74,23 @@ def dict_data_to_dict(row: SysDictData) -> dict:
     }
 
 
+def student_to_dict(student: Student) -> dict:
+    return {
+        "id": to_id_str(student.id),
+        "name": student.name,
+        "student_no": student.student_no,
+        "gender": student.gender,
+        "age": student.age,
+        "phone": student.phone,
+        "email": student.email,
+        "address": student.address,
+        "created_at": student.created_at.isoformat() if student.created_at else None,
+        "updated_at": student.updated_at.isoformat() if student.updated_at else None,
+    }
+
+
 def user_to_dict(user: User, *, include_roles: bool = True) -> dict:
-    role_ids: list[int] = []
+    role_ids: list[str] = []
     role_names: list[str] = []
     roles: list[str] = []
     is_super_admin_user = False
@@ -85,18 +101,18 @@ def user_to_dict(user: User, *, include_roles: bool = True) -> dict:
             if is_system_role_code(ur.role.code):
                 is_super_admin_user = True
             if ur.role.status == "1":
-                role_ids.append(ur.role.id)
+                role_ids.append(to_id_str(ur.role.id))
                 role_names.append(ur.role.name)
                 roles.append(ur.role.code)
     return {
-        "id": user.id,
+        "id": to_id_str(user.id),
         "username": user.username,
         "nickname": user.nickname or "",
         "phone": user.phone or "",
         "email": user.email or "",
         "avatar": user.avatar or "",
         "remark": user.remark or "",
-        "deptId": user.dept_id,
+        "deptId": to_id_str(user.dept_id),
         "sort": getattr(user, "sort", 0) or 0,
         "status": user.status,
         "createTime": format_create_time(user.created_at),

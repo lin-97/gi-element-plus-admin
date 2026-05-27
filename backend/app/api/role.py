@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.formatters import role_option_to_dict, role_to_dict
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_super_admin
+from app.core.ids import parse_id, parse_id_list, to_id_str_list
 from app.core.rbac import is_system_role_code
 from app.crud.role_crud import (
     create_role,
@@ -15,7 +16,7 @@ from app.crud.role_crud import (
     get_roles,
     update_role,
 )
-from app.crud.role_menu_crud import get_role_menu_ids, set_role_menus
+from app.crud.role_menu_crud import get_role_menu_leaf_ids, set_role_menus
 from app.schemas.menu_admin import RoleMenuUpdate
 from app.schemas.schemas import RoleBatchDelete, RoleCreate, RoleUpdate
 
@@ -60,40 +61,43 @@ def role_options(
 
 @router.get("/{role_id}/menus", response_model=dict)
 def get_role_menus(
-    role_id: int,
+    role_id: str,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    role = get_role(db, role_id)
+    rid = parse_id(role_id)
+    role = get_role(db, rid)
     if not role:
         raise HTTPException(status_code=404, detail="角色不存在")
     if is_system_role_code(role.code):
         return {"code": 200, "message": "success", "data": {"menuIds": []}}
-    menu_ids = get_role_menu_ids(db, role_id)
-    return {"code": 200, "message": "success", "data": {"menuIds": menu_ids}}
+    menu_ids = get_role_menu_leaf_ids(db, rid)
+    return {"code": 200, "message": "success", "data": {"menuIds": to_id_str_list(menu_ids)}}
 
 
 @router.put("/{role_id}/menus", response_model=dict)
 def update_role_menus(
-    role_id: int,
+    role_id: str,
     data: RoleMenuUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
+    rid = parse_id(role_id)
+    menu_ids = parse_id_list(data.menuIds) if data.menuIds else []
     try:
-        set_role_menus(db, role_id, data.menuIds)
+        set_role_menus(db, rid, menu_ids)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
-    return {"code": 200, "message": "保存成功", "data": {"menuIds": data.menuIds}}
+    return {"code": 200, "message": "保存成功", "data": {"menuIds": to_id_str_list(menu_ids)}}
 
 
 @router.get("/{role_id}", response_model=dict)
 def get_role_detail(
-    role_id: int,
+    role_id: str,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    role = get_role(db, role_id)
+    role = get_role(db, parse_id(role_id))
     if not role:
         raise HTTPException(status_code=404, detail="角色不存在")
     return {"code": 200, "message": "success", "data": role_to_dict(role)}
@@ -114,13 +118,13 @@ def add_role(
 
 @router.put("/{role_id}", response_model=dict)
 def edit_role(
-    role_id: int,
+    role_id: str,
     data: RoleUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
     try:
-        role = update_role(db, role_id, data.model_dump(exclude_unset=True))
+        role = update_role(db, parse_id(role_id), data.model_dump(exclude_unset=True))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if not role:
@@ -135,7 +139,7 @@ def batch_remove_roles(
     _current_user=Depends(require_super_admin),
 ):
     try:
-        count = delete_roles(db, data.ids)
+        count = delete_roles(db, parse_id_list(data.ids))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if count == 0:

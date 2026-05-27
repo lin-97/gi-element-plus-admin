@@ -1,13 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
 from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.orm import Session
+
+from app.api.formatters import student_to_dict
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_admin
+from app.core.ids import parse_id, parse_id_list
 from app.crud.student_crud import (
-    get_student, get_students, create_student,
-    update_student, delete_student, delete_students,
+    create_student,
+    delete_student,
+    delete_students,
+    get_student,
+    get_students,
+    update_student,
 )
-from app.schemas.schemas import StudentCreate, StudentUpdate, StudentBatchDelete, StudentResponse
+from app.schemas.schemas import StudentBatchDelete, StudentCreate, StudentUpdate
 
 router = APIRouter(prefix="/student", tags=["学生管理"])
 
@@ -21,32 +29,18 @@ def list_students(
     gender: Optional[str] = None,
     age: Optional[int] = None,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
     result = get_students(db, page, size, name, student_no, gender, age)
     return {
         "code": 200,
         "message": "success",
         "data": {
-            "list": [
-                {
-                    "id": s.id,
-                    "name": s.name,
-                    "student_no": s.student_no,
-                    "gender": s.gender,
-                    "age": s.age,
-                    "phone": s.phone,
-                    "email": s.email,
-                    "address": s.address,
-                    "created_at": s.created_at.isoformat() if s.created_at else None,
-                    "updated_at": s.updated_at.isoformat() if s.updated_at else None
-                }
-                for s in result["list"]
-            ],
+            "list": [student_to_dict(s) for s in result["list"]],
             "total": result["total"],
             "page": result["page"],
-            "size": result["size"]
-        }
+            "size": result["size"],
+        },
     }
 
 
@@ -56,7 +50,7 @@ def batch_remove_students(
     db: Session = Depends(get_db),
     current_user=Depends(require_admin),
 ):
-    deleted_count = delete_students(db, data.ids)
+    deleted_count = delete_students(db, parse_id_list(data.ids))
     if deleted_count == 0:
         raise HTTPException(status_code=404, detail="学生不存在")
     return {
@@ -68,28 +62,17 @@ def batch_remove_students(
 
 @router.get("/{student_id}", response_model=dict)
 def get_student_detail(
-    student_id: int,
+    student_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(get_current_user)
+    current_user=Depends(get_current_user),
 ):
-    student = get_student(db, student_id)
+    student = get_student(db, parse_id(student_id))
     if not student:
         raise HTTPException(status_code=404, detail="学生不存在")
     return {
         "code": 200,
         "message": "success",
-        "data": {
-            "id": student.id,
-            "name": student.name,
-            "student_no": student.student_no,
-            "gender": student.gender,
-            "age": student.age,
-            "phone": student.phone,
-            "email": student.email,
-            "address": student.address,
-            "created_at": student.created_at.isoformat() if student.created_at else None,
-            "updated_at": student.updated_at.isoformat() if student.updated_at else None
-        }
+        "data": student_to_dict(student),
     }
 
 
@@ -97,7 +80,7 @@ def get_student_detail(
 def add_student(
     data: StudentCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(require_admin)
+    current_user=Depends(require_admin),
 ):
     try:
         student = create_student(db, data)
@@ -106,28 +89,19 @@ def add_student(
     return {
         "code": 200,
         "message": "添加成功",
-        "data": {
-            "id": student.id,
-            "name": student.name,
-            "student_no": student.student_no,
-            "gender": student.gender,
-            "age": student.age,
-            "phone": student.phone,
-            "email": student.email,
-            "address": student.address
-        }
+        "data": student_to_dict(student),
     }
 
 
 @router.put("/{student_id}", response_model=dict)
 def edit_student(
-    student_id: int,
+    student_id: str,
     data: StudentUpdate,
     db: Session = Depends(get_db),
-    current_user = Depends(require_admin)
+    current_user=Depends(require_admin),
 ):
     try:
-        student = update_student(db, student_id, data)
+        student = update_student(db, parse_id(student_id), data)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     if not student:
@@ -135,26 +109,17 @@ def edit_student(
     return {
         "code": 200,
         "message": "更新成功",
-        "data": {
-            "id": student.id,
-            "name": student.name,
-            "student_no": student.student_no,
-            "gender": student.gender,
-            "age": student.age,
-            "phone": student.phone,
-            "email": student.email,
-            "address": student.address
-        }
+        "data": student_to_dict(student),
     }
 
 
 @router.delete("/{student_id}", response_model=dict)
 def remove_student(
-    student_id: int,
+    student_id: str,
     db: Session = Depends(get_db),
-    current_user = Depends(require_admin)
+    current_user=Depends(require_admin),
 ):
-    success = delete_student(db, student_id)
+    success = delete_student(db, parse_id(student_id))
     if not success:
         raise HTTPException(status_code=404, detail="学生不存在")
     return {"code": 200, "message": "删除成功"}

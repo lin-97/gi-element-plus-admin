@@ -74,7 +74,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <GiPageLayout>
+  <GiPageLayout class="g-page-layout">
     <template #tool>
       <el-space>
         <gi-button type="add" @click="handleAddRoot">
@@ -111,7 +111,7 @@ onMounted(() => {
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="220" align="center" fixed="right">
+      <el-table-column label="操作" width="180" align="center" fixed="right">
         <template #default="{ row }">
           <el-space :size="4">
             <el-button

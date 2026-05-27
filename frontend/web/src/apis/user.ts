@@ -6,7 +6,7 @@ import { request } from './request'
 export const AVATAR_MAX_LENGTH = 500
 
 export interface SysUserItem {
-  id: number
+  id: string
   username: string
   nickname?: string
   phone?: string
@@ -17,8 +17,8 @@ export interface SysUserItem {
   sort?: number
   createTime?: string
   isSuperAdmin?: boolean
-  deptId?: number | null
-  roleIds?: number[]
+  deptId?: string | null
+  roleIds?: string[]
   roleNames?: string[]
   roles?: string[]
 }
@@ -39,14 +39,14 @@ export interface SysUserFormData {
   remark?: string
   status: StatusValue
   sort?: number
-  roleIds: number[]
+  roleIds: string[]
 }
 
 export function getUserListApi(params: SysUserListQuery) {
   return request<PageResult<SysUserItem>>({ url: '/user/list', method: 'get', params })
 }
 
-export function getUserDetailApi(id: number) {
+export function getUserDetailApi(id: string) {
   return request<SysUserItem>({ url: `/user/${id}`, method: 'get' })
 }
 
@@ -55,20 +55,20 @@ export function createUserApi(data: Partial<SysUserFormData> & { password: strin
   return request({ url: '/user', method: 'post', data: { ...rest, role_ids: roleIds ?? [] } })
 }
 
-export function updateUserApi(id: number, data: Partial<SysUserFormData>) {
+export function updateUserApi(id: string, data: Partial<SysUserFormData>) {
   const { roleIds, ...rest } = data
   return request({ url: `/user/${id}`, method: 'put', data: { ...rest, role_ids: roleIds } })
 }
 
 export function deleteUserApi(ids: string[]) {
-  return request({ url: '/user/delete', method: 'post', data: { ids: ids.map(Number) } })
+  return request({ url: '/user/delete', method: 'post', data: { ids } })
 }
 
-export function resetUserPasswordApi(id: number, password: string) {
+export function resetUserPasswordApi(id: string, password: string) {
   return request({ url: `/user/${id}/password`, method: 'put', data: { password } })
 }
 
-export function updateUserStatusApi(id: number, status: StatusValue) {
+export function updateUserStatusApi(id: string, status: StatusValue) {
   return request({ url: `/user/${id}/status`, method: 'put', data: { status } })
 }
 

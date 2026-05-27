@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.formatters import dict_data_to_dict, dict_type_to_dict
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_super_admin
+from app.core.ids import parse_id, parse_id_list
 from app.crud.dict_data_crud import (
     create_dict_data,
     delete_dict_data,
@@ -31,6 +32,15 @@ from app.schemas.dict_admin import (
 )
 
 router = APIRouter(prefix="/dict", tags=["字典管理"])
+
+
+def _dict_data_payload(payload: dict) -> dict:
+    result = dict(payload)
+    if "typeId" in result:
+        result["type_id"] = parse_id(result.pop("typeId"))
+    elif "type_id" in result:
+        result["type_id"] = parse_id(result["type_id"])
+    return result
 
 
 @router.get("/type/list", response_model=dict)
@@ -63,13 +73,13 @@ def add_dict_type(
 
 @router.put("/type/{type_id}", response_model=dict)
 def edit_dict_type(
-    type_id: int,
+    type_id: str,
     data: DictTypeUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
     try:
-        row = update_dict_type(db, type_id, data.model_dump(exclude_unset=True))
+        row = update_dict_type(db, parse_id(type_id), data.model_dump(exclude_unset=True))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if not row:
@@ -84,7 +94,7 @@ def remove_dict_types(
     _current_user=Depends(require_super_admin),
 ):
     try:
-        count = delete_dict_types(db, data.ids)
+        count = delete_dict_types(db, parse_id_list(data.ids))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if count == 0:
@@ -94,7 +104,7 @@ def remove_dict_types(
 
 @router.get("/data/list", response_model=dict)
 def dict_data_list(
-    typeId: int = Query(..., alias="typeId"),
+    typeId: str = Query(..., alias="typeId"),
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
     label: Optional[str] = None,
@@ -102,7 +112,7 @@ def dict_data_list(
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    result = list_dict_data(db, typeId, page, size, label, status)
+    result = list_dict_data(db, parse_id(typeId), page, size, label, status)
     return {
         "code": 200,
         "message": "success",
@@ -131,8 +141,7 @@ def add_dict_data(
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    payload = data.model_dump()
-    payload["type_id"] = payload.pop("typeId")
+    payload = _dict_data_payload(data.model_dump())
     try:
         row = create_dict_data(db, payload)
     except ValueError as e:
@@ -142,16 +151,15 @@ def add_dict_data(
 
 @router.put("/data/{data_id}", response_model=dict)
 def edit_dict_data(
-    data_id: int,
+    data_id: str,
     data: DictDataUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
     payload = data.model_dump(exclude_unset=True)
-    if "typeId" in payload:
-        payload["type_id"] = payload.pop("typeId")
+    payload = _dict_data_payload(payload)
     try:
-        row = update_dict_data(db, data_id, payload)
+        row = update_dict_data(db, parse_id(data_id), payload)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if not row:
@@ -161,12 +169,12 @@ def edit_dict_data(
 
 @router.put("/data/{data_id}/status", response_model=dict)
 def edit_dict_data_status(
-    data_id: int,
+    data_id: str,
     data: DictDataStatusUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    row = update_dict_data_status(db, data_id, data.status)
+    row = update_dict_data_status(db, parse_id(data_id), data.status)
     if not row:
         raise HTTPException(status_code=404, detail="字典数据不存在")
     return {"code": 200, "message": "更新成功", "data": dict_data_to_dict(row)}
@@ -178,7 +186,7 @@ def remove_dict_data(
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    count = delete_dict_data(db, data.ids)
+    count = delete_dict_data(db, parse_id_list(data.ids))
     if count == 0:
         raise HTTPException(status_code=404, detail="字典数据不存在")
     return {"code": 200, "message": "删除成功", "data": {"count": count}}

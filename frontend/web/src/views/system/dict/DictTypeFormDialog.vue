@@ -22,7 +22,7 @@ interface DictTypeFormData {
 
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<number>()
+const currentId = ref<string>()
 const formRef = ref<FormInstance>()
 const formData = ref<DictTypeFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑字典类型' : '新增字典类型'))

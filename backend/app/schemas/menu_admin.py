@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class MenuBase(BaseModel):
-    parentId: int = Field(0, alias="parentId")
+    parentId: str = Field("0", alias="parentId")
     type: Literal[1, 2, 3] = 2
     title: str
     path: str = ""
@@ -30,7 +30,7 @@ class MenuCreate(MenuBase):
 
 
 class MenuUpdate(BaseModel):
-    parentId: Optional[int] = None
+    parentId: Optional[str] = None
     type: Optional[Literal[1, 2, 3]] = None
     title: Optional[str] = None
     path: Optional[str] = None
@@ -52,8 +52,8 @@ class MenuUpdate(BaseModel):
 
 
 class MenuBatchDelete(BaseModel):
-    ids: list[int]
+    ids: list[str]
 
 
 class RoleMenuUpdate(BaseModel):
-    menuIds: list[int] = Field(default_factory=list)
+    menuIds: list[str] = Field(default_factory=list)

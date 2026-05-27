@@ -42,7 +42,7 @@ class UserUpdate(BaseModel):
 
 
 class UserResponse(UserBase):
-    id: int
+    id: str
     created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
@@ -179,11 +179,11 @@ class StudentUpdate(BaseModel):
 
 
 class StudentBatchDelete(BaseModel):
-    ids: list[int] = Field(..., min_length=1)
+    ids: list[str] = Field(..., min_length=1)
 
 
 class StudentResponse(StudentBase):
-    id: int
+    id: str
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
@@ -249,7 +249,7 @@ class RoleUpdate(BaseModel):
 
 
 class RoleBatchDelete(BaseModel):
-    ids: list[int] = Field(..., min_length=1)
+    ids: list[str] = Field(..., min_length=1)
 
 
 class SysUserCreate(BaseModel):
@@ -262,8 +262,8 @@ class SysUserCreate(BaseModel):
     remark: Optional[str] = Field(None, max_length=500)
     status: str = "1"
     sort: int = 0
-    dept_id: Optional[int] = None
-    role_ids: list[int] = Field(default_factory=list)
+    dept_id: Optional[str] = None
+    role_ids: list[str] = Field(default_factory=list)
 
     @field_validator("status", mode="before")
     @classmethod
@@ -297,8 +297,8 @@ class SysUserUpdate(BaseModel):
     remark: Optional[str] = Field(None, max_length=500)
     status: Optional[str] = None
     sort: Optional[int] = None
-    dept_id: Optional[int] = None
-    role_ids: Optional[list[int]] = None
+    dept_id: Optional[str] = None
+    role_ids: Optional[list[str]] = None
     password: Optional[str] = Field(None, min_length=6, max_length=128)
 
     @field_validator("status", mode="before")
@@ -328,7 +328,7 @@ class SysUserUpdate(BaseModel):
 
 
 class SysUserBatchDelete(BaseModel):
-    ids: list[int] = Field(..., min_length=1)
+    ids: list[str] = Field(..., min_length=1)
 
 
 class SysUserPasswordReset(BaseModel):

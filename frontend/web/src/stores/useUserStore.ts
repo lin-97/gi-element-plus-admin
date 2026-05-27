@@ -1,11 +1,11 @@
 import type { UserInfo } from '@/apis/auth'
 import { defineStore } from 'pinia'
-import router from '@/router'
 import { getUserInfoApi, loginApi, logoutApi } from '@/apis/auth'
 import { getRoutesApi } from '@/apis/menu'
 import { usePermissionStore } from '@/core/stores/usePermissionStore'
 import { useRouteStore } from '@/core/stores/useRouteStore'
 import { useTabsStore } from '@/core/stores/useTabsStore'
+import router from '@/router'
 import { resetRoutesLoadedFlag } from '@/router/route-load-state'
 import { constantRoutes } from '@/router/routes'
 

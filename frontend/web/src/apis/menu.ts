@@ -66,5 +66,5 @@ export function updateMenuApi(id: string, data: Partial<MenuFormData>) {
 }
 
 export function deleteMenuApi(ids: string[]) {
-  return request({ url: '/menu/delete', method: 'post', data: { ids: ids.map(Number) } })
+  return request({ url: '/menu/delete', method: 'post', data: { ids } })
 }

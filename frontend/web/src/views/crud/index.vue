@@ -93,7 +93,7 @@ function handleEdit(row: StudentItem) {
 </script>
 
 <template>
-  <GiPageLayout>
+  <GiPageLayout class="g-page-layout">
     <template #header>
       <GiForm
         :model-value="queryForm" :columns="formColumns" search :grid-item-props="{
@@ -104,10 +104,11 @@ function handleEdit(row: StudentItem) {
 
     <template #tool>
       <el-space>
-        <gi-button type="add" @click="handleAdd">
+        <gi-button v-hasPerm="['crud:add']" type="add" @click="handleAdd">
           新增
         </gi-button>
         <el-button
+          v-hasPerm="['crud:delete']"
           type="danger"
           :disabled="!selectedKeys.length"
           @click="onBatchDelete"
@@ -127,10 +128,10 @@ function handleEdit(row: StudentItem) {
       @selection-change="onSelectionChange"
     >
       <template #action="{ row }">
-        <el-button type="primary" link @click="handleEdit(row)">
+        <el-button v-hasPerm="['crud:edit']" type="primary" link @click="handleEdit(row)">
           编辑
         </el-button>
-        <el-button type="danger" link @click="onDelete(row)">
+        <el-button v-hasPerm="['crud:delete']" type="danger" link @click="onDelete(row)">
           删除
         </el-button>
       </template>

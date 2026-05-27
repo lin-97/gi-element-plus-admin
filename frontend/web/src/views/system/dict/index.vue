@@ -52,16 +52,17 @@ const dataFormColumns = computed<FormColumnItem[]>(() => [
 const dataTableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center' },
   { prop: 'id', label: '序号', width: 80 },
-  { prop: 'label', label: '数据标签' },
-  { prop: 'value', label: '数据键值', width: 120 },
+  { prop: 'label', label: '数据标签', minWidth: 120 },
+  { prop: 'value', label: '数据键值', minWidth: 120 },
   { prop: 'status', label: '状态', width: 100, align: 'center', slotName: 'status' },
-  { prop: 'remark', label: '备注', showOverflowTooltip: true },
   { prop: 'createTime', label: '创建时间', width: 180 },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true },
   {
     prop: 'action',
     label: '操作',
     width: 120,
     align: 'center',
+    fixed: 'right',
     slotName: 'action',
   },
 ]
@@ -85,7 +86,7 @@ const {
     label: dataQueryForm.label || undefined,
     status: dataQueryForm.status,
   }),
-  deleteAPI: ids => deleteDictDataApi(ids.map(Number)),
+  deleteAPI: deleteDictDataApi,
 })
 
 const canAddData = computed(() => selectedType.value?.status === '1')
@@ -223,7 +224,7 @@ onMounted(loadTypes)
 </script>
 
 <template>
-  <GiPageLayout>
+  <GiPageLayout class="g-page-layout">
     <template #left>
       <div v-loading="typeLoading" class="dict-type-panel">
         <el-input
@@ -336,7 +337,7 @@ onMounted(loadTypes)
     <DictDataFormDialog
       :key="selectedType?.id"
       ref="DataFormDialogRef"
-      :type-id="selectedType?.id ?? 0"
+      :type-id="selectedType?.id ?? ''"
       @success="onDataSuccess"
     />
 
@@ -376,7 +377,9 @@ onMounted(loadTypes)
   margin-bottom: 4px;
   border-radius: var(--el-border-radius-base);
   cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+  transition:
+    background-color 0.2s,
+    color 0.2s;
   line-height: 1.5;
 
   &:hover {

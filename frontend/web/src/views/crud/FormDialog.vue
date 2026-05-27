@@ -27,7 +27,7 @@ interface StudentFormData {
 
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<number>()
+const currentId = ref<string>()
 const formRef = ref<FormInstance>()
 const formData = ref<StudentFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑学生' : '新增学生'))

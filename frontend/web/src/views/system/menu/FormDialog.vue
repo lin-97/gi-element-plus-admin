@@ -154,7 +154,7 @@ function openEdit(row: MenuItem) {
 async function handleBeforeOk() {
   try {
     await formRef.value?.formRef?.validate()
-    const payload = { ...formData.value, parentId: Number(formData.value.parentId) || 0 }
+    const payload = { ...formData.value, parentId: formData.value.parentId || '0' }
     if (isEdit.value && currentId.value) {
       await updateMenuApi(currentId.value, payload)
       ElMessage.success('更新成功')

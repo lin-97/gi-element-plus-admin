@@ -8,7 +8,7 @@ export interface DictOption {
 }
 
 export interface DictTypeItem {
-  id: number
+  id: string
   name: string
   code: string
   status: StatusValue
@@ -20,8 +20,8 @@ export interface DictTypeItem {
 }
 
 export interface DictDataItem {
-  id: number
-  typeId: number
+  id: string
+  typeId: string
   label: string
   value: string
   status: StatusValue
@@ -36,7 +36,7 @@ export interface DictTypeListQuery {
 }
 
 export interface DictDataListQuery extends PageParams {
-  typeId: number
+  typeId: string
   label?: string
   status?: StatusValue
 }
@@ -49,11 +49,11 @@ export function createDictTypeApi(data: Partial<DictTypeItem>) {
   return request<DictTypeItem>({ url: '/dict/type', method: 'post', data })
 }
 
-export function updateDictTypeApi(id: number, data: Partial<DictTypeItem>) {
+export function updateDictTypeApi(id: string, data: Partial<DictTypeItem>) {
   return request<DictTypeItem>({ url: `/dict/type/${id}`, method: 'put', data })
 }
 
-export function deleteDictTypeApi(ids: number[]) {
+export function deleteDictTypeApi(ids: string[]) {
   return request({ url: '/dict/type/delete', method: 'post', data: { ids } })
 }
 
@@ -65,15 +65,15 @@ export function createDictDataApi(data: Partial<DictDataItem>) {
   return request<DictDataItem>({ url: '/dict/data', method: 'post', data })
 }
 
-export function updateDictDataApi(id: number, data: Partial<DictDataItem>) {
+export function updateDictDataApi(id: string, data: Partial<DictDataItem>) {
   return request<DictDataItem>({ url: `/dict/data/${id}`, method: 'put', data })
 }
 
-export function updateDictDataStatusApi(id: number, status: StatusValue) {
+export function updateDictDataStatusApi(id: string, status: StatusValue) {
   return request<DictDataItem>({ url: `/dict/data/${id}/status`, method: 'put', data: { status } })
 }
 
-export function deleteDictDataApi(ids: number[]) {
+export function deleteDictDataApi(ids: string[]) {
   return request({ url: '/dict/data/delete', method: 'post', data: { ids } })
 }
 

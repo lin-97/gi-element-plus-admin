@@ -55,11 +55,11 @@ class DictTypeUpdate(BaseModel):
 
 
 class DictTypeBatchDelete(BaseModel):
-    ids: list[int] = Field(..., min_length=1)
+    ids: list[str] = Field(..., min_length=1)
 
 
 class DictDataCreate(BaseModel):
-    typeId: int
+    typeId: str
     label: str = Field(..., min_length=1, max_length=100)
     value: str = Field(..., min_length=1, max_length=100)
     status: str = "1"
@@ -80,7 +80,7 @@ class DictDataCreate(BaseModel):
 
 
 class DictDataUpdate(BaseModel):
-    typeId: Optional[int] = None
+    typeId: Optional[str] = None
     label: Optional[str] = Field(None, min_length=1, max_length=100)
     value: Optional[str] = Field(None, min_length=1, max_length=100)
     status: Optional[str] = None
@@ -114,4 +114,4 @@ class DictDataStatusUpdate(BaseModel):
 
 
 class DictDataBatchDelete(BaseModel):
-    ids: list[int] = Field(..., min_length=1)
+    ids: list[str] = Field(..., min_length=1)

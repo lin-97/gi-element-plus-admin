@@ -38,17 +38,18 @@ const tableColumns: TableColumnItem[] = [
     selectable: (row: RoleItem) => !isSystemRole(row),
   },
   { prop: 'id', label: 'ID', width: 80 },
-  { prop: 'code', label: '角色标识' },
-  { prop: 'name', label: '角色名称' },
+  { prop: 'code', label: '角色标识', minWidth: 150 },
+  { prop: 'name', label: '角色名称', minWidth: 150 },
   { prop: 'status', label: '状态', width: 100, align: 'center', slotName: 'status' },
   { prop: 'sort', label: '排序', width: 80, align: 'center' },
   { prop: 'createTime', label: '创建时间', width: 180 },
-  { prop: 'remark', label: '备注', showOverflowTooltip: true },
+  { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true },
   {
     prop: 'action',
     label: '操作',
     width: 120,
     align: 'center',
+    fixed: 'right',
     slotName: 'action',
   },
 ]
@@ -113,7 +114,7 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
 </script>
 
 <template>
-  <GiPageLayout>
+  <GiPageLayout class="g-page-layout">
     <template #header>
       <GiForm
         :model-value="queryForm"

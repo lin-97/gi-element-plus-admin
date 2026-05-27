@@ -3,7 +3,7 @@ import { request } from './request'
 /** 性别：1-男 2-女（与后端存储一致） */
 export type GenderValue = '1' | '2'
 export interface StudentItem {
-  id: number
+  id: string
   name: string
   student_no?: string
   gender?: GenderValue
@@ -26,7 +26,7 @@ export function getStudentListApi(params: StudentListQuery) {
   return request<StudentItem[]>({ url: '/student/list', method: 'get', params })
 }
 
-export function getStudentDetailApi(id: number) {
+export function getStudentDetailApi(id: string) {
   return request<StudentItem>({ url: `/student/${id}`, method: 'get' })
 }
 
@@ -34,7 +34,7 @@ export function createStudentApi(data: Partial<StudentItem>) {
   return request({ url: '/student', method: 'post', data })
 }
 
-export function updateStudentApi(id: number, data: Partial<StudentItem>) {
+export function updateStudentApi(id: string, data: Partial<StudentItem>) {
   return request({ url: `/student/${id}`, method: 'put', data })
 }
 

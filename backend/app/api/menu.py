@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.api.formatters import menu_to_dict
 from app.core.database import get_db
+from app.core.ids import parse_id, parse_id_list
 from app.core.deps import get_current_user, require_super_admin
 from app.crud.menu_crud import (
     build_menu_tree_dict,
@@ -66,14 +67,14 @@ def add_menu(
 
 @router.put("/menu/{menu_id}", response_model=dict)
 def edit_menu(
-    menu_id: int,
+    menu_id: str,
     data: MenuUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
     payload = _menu_payload_to_db(data.model_dump(exclude_unset=True, by_alias=True))
     try:
-        menu = update_menu(db, menu_id, payload)
+        menu = update_menu(db, parse_id(menu_id), payload)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if not menu:
@@ -88,7 +89,7 @@ def batch_remove_menus(
     _current_user=Depends(require_super_admin),
 ):
     try:
-        count = delete_menus(db, data.ids)
+        count = delete_menus(db, parse_id_list(data.ids))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if count == 0:

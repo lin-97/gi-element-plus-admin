@@ -9,7 +9,7 @@ import { useDict } from '@/hooks/useDict'
 defineOptions({ name: 'DictDataFormDialog' })
 
 const props = defineProps<{
-  typeId: number
+  typeId: string
 }>()
 
 const emit = defineEmits<{ success: [] }>()
@@ -26,7 +26,7 @@ interface DictDataFormData {
 
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<number>()
+const currentId = ref<string>()
 const formRef = ref<FormInstance>()
 const formData = ref<DictDataFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑字典数据' : '新增字典数据'))

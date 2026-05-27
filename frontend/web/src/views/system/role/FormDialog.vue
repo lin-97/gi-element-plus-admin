@@ -33,11 +33,11 @@ interface RoleFormData {
 const visible = ref(false)
 const isEdit = ref(false)
 const isSystemRole = ref(false)
-const currentId = ref<number>()
+const currentId = ref<string>()
 const formRef = ref<FormInstance>()
 const menuTreeRef = ref()
 const menuTreeData = ref<MenuItem[]>([])
-const checkedMenuIds = ref<number[]>([])
+const checkedMenuIds = ref<string[]>([])
 const formData = ref<RoleFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑角色' : '新增角色'))
 
@@ -80,11 +80,11 @@ async function loadMenuTree() {
   menuTreeData.value = await getMenuTreeApi()
 }
 
-async function loadRoleMenus(roleId: number) {
+async function loadRoleMenus(roleId: string) {
   const { menuIds } = await getRoleMenusApi(roleId)
   checkedMenuIds.value = menuIds
   await nextTick()
-  menuTreeRef.value?.setCheckedKeys(menuIds.map(String))
+  menuTreeRef.value?.setCheckedKeys(menuIds, false)
 }
 
 function toFormData(row: RoleItem): RoleFormData {
@@ -120,12 +120,14 @@ async function openEdit(row: RoleItem) {
     await loadRoleMenus(row.id)
 }
 
-function getSelectedMenuIds(): number[] {
+/** 仅提交叶子节点，避免半选父节点在后端 expand 时把未勾选的子节点一并写入 */
+function getSelectedMenuIds(): string[] {
   if (isSystemRole.value)
     return []
-  const checked = (menuTreeRef.value?.getCheckedKeys(false) ?? []) as Array<string | number>
-  const half = (menuTreeRef.value?.getHalfCheckedKeys() ?? []) as Array<string | number>
-  return [...new Set([...checked, ...half])].map(id => Number(id))
+  const tree = menuTreeRef.value
+  if (!tree)
+    return []
+  return (tree.getCheckedKeys(true) as string[]).map(String)
 }
 
 async function handleBeforeOk() {
@@ -157,7 +159,8 @@ async function handleBeforeOk() {
     emit('success')
     return true
   }
-  catch {
+  catch (err) {
+    ElMessage.error(err instanceof Error ? err.message : '保存失败')
     return false
   }
 }
@@ -170,40 +173,43 @@ defineExpose({ openAdd, openEdit })
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
-    :style="{ maxWidth: '720px' }"
+    :style="{ maxWidth: '920px' }"
+    body-class="g-p0"
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
-      ref="formRef"
-      v-model="formData"
-      :columns="formColumns"
-      :rules="formRules"
-      label-width="90px"
-    />
-    <el-divider content-position="left">
-      菜单权限
-    </el-divider>
-    <p v-if="isSystemRole" class="menu-tree-tip">
-      超级管理员拥有全部菜单，无需分配。
-    </p>
-    <el-tree
-      v-else
-      ref="menuTreeRef"
-      :data="menuTreeData"
-      show-checkbox
-      node-key="id"
-      :props="menuTreeProps"
-      default-expand-all
-      :default-checked-keys="checkedMenuIds"
-    />
+    <GiPageLayout
+      :size="340"
+      :collapse="false"
+      :bordered="false"
+      :left-style="{ padding: 'var(--padding)', boxSizing: 'border-box', overflow: 'hidden' }"
+      style="height: min(60vh, 480px); min-height: 320px;margin: 0"
+    >
+      <template #left>
+        <GiForm
+          ref="formRef"
+          v-model="formData"
+          :columns="formColumns"
+          :rules="formRules"
+          auto-label-width
+          direction="vertical"
+          :grid-item-props="{ span: 24 }"
+        />
+      </template>
+
+      <el-scrollbar>
+        <el-tree
+          ref="menuTreeRef"
+          :data="menuTreeData"
+          show-checkbox
+          node-key="id"
+          :props="menuTreeProps"
+          default-expand-all
+        />
+      </el-scrollbar>
+    </GiPageLayout>
   </GiDialog>
 </template>
 
-<style scoped>
-.menu-tree-tip {
-  margin: 0;
-  color: var(--el-text-color-secondary);
-  font-size: 13px;
-}
+<style scoped lang="scss">
 </style>

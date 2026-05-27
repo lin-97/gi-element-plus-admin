@@ -117,7 +117,7 @@ async function handleStatusSwitch(row: SysUserItem, val: string | number | boole
 </script>
 
 <template>
-  <GiPageLayout>
+  <GiPageLayout class="g-page-layout">
     <template #header>
       <GiForm
         :model-value="queryForm"

@@ -15,11 +15,11 @@ body,
   background-color: var(--el-fill-color-light);
 }
 
-.layout__content .gi-page-layout {
-  width: auto;
-  margin: var(--margin);
-}
-
 .layout__content .gi-page-layout__tool {
   justify-content: start;
+}
+
+.g-page-layout {
+  width: auto !important;
+  margin: var(--margin) !important;
 }

@@ -27,13 +27,13 @@ interface UserFormData {
   remark: string
   status: '0' | '1'
   sort: number
-  roleIds: number[]
+  roleIds: string[]
 }
 
 const visible = ref(false)
 const isEdit = ref(false)
 const isSuperAdmin = ref(false)
-const currentId = ref<number>()
+const currentId = ref<string>()
 const formRef = ref<FormInstance>()
 const roleOptions = ref<RoleOption[]>([])
 const formData = ref<UserFormData>(createEmptyForm())

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.api.formatters import user_to_dict
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_super_admin
+from app.core.ids import parse_id, parse_id_list
 from app.crud.user_crud import (
     can_disable_user,
     create_user,
@@ -37,6 +38,13 @@ def _load_user(db: Session, user_id: int) -> Optional[User]:
     )
 
 
+def _parse_user_payload(payload: dict) -> dict:
+    result = dict(payload)
+    if "dept_id" in result and result["dept_id"] is not None:
+        result["dept_id"] = parse_id(result["dept_id"])
+    return result
+
+
 @router.get("/list", response_model=dict)
 def list_users(
     page: int = Query(1, ge=1),
@@ -62,11 +70,12 @@ def list_users(
 
 @router.get("/{user_id}", response_model=dict)
 def get_user_detail(
-    user_id: int,
+    user_id: str,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    user = _load_user(db, user_id)
+    uid = parse_id(user_id)
+    user = _load_user(db, uid)
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在")
     return {"code": 200, "message": "success", "data": user_to_dict(user)}
@@ -78,9 +87,10 @@ def add_user(
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    payload = data.model_dump(exclude={"role_ids"})
+    payload = _parse_user_payload(data.model_dump(exclude={"role_ids"}))
+    role_ids = parse_id_list(data.role_ids) if data.role_ids else []
     try:
-        user = create_user(db, payload, data.role_ids)
+        user = create_user(db, payload, role_ids)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     user = _load_user(db, user.id)
@@ -89,31 +99,34 @@ def add_user(
 
 @router.put("/{user_id}", response_model=dict)
 def edit_user(
-    user_id: int,
+    user_id: str,
     data: SysUserUpdate,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
+    uid = parse_id(user_id)
     body = data.model_dump(exclude_unset=True)
-    role_ids = body.pop("role_ids", None)
+    role_ids_raw = body.pop("role_ids", None)
+    role_ids = parse_id_list(role_ids_raw) if role_ids_raw is not None else None
+    body = _parse_user_payload(body)
     try:
-        user = update_user(db, user_id, body, role_ids)
+        user = update_user(db, uid, body, role_ids)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在")
-    user = _load_user(db, user_id)
+    user = _load_user(db, uid)
     return {"code": 200, "message": "更新成功", "data": user_to_dict(user)}
 
 
 @router.put("/{user_id}/password", response_model=dict)
 def reset_password(
-    user_id: int,
+    user_id: str,
     data: SysUserPasswordReset,
     db: Session = Depends(get_db),
     _current_user=Depends(require_super_admin),
 ):
-    ok = update_user_password(db, user_id, data.password)
+    ok = update_user_password(db, parse_id(user_id), data.password)
     if not ok:
         raise HTTPException(status_code=404, detail="用户不存在")
     return {"code": 200, "message": "密码重置成功"}
@@ -121,20 +134,21 @@ def reset_password(
 
 @router.put("/{user_id}/status", response_model=dict)
 def set_user_status(
-    user_id: int,
+    user_id: str,
     data: SysUserStatusUpdate,
     db: Session = Depends(get_db),
     current_user=Depends(require_super_admin),
 ):
+    uid = parse_id(user_id)
     if data.status == "0":
         try:
-            can_disable_user(db, user_id, current_user.id)
+            can_disable_user(db, uid, current_user.id)
         except ValueError as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
-    user = update_user_status(db, user_id, data.status)
+    user = update_user_status(db, uid, data.status)
     if not user:
         raise HTTPException(status_code=404, detail="用户不存在")
-    user = _load_user(db, user_id)
+    user = _load_user(db, uid)
     return {"code": 200, "message": "更新成功", "data": user_to_dict(user)}
 
 
@@ -145,7 +159,7 @@ def batch_remove_users(
     current_user=Depends(require_super_admin),
 ):
     try:
-        count = delete_users(db, data.ids, current_user.id)
+        count = delete_users(db, parse_id_list(data.ids), current_user.id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
     if count == 0:
