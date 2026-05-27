@@ -1,11 +1,18 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import type { ApiResponse } from '@/types/api'
 import axios from 'axios'
 import qs from 'qs'
 import { appConfig } from '@/config'
-import { HttpCode } from '@/enums'
 import router from '@/router'
-import { useUserStore } from '@/stores/modules/user'
+import { useUserStore } from '@/stores/useUserStore'
+
+/** HTTP 状态码 */
+export enum HttpCode {
+  SUCCESS = 200,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  NOT_FOUND = 404,
+  SERVER_ERROR = 500,
+}
 
 /** 创建 axios 实例 */
 const service: AxiosInstance = axios.create({

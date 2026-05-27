@@ -2,21 +2,21 @@ import type { Router } from 'vue-router'
 import NProgress from 'nprogress'
 import { appConfig } from '@/config'
 import { setRouteEmitter } from '@/core/hooks'
-import { useTabsStore } from '@/core/stores/useTabsStore'
-import { usePermissionStore } from '@/stores/modules/permission'
-import { useUserStore } from '@/stores/modules/user'
+import { useUserStore } from '@/stores/useUserStore'
 import 'nprogress/nprogress.css'
 
 NProgress.configure({ showSpinner: false })
 
 const whiteList = [appConfig.loginPath, appConfig.notFoundPath]
 
+let isRoutesLoaded = false
+
 /** 注册路由守卫 */
 export function setupRouterGuard(router: Router) {
   router.beforeEach(async (to, _from, next) => {
     NProgress.start()
     const userStore = useUserStore()
-    const permissionStore = usePermissionStore()
+    // const permissionStore = usePermissionStore()
 
     if (userStore.isLogin) {
       if (to.path === appConfig.loginPath) {
@@ -24,11 +24,9 @@ export function setupRouterGuard(router: Router) {
         return
       }
 
-      if (!permissionStore.isRoutesLoaded) {
-        const mergedRoutes = await permissionStore.generateRoutes()
-        mergedRoutes.forEach((route: import('vue-router').RouteRecordRaw) => {
-          router.addRoute(route)
-        })
+      if (!isRoutesLoaded) {
+        await userStore.generateRoutes()
+        isRoutesLoaded = true
         next({ ...to, replace: true })
         return
       }
@@ -36,10 +34,6 @@ export function setupRouterGuard(router: Router) {
       next()
     }
     else {
-      if (permissionStore.isRoutesLoaded) {
-        permissionStore.reset()
-        useTabsStore().reset()
-      }
       if (whiteList.includes(to.path)) {
         next()
       }

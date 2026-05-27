@@ -4,10 +4,6 @@ export const appConfig = {
   title: import.meta.env.VITE_APP_TITLE,
   /** API 前缀 */
   apiPrefix: import.meta.env.VITE_API_BASE_URL,
-  /** 默认分页大小 */
-  pageSize: 10,
-  /** 分页大小选项 */
-  pageSizes: [10, 20, 50, 100],
   /** Token 请求头字段 */
   tokenHeader: 'Authorization',
   /** Token 前缀 */

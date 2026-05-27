@@ -22,7 +22,7 @@ function storeSetup() {
    * @param collapsed - 是否折叠
    */
   const setMenuCollapse = (collapsed: boolean) => {
-    settingConfig.isMenuAccordion = collapsed
+    settingConfig.isMenuCollapse = collapsed
   }
 
   return {

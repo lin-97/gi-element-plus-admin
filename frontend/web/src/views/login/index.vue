@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
-import type { LoginParams } from '@/types/user'
 import { Lock, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { appConfig } from '@/config'
-import { useUserStore } from '@/stores/modules/user'
+import { useUserStore } from '@/stores/useUserStore'
 
 const router = useRouter()
 const route = useRoute()
@@ -12,7 +11,7 @@ const userStore = useUserStore()
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
-const form = reactive<LoginParams>({
+const form = reactive<{ username: string, password: string }>({
   username: 'admin',
   password: '123456',
 })

@@ -13,23 +13,13 @@ import { ElMessageBox, ElSpace } from 'element-plus'
 import { appConfig } from '@/config'
 import { useBreadcrumb, useTheme } from '@/core/hooks'
 import { useAppStore } from '@/core/stores'
-import { useUserStore } from '@/stores/modules/user'
-
-interface Props {
-  /** 顶栏模式 */
-  mode?: 'side' | 'top'
-}
-
-withDefaults(defineProps<Props>(), {
-  mode: 'side',
-})
+import { useUserStore } from '@/stores/useUserStore'
 
 const router = useRouter()
 const appStore = useAppStore()
 const { isDark, toggleDark } = useTheme()
 const userStore = useUserStore()
-const fullscreenTarget = ref(document.documentElement)
-const { toggle: toggleFullscreen } = useFullscreen(fullscreenTarget)
+const { toggle: toggleFullscreen } = useFullscreen()
 const { breadcrumbs } = useBreadcrumb()
 
 async function handleLogout() {
@@ -47,13 +37,12 @@ async function handleLogout() {
   <header class="app-header">
     <div class="app-header__left">
       <el-button
-        v-if="mode === 'side'"
         type="primary"
         bg
         text
         circle
-        :icon="appStore.isMenuAccordion ? Expand : Fold"
-        @click="appStore.setMenuCollapse(!appStore.isMenuAccordion)"
+        :icon="appStore.isMenuCollapse ? Expand : Fold"
+        @click="appStore.setMenuCollapse(!appStore.isMenuCollapse)"
       />
       <el-breadcrumb v-if="breadcrumbs.length" separator="/">
         <el-breadcrumb-item
@@ -65,39 +54,38 @@ async function handleLogout() {
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-    <div class="app-header__right">
-      <ElSpace :size="8">
-        <el-tooltip content="全屏">
-          <el-button type="primary" bg text circle :icon="FullScreen" @click="toggleFullscreen" />
-        </el-tooltip>
-        <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
-          <el-button
-            type="primary"
-            bg
-            text
-            circle
-            :icon="isDark ? Sunny : Moon"
-            @click="toggleDark()"
-          />
-        </el-tooltip>
-        <el-dropdown trigger="click">
-          <span class="app-header__user">
-            <el-avatar :size="28" :src="userStore.userInfo?.avatar">
-              <el-icon><User /></el-icon>
-            </el-avatar>
-            <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="handleLogout">
-                <el-icon><SwitchButton /></el-icon>
-                退出登录
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
-      </ElSpace>
-    </div>
+
+    <ElSpace :size="8">
+      <el-tooltip content="全屏">
+        <el-button type="primary" bg text circle :icon="FullScreen" @click="toggleFullscreen" />
+      </el-tooltip>
+      <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
+        <el-button
+          type="primary"
+          bg
+          text
+          circle
+          :icon="isDark ? Sunny : Moon"
+          @click="toggleDark()"
+        />
+      </el-tooltip>
+      <el-dropdown trigger="click">
+        <span class="app-header__user">
+          <el-avatar :size="28" :src="userStore.userInfo?.avatar">
+            <el-icon><User /></el-icon>
+          </el-avatar>
+          <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="handleLogout">
+              <el-icon><SwitchButton /></el-icon>
+              退出登录
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </ElSpace>
   </header>
 </template>
 
@@ -127,5 +115,9 @@ async function handleLogout() {
     align-items: center;
     cursor: pointer;
   }
+}
+
+:deep(.el-button) {
+  border-radius: 4px;
 }
 </style>

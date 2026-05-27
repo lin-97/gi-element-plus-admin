@@ -20,4 +20,17 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: () => import('@/views/redirect/index.vue'),
     meta: { hidden: true, showInTabs: false },
   },
+  {
+    path: '/',
+    component: () => import('@/layouts/default/index.vue'),
+    meta: { title: '', hidden: false, icon: 'Monitor' },
+    redirect: '/dashboard',
+    children: [
+      {
+        path: '/dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: { title: '工作台', affix: true, hidden: false, icon: 'Monitor' },
+      },
+    ],
+  },
 ]

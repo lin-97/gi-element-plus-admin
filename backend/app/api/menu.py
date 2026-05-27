@@ -72,7 +72,7 @@ MOCK_ASYNC_ROUTES: list[AsyncRouteItem] = [
             _route(
                 id="2",
                 parent_id="1",
-                path="index",
+                path="/crud/index",
                 title="学生列表",
                 type=2,
                 component="crud/index",

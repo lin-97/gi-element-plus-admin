@@ -7,6 +7,7 @@ import type { RouteRecordRaw } from 'vue-router'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { mapTree } from 'xe-utils'
+import router from '@/router'
 import { DEFAULT_LAYOUT } from '../config'
 import { transformPathToName } from '../utils'
 
@@ -161,6 +162,24 @@ function formatAsyncRoutes(menus: AsyncRouteItem[]) {
   return routes as RouteRecordRaw[]
 }
 
+/** 将动态路由注册到 Vue Router（Vue Router 4 使用 addRoute，无 addRoutes） */
+function registerAsyncRoutes(asyncRoutes: RouteRecordRaw[]) {
+  asyncRoutes.forEach((route) => {
+    if (route.name && router.hasRoute(route.name as string))
+      return
+    router.addRoute(route)
+  })
+
+  if (!router.hasRoute('CatchAll')) {
+    router.addRoute({
+      path: '/:pathMatch(.*)*',
+      name: 'CatchAll',
+      redirect: '/404',
+      meta: { hidden: true },
+    })
+  }
+}
+
 /**
  * 路由状态管理的核心逻辑
  * @description 管理路由相关的状态和操作
@@ -179,7 +198,9 @@ function storeSetup() {
    */
   const setRoutes = (params: { constantRoutes: RouteRecordRaw[], asyncData: AsyncRouteItem[] }) => {
     const { constantRoutes, asyncData } = params
-    routes.value = constantRoutes.concat(formatAsyncRoutes(asyncData))
+    const asyncRoutes = formatAsyncRoutes(asyncData)
+    routes.value = constantRoutes.concat(asyncRoutes)
+    registerAsyncRoutes(asyncRoutes)
   }
 
   return {

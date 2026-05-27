@@ -3,6 +3,7 @@
   "isShowTabs": true,
   "isShowAnimation": true,
   "isMenuAccordion": false,
+  "isMenuCollapse": false,
   "isMenuDark": false,
   "layoutMode": "left"
 }

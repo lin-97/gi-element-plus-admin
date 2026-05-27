@@ -8,8 +8,11 @@ import {
   Minus,
   Refresh,
 } from '@element-plus/icons-vue'
+import { HOME_PATH } from '@/core/config'
 import { useRouteListener } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
+
+const isHomeTab = (path: string) => path === '/' || path === HOME_PATH
 
 const router = useRouter()
 const route = useRoute()
@@ -33,8 +36,10 @@ const tabList = computed<NavTabItem[]>(() =>
     .map(tab => ({
       label: (tab.meta?.title as string) || '未命名',
       value: tab.path,
-      disabled: tab?.meta?.affix,
-    })),
+      disabled: false,
+      ...tab,
+    }))
+    .sort((a, b) => Number(isHomeTab(String(b.value))) - Number(isHomeTab(String(a.value)))),
 )
 
 const dropdownRefMap = new Map<string | number, DropdownInstance>()
@@ -60,23 +65,35 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
 <template>
   <div class="app-tabs">
     <gi-nav-tabs v-model="activeValue" :data="tabList" custom>
-      <template #default="{ item, active, disabled }">
+      <template #default="{ item, active }">
+        <gi-tag
+          v-if="item.meta?.affix || ['/', '/dashboard'].includes(item.value)"
+          :type="active ? 'dark' : 'light-outline'"
+          :color="active ? 'primary' : 'info'"
+          size="large"
+          :closable="false"
+          style="height: 26px;"
+          @close="tabsStore.close('current', item.value)"
+        >
+          {{ item.label }}
+        </gi-tag>
+
         <el-dropdown
+          v-else
           :ref="(el) => setDropdownRef(item.value, el)"
           trigger="contextmenu"
-          :disabled="disabled"
           @visible-change="(visible) => handleContextMenuVisible(visible, item.value)"
         >
-          <GiTag
+          <gi-tag
             :type="active ? 'dark' : 'light-outline'"
             :color="active ? 'primary' : 'info'"
             size="large"
-            :closable="!disabled"
+            :closable="true"
             style="height: 26px;"
             @close="tabsStore.close('current', item.value)"
           >
             {{ item.label }}
-          </GiTag>
+          </gi-tag>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item :icon="ArrowLeft" @click="tabsStore.close('left', item.value)">

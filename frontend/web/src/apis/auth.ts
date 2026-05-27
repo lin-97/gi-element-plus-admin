@@ -1,8 +1,19 @@
 import { request } from './request'
-import type { LoginParams, LoginResult } from '@/types/user'
+
+export interface LoginResult {
+  token: string
+  user: {
+    id: number
+    username: string
+    nickname: string
+    role: string
+  }
+}
+
+export type UserInfo = LoginResult['user']
 
 /** 登录 */
-export function loginApi(data: LoginParams) {
+export function loginApi(data: { username: string, password: string }) {
   return request<LoginResult>({ url: '/auth/login', method: 'post', data })
 }
 

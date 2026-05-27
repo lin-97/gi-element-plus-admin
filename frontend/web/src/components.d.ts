@@ -14,6 +14,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
     AppHeader: typeof import('./components/AppHeader/index.vue')['default']
+    AppMenuItem: typeof import('./components/AppMenuItem.vue')['default']
     AppSidebar: typeof import('./components/AppSidebar/index.vue')['default']
     AppTabs: typeof import('./components/AppTabs/index.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
@@ -37,6 +38,7 @@ declare module 'vue' {
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSpace: typeof import('element-plus/es')['ElSpace']
     ElStatistic: typeof import('element-plus/es')['ElStatistic']
+    ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     PageTransition: typeof import('./components/PageTransition/index.vue')['default']
@@ -53,6 +55,7 @@ declare module 'vue' {
 declare global {
   const AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
   const AppHeader: typeof import('./components/AppHeader/index.vue')['default']
+  const AppMenuItem: typeof import('./components/AppMenuItem.vue')['default']
   const AppSidebar: typeof import('./components/AppSidebar/index.vue')['default']
   const AppTabs: typeof import('./components/AppTabs/index.vue')['default']
   const ElAvatar: typeof import('element-plus/es')['ElAvatar']
@@ -76,6 +79,7 @@ declare global {
   const ElRow: typeof import('element-plus/es')['ElRow']
   const ElSpace: typeof import('element-plus/es')['ElSpace']
   const ElStatistic: typeof import('element-plus/es')['ElStatistic']
+  const ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
   const ElTag: typeof import('element-plus/es')['ElTag']
   const ElTooltip: typeof import('element-plus/es')['ElTooltip']
   const PageTransition: typeof import('./components/PageTransition/index.vue')['default']
