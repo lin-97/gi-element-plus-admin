@@ -1,0 +1,4 @@
+name = "学生管理"
+code = "student"
+version = "1.0.0"
+description = "学生业务示例插件"

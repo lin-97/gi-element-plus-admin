@@ -1,0 +1,7 @@
+name = "example"
+title = "示例插件"
+version = "1.0.0"
+description = "演示 module_* 插件目录与动态路由注册。"
+optional = true
+tags = ["demo", "sample"]
+
