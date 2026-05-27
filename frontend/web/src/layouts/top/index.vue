@@ -6,12 +6,15 @@
 import AppHeader from '@/components/AppHeader/index.vue'
 import AppTabs from '@/components/AppTabs/index.vue'
 import PageTransition from '@/components/PageTransition/index.vue'
+import { useAppStore } from '@/core/stores'
+
+const appStore = useAppStore()
 </script>
 
 <template>
   <div class="layout">
     <AppHeader mode="top" />
-    <AppTabs />
+    <AppTabs v-if="appStore.isShowTabs" />
     <div class="layout__content">
       <PageTransition />
     </div>

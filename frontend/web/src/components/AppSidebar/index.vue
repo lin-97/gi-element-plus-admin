@@ -20,6 +20,7 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     <el-menu
       :default-active="selectedKeys[0]"
       :collapse="appStore.isMenuCollapse"
+      :unique-opened="appStore.isMenuAccordion"
       @select="handleMenuItemClick"
     >
       <AppMenuItem

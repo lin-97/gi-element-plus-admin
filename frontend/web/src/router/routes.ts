@@ -22,7 +22,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    component: () => import('@/layouts/default/index.vue'),
+    component: () => import('@/layouts/AppLayout.vue'),
     meta: { title: '', hidden: false, icon: 'Monitor' },
     redirect: '/dashboard',
     children: [

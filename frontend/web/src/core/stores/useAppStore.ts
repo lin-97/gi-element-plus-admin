@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
-import { computed, reactive, toRefs } from 'vue'
+import { computed, reactive, toRefs, watch } from 'vue'
 import defaultSettings from '../config/setting.json'
+import { applyThemeColor } from '../utils/theme'
 
 /**
  * App Store 的核心设置逻辑
@@ -8,6 +9,12 @@ import defaultSettings from '../config/setting.json'
 function storeSetup() {
   // 初始化 App 配置
   const settingConfig = reactive({ ...defaultSettings }) as App.SettingConfig
+
+  watch(
+    () => settingConfig.themeColor,
+    color => applyThemeColor(color),
+    { immediate: true },
+  )
 
   /**
    * 计算页面切换动画类名
@@ -25,10 +32,16 @@ function storeSetup() {
     settingConfig.isMenuCollapse = collapsed
   }
 
+  /** 恢复默认配置 */
+  const resetSetting = () => {
+    Object.assign(settingConfig, defaultSettings)
+  }
+
   return {
     ...toRefs(settingConfig),
     transitionName,
     setMenuCollapse,
+    resetSetting,
   }
 }
 

@@ -3,6 +3,9 @@ import AppHeader from '@/components/AppHeader/index.vue'
 import AppSidebar from '@/components/AppSidebar/index.vue'
 import AppTabs from '@/components/AppTabs/index.vue'
 import PageTransition from '@/components/PageTransition/index.vue'
+import { useAppStore } from '@/core/stores'
+
+const appStore = useAppStore()
 </script>
 
 <template>
@@ -10,7 +13,7 @@ import PageTransition from '@/components/PageTransition/index.vue'
     <AppSidebar />
     <div class="layout__main">
       <AppHeader />
-      <AppTabs />
+      <AppTabs v-if="appStore.isShowTabs" />
       <div class="layout__content">
         <PageTransition />
       </div>

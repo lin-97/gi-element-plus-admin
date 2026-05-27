@@ -7,4 +7,4 @@ export const SUPER_ADMIN_ROLE = 'role_admin'
 export const HOME_PATH = '/dashboard'
 
 /** 默认布局 */
-export const DEFAULT_LAYOUT = () => import('@/layouts/default/index.vue')
+export const DEFAULT_LAYOUT = () => import('@/layouts/AppLayout.vue')
