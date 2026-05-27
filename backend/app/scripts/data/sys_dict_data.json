@@ -1,0 +1,5 @@
+[
+  {"id": 1, "uuid": "seed-dict-status-normal", "label": "正常", "value": "0", "dict_type": "common_status", "dict_type_id": 1, "order": 1, "status": "0"},
+  {"id": 2, "uuid": "seed-dict-status-disabled", "label": "禁用", "value": "1", "dict_type": "common_status", "dict_type_id": 1, "order": 2, "status": "0"}
+]
+

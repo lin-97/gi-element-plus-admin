@@ -1,0 +1,5 @@
+[
+  {"id": 1, "uuid": "seed-role-admin", "name": "超级管理员", "code": "admin", "order": 1, "data_scope": 4, "status": "0"},
+  {"id": 2, "uuid": "seed-role-user", "name": "普通用户", "code": "user", "order": 2, "data_scope": 1, "status": "0"}
+]
+

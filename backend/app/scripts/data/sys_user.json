@@ -1,0 +1,5 @@
+[
+  {"id": 1, "uuid": "seed-user-admin", "username": "admin", "password": "123456", "name": "超级管理员", "is_superuser": true, "dept_id": 1, "status": "0"},
+  {"id": 2, "uuid": "seed-user-user", "username": "user", "password": "123456", "name": "普通用户", "is_superuser": false, "dept_id": 1, "status": "0"}
+]
+

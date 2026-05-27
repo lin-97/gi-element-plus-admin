@@ -1,0 +1,5 @@
+[
+  {"id": 1, "uuid": "seed-student-001", "name": "张三", "student_no": "S001", "gender": "男", "age": 18, "phone": "13800138001", "email": "zhangsan@example.com", "address": "北京市朝阳区", "created_id": 1, "updated_id": 1, "status": "0"},
+  {"id": 2, "uuid": "seed-student-002", "name": "李四", "student_no": "S002", "gender": "女", "age": 19, "phone": "13800138002", "email": "lisi@example.com", "address": "上海市浦东新区", "created_id": 1, "updated_id": 1, "status": "0"}
+]
+

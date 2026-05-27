@@ -1,0 +1,5 @@
+[
+  {"id": 1, "uuid": "seed-position-admin", "name": "管理员", "code": "admin", "order": 1, "status": "0"},
+  {"id": 2, "uuid": "seed-position-user", "name": "普通员工", "code": "user", "order": 2, "status": "0"}
+]
+

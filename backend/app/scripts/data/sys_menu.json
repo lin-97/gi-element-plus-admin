@@ -1,0 +1,13 @@
+[
+  {"id": 1, "uuid": "seed-menu-system", "name": "系统管理", "type": 1, "order": 10, "permission": null, "icon": "setting", "route_name": "System", "route_path": "/system", "component_path": "Layout", "title": "系统管理", "parent_id": null, "status": "0"},
+  {"id": 2, "uuid": "seed-menu-user", "name": "用户管理", "type": 2, "order": 11, "permission": "module_system:user:query", "icon": "user", "route_name": "SystemUser", "route_path": "user", "component_path": "system/user/index", "title": "用户管理", "parent_id": 1, "status": "0"},
+  {"id": 3, "uuid": "seed-menu-role", "name": "角色管理", "type": 2, "order": 12, "permission": "module_system:role:query", "icon": "user-filled", "route_name": "SystemRole", "route_path": "role", "component_path": "system/role/index", "title": "角色管理", "parent_id": 1, "status": "0"},
+  {"id": 4, "uuid": "seed-menu-student", "name": "学生管理", "type": 2, "order": 20, "permission": "module_student:student:query", "icon": "school", "route_name": "Student", "route_path": "/student", "component_path": "student/index", "title": "学生管理", "parent_id": null, "status": "0"},
+  {"id": 5, "uuid": "seed-menu-plugin", "name": "插件管理", "type": 2, "order": 30, "permission": "module_common:plugin:query", "icon": "connection", "route_name": "Plugin", "route_path": "/plugin", "component_path": "plugin/index", "title": "插件管理", "parent_id": null, "status": "0"},
+  {"id": 101, "uuid": "seed-perm-user-create", "name": "用户新增", "type": 3, "order": 1, "permission": "module_system:user:create", "parent_id": 2, "status": "0"},
+  {"id": 102, "uuid": "seed-perm-user-update", "name": "用户更新", "type": 3, "order": 2, "permission": "module_system:user:update", "parent_id": 2, "status": "0"},
+  {"id": 103, "uuid": "seed-perm-user-delete", "name": "用户删除", "type": 3, "order": 3, "permission": "module_system:user:delete", "parent_id": 2, "status": "0"},
+  {"id": 201, "uuid": "seed-perm-student-create", "name": "学生新增", "type": 3, "order": 1, "permission": "module_student:student:create", "parent_id": 4, "status": "0"},
+  {"id": 202, "uuid": "seed-perm-student-update", "name": "学生更新", "type": 3, "order": 2, "permission": "module_student:student:update", "parent_id": 4, "status": "0"},
+  {"id": 203, "uuid": "seed-perm-student-delete", "name": "学生删除", "type": 3, "order": 3, "permission": "module_student:student:delete", "parent_id": 4, "status": "0"}
+]
