@@ -1,0 +1,80 @@
+---
+description: 前端强制开发规范（Vue 3 + gi-component）
+globs: frontend/web/**
+alwaysApply: true
+---
+
+# 前端强制规范
+
+## 通用要求
+
+- 始终使用**简体中文**与用户沟通。
+- 未经用户明确要求，**不要**创建说明文档（README、*.md 等）。
+- 未经用户明确要求，**不要**执行 git commit / push。
+- 改动范围最小化：只改与任务直接相关的代码，不顺手重构无关模块。
+- 优先复用项目已有抽象与约定，禁止凭空引入新架构或重复造轮子。
+
+## 项目路径
+
+- 前端根目录：`frontend/web/`
+- 路径别名：`@/` → `frontend/web/src/`
+
+## 技术栈
+
+- Vue 3 **Composition API** + `<script setup lang="ts">`
+- 每个 SFC 必须 `defineOptions({ name: 'Xxx' })`
+- UI 组件库：优先使用 `gi-component`（GiPageLayout、GiForm、GiTable、GiDialog）
+- 状态：Pinia；路由：Vue Router 4
+- HTTP：`@/apis/request`，统一响应类型 `ApiResponse<T>`
+
+## 目录约定
+
+```
+src/views/{module}/index.vue      # 列表页
+src/views/{module}/FormDialog.vue # 新增/编辑弹窗（有表单时必建）
+src/apis/{module}.ts              # 类型定义 + CRUD API
+```
+
+路由组件路径与 `views` 目录一致，例如 `crud/index` → `views/crud/index.vue`。
+
+## CRUD 列表页（强制遵循）
+
+新建/修改表格页时，**必须**参考并遵循：
+
+- 参考实现：`frontend/web/src/views/crud/index.vue`、`FormDialog.vue`
+- Hook：`@/hooks/useTable`
+- API 模板：`frontend/web/src/apis/student.ts`
+- 详细步骤：读取并遵循 `.cursor/skills/table-page/SKILL.md`
+
+核心结构：
+
+1. `queryForm`（reactive）+ `formColumns`（FormColumnItem[]）搜索区
+2. `tableColumns`（TableColumnItem[]），操作列 `slotName: 'action'`
+3. `useTable` 绑定列表 API 与 `deleteAPI`
+4. `FormDialog` ref，`@success="refresh"`
+
+分页类型：`PageResult<T>`（`list` + `total`）。
+
+## API 层模板
+
+```typescript
+import { request } from './request'
+
+export function getXxxListApi(params: XxxListQuery) {
+  return request<PageResult<XxxInfo>>({ url: '/xxx/list', method: 'get', params })
+}
+```
+
+## 代码风格
+
+- 遵循 `@antfu/eslint-config`（`eslint.config.js`）
+- 优先使用 auto-import 已注册 API（ref、reactive、computed 等无需手动 import）
+- 布局组件放 `layouts/`，通用组件放 `components/`，业务逻辑 Hook 放 `hooks/` 或 `core/hooks/`
+
+## 禁止事项
+
+- ❌ 使用 Options API 编写新组件
+- ❌ 绕过 `@/apis/request` 直接裸用 axios
+- ❌ 表格页自行实现分页/删除逻辑，而不使用 `useTable`
+- ❌ 表格页使用原生 el-table 替代 GiTable（除非用户明确要求）
+- ❌ 在用户未要求时添加测试、文档或无关注释

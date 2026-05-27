@@ -36,29 +36,29 @@ src/apis/{module}.ts # 类型 + 列表/详情/增删改 API
 ```typescript
 import { request } from './request'
 
-export interface XxxInfo {
+export interface XxxItem {
   id: number
   // ...业务字段
 }
 
-export interface XxxListQuery extends PageParams {
+export interface XxxListQueryParams extends PageParams {
   // ...查询字段（可选）
 }
 
-export function getXxxListApi(params: XxxListQuery) {
-  return request<PageResult<XxxInfo>>({ url: '/xxx/list', method: 'get', params })
+export function getXxxListApi(params: XxxListQueryParams) {
+  return request<PageResult<XxxItem>>({ url: '/xxx/list', method: 'get', params })
 }
 
-export function createXxxApi(data: Partial<XxxInfo>) {
+export function createXxxApi(data: Partial<XxxItem>) {
   return request({ url: '/xxx', method: 'post', data })
 }
 
-export function updateXxxApi(id: number, data: Partial<XxxInfo>) {
+export function updateXxxApi(id: number, data: Partial<XxxItem>) {
   return request({ url: `/xxx/${id}`, method: 'put', data })
 }
 
-export function deleteXxxApi(id: number) {
-  return request({ url: `/xxx/${id}`, method: 'delete' })
+export function deleteXxxApi(ids: string[]) {
+  return request({ url: '/xxx/delete', method: 'post', data: { ids } })
 }
 ```
 
@@ -77,14 +77,14 @@ export function deleteXxxApi(id: number) {
 ```vue
 <script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
-import type { XxxInfo } from '@/apis/xxx'
+import type { XxxItem } from '@/apis/xxx'
 import { deleteXxxApi, getXxxListApi } from '@/apis/xxx'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'Xxx' })
 
-const formDialogRef = ref<InstanceType<typeof FormDialog>>()
+const FormDialogRef = useTemplateRef('FormDialogRef')
 
 const queryForm = reactive({
   // 与 XxxListQuery 对齐，空字符串/undefined 表示不过滤
@@ -114,31 +114,24 @@ const {
   search,
   refresh,
   onDelete,
-} = useTable<XxxInfo>(
-  params => getXxxListApi({
-    page: params.page,
-    size: params.size,
-    // 将 queryForm 转为 API 参数，空值传 undefined
-  }),
-  {
+} = useTable({
     rowKey: 'id',
+    listAPI: p => getXxxListApi({ ...p, ...queryForm }),
     deleteAPI: ids => Promise.all(ids.map(id => deleteXxxApi(Number(id)))),
   },
 )
-
-function handleSearch() { search() }
 
 function handleReset() {
   // 重置 queryForm 各字段
   search()
 }
 
-function handleAdd() { formDialogRef.value?.openAdd() }
-function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
+function handleAdd() { FormDialogRef.value?.openAdd() }
+function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
 </script>
 
 <template>
-  <GiPageLayout class="page-container">
+  <GiPageLayout>
     <template #header>
       <GiForm
         :model-value="queryForm"
@@ -146,7 +139,7 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
         search
         :grid-item-props="{ span: { xs: 24, sm: 12, md: 12, lg: 8, xl: 6, xxl: 6 } }"
         @update:model-value="Object.assign(queryForm, $event)"
-        @search="handleSearch"
+        @search="search"
         @reset="handleReset"
       />
     </template>
@@ -158,9 +151,9 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
     <GiTable
       v-loading="loading"
       border
+      row-key="id"
       :data="tableData"
       :columns="tableColumns"
-      row-key="id"
       :pagination="pagination"
     >
       <template #action="{ row }">
@@ -169,12 +162,11 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
       </template>
     </GiTable>
 
-    <FormDialog ref="formDialogRef" @success="refresh" />
+    <FormDialog ref="FormDialogRef" @success="refresh" />
   </GiPageLayout>
 </template>
 
 <style lang="scss" scoped>
-.page-container { height: 100%; }
 </style>
 ```
 
@@ -188,7 +180,7 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
 | `onBatchDelete()` | 批量删除（表格需开启多选 + `onSelectionChange`） |
 | `pagination` | 直接传给 `GiTable` 的 `:pagination` |
 
-列表 API 必须返回 `PageResult<T>`（`list`、`total`）。查询参数中的空字符串应在调用 API 前转为 `undefined`。
+列表 API 必须返回 `PageResult<T>`（`list`、`total`）
 
 ### 表格列扩展
 
@@ -211,22 +203,22 @@ function handleEdit(row: XxxInfo) { formDialogRef.value?.openEdit(row) }
 <script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
-import type { XxxInfo } from '@/apis/xxx'
+import type { XxxItem } from '@/apis/xxx'
 import { ElMessage } from 'element-plus'
-import { GiDialog, GiForm } from 'gi-component'
 import { createXxxApi, updateXxxApi } from '@/apis/xxx'
 
 defineOptions({ name: 'XxxFormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
+const FormRef = useTemplateRef('FormRef')
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<number>()
-const formRef = ref<FormInstance>()
-const formData = ref(createEmptyForm())
-
 const dialogTitle = computed(() => (isEdit.value ? '编辑' : '新增'))
+const currentId = ref('')
+const formData = ref(createEmptyForm())
 
 function createEmptyForm() { return { /* 字段默认值 */ } }
 
@@ -240,11 +232,6 @@ const formColumns: FormColumnItem[] = [
   { field: 'remark', label: '备注', type: 'textarea', span: 24, props: { rows: 3 } },
 ]
 
-function toFormData(row: XxxInfo) { /* 行数据 → 表单 */ }
-function toPayload(data: typeof formData.value): Partial<XxxInfo> {
-  // trim 字符串，可选字段空值不传
-}
-
 function openAdd() {
   isEdit.value = false
   currentId.value = undefined
@@ -252,22 +239,21 @@ function openAdd() {
   visible.value = true
 }
 
-function openEdit(row: XxxInfo) {
+function openEdit(row: XxxItem) {
   isEdit.value = true
   currentId.value = row.id
-  formData.value = toFormData(row)
+  formData.value = row
   visible.value = true
 }
 
 async function handleBeforeOk() {
   try {
-    await formRef.value?.formRef?.validate()
-    const payload = toPayload(formData.value)
+    await FormRef.value?.formRef?.validate()
     if (isEdit.value && currentId.value) {
-      await updateXxxApi(currentId.value, payload)
+      await updateXxxApi(currentId.value, formData.value)
       ElMessage.success('更新成功')
     } else {
-      await createXxxApi(payload)
+      await createXxxApi(formData.value)
       ElMessage.success('添加成功')
     }
     emit('success')
@@ -289,7 +275,7 @@ defineExpose({ openAdd, openEdit })
     :on-before-ok="handleBeforeOk"
   >
     <GiForm
-      ref="formRef"
+      ref="FormRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
@@ -313,7 +299,7 @@ defineExpose({ openAdd, openEdit })
 
 ## 生成检查清单
 
-- [ ] API：类型、`ListQuery`、`PageResult`、增删改查
+- [ ] API：类型、`ListQueryParams`、`PageResult`、增删改查
 - [ ] `index.vue`：`useTable` + 查询重置 + 操作列插槽
 - [ ] `FormDialog.vue`：`openAdd`/`openEdit`、`handleBeforeOk` 返回 boolean
 - [ ] 删除走 `onDelete`，不手写 `ElMessageBox`（除非特殊流程）
@@ -325,7 +311,6 @@ defineExpose({ openAdd, openEdit })
 - 列表页不要手写分页 state（优先 `useTable`）
 - 不要在 `index.vue` 内联大段表单（拆 `FormDialog.vue`）
 - 不要把 API 请求写在模板里
-- 查询字段不要原样传空字符串给后端（转 `undefined`）
 
 ## 参考文件
 

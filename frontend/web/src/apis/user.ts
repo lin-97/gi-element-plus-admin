@@ -1,6 +1,5 @@
+import type { UserInfo } from '@/apis/auth'
 import { request } from './request'
-import type { PageParams, PageResult } from '@/types/api'
-import type { UserInfo } from '@/types/user'
 
 /** 用户分页列表 */
 export function getUserListApi(params: PageParams) {
