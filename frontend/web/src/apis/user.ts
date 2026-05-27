@@ -1,22 +1,75 @@
-import type { UserInfo } from '@/apis/auth'
+import type { RoleOption } from './role'
+import type { StatusValue } from './role'
 import { request } from './request'
 
-/** 用户分页列表 */
-export function getUserListApi(params: PageParams) {
-  return request<PageResult<UserInfo>>({ url: '/user/list', method: 'get', params })
+/** 头像 URL 最大长度（与后端 users.avatar VARCHAR(500) 一致） */
+export const AVATAR_MAX_LENGTH = 500
+
+export interface SysUserItem {
+  id: number
+  username: string
+  nickname?: string
+  phone?: string
+  email?: string
+  avatar?: string
+  remark?: string
+  status: StatusValue
+  sort?: number
+  createTime?: string
+  isSuperAdmin?: boolean
+  deptId?: number | null
+  roleIds?: number[]
+  roleNames?: string[]
+  roles?: string[]
 }
 
-/** 新增用户 */
-export function createUserApi(data: Partial<UserInfo>) {
-  return request({ url: '/user', method: 'post', data })
+export interface SysUserListQuery extends PageParams {
+  username?: string
+  phone?: string
+  status?: StatusValue
 }
 
-/** 更新用户 */
-export function updateUserApi(id: string | number, data: Partial<UserInfo>) {
-  return request({ url: `/user/${id}`, method: 'put', data })
+export interface SysUserFormData {
+  username: string
+  password?: string
+  nickname?: string
+  phone?: string
+  email?: string
+  avatar?: string
+  remark?: string
+  status: StatusValue
+  sort?: number
+  roleIds: number[]
 }
 
-/** 删除用户 */
-export function deleteUserApi(id: string | number) {
-  return request({ url: `/user/${id}`, method: 'delete' })
+export function getUserListApi(params: SysUserListQuery) {
+  return request<PageResult<SysUserItem>>({ url: '/user/list', method: 'get', params })
 }
+
+export function getUserDetailApi(id: number) {
+  return request<SysUserItem>({ url: `/user/${id}`, method: 'get' })
+}
+
+export function createUserApi(data: Partial<SysUserFormData> & { password: string }) {
+  const { roleIds, ...rest } = data
+  return request({ url: '/user', method: 'post', data: { ...rest, role_ids: roleIds ?? [] } })
+}
+
+export function updateUserApi(id: number, data: Partial<SysUserFormData>) {
+  const { roleIds, ...rest } = data
+  return request({ url: `/user/${id}`, method: 'put', data: { ...rest, role_ids: roleIds } })
+}
+
+export function deleteUserApi(ids: string[]) {
+  return request({ url: '/user/delete', method: 'post', data: { ids: ids.map(Number) } })
+}
+
+export function resetUserPasswordApi(id: number, password: string) {
+  return request({ url: `/user/${id}/password`, method: 'put', data: { password } })
+}
+
+export function updateUserStatusApi(id: number, status: StatusValue) {
+  return request({ url: `/user/${id}/status`, method: 'put', data: { status } })
+}
+
+export type { RoleOption }

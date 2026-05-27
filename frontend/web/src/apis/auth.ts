@@ -1,16 +1,24 @@
+import type { StatusValue } from './role'
 import { request } from './request'
+
+export interface UserInfo {
+  id: number
+  username: string
+  nickname: string
+  phone?: string
+  email?: string
+  avatar?: string
+  remark?: string
+  status?: StatusValue
+  createTime?: string
+  roles: string[]
+  permissions: string[]
+}
 
 export interface LoginResult {
   token: string
-  user: {
-    id: number
-    username: string
-    nickname: string
-    role: string
-  }
+  user: UserInfo
 }
-
-export type UserInfo = LoginResult['user']
 
 /** 登录 */
 export function loginApi(data: { username: string, password: string }) {
@@ -19,7 +27,7 @@ export function loginApi(data: { username: string, password: string }) {
 
 /** 获取用户信息 */
 export function getUserInfoApi() {
-  return request<LoginResult['user']>({ url: '/auth/userinfo', method: 'get' })
+  return request<UserInfo>({ url: '/auth/userinfo', method: 'get' })
 }
 
 /** 退出登录 */

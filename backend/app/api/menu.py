@@ -1,8 +1,12 @@
 from typing import Literal
 
 from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
+from app.core.database import get_db
 from app.core.deps import get_current_user
+from app.core.rbac import is_super_admin
+from app.crud.user_crud import get_effective_role_codes
 from app.schemas.menu import AsyncRouteItem, MenuRoutesResponse
 
 router = APIRouter(tags=["菜单"])
@@ -55,7 +59,6 @@ def _route(
     )
 
 
-# 动态路由菜单（后续可改为数据库查询并按角色过滤）
 MOCK_ASYNC_ROUTES: list[AsyncRouteItem] = [
     _route(
         id="1",
@@ -82,18 +85,58 @@ MOCK_ASYNC_ROUTES: list[AsyncRouteItem] = [
             ),
         ],
     ),
+    _route(
+        id="10",
+        path="/system",
+        title="系统管理",
+        type=1,
+        component="Layout",
+        redirect="/system/user/index",
+        icon="setting",
+        permission="system",
+        sort=2,
+        roles=["role_admin"],
+        always_show=True,
+        children=[
+            _route(
+                id="11",
+                parent_id="10",
+                path="/system/user/index",
+                title="用户管理",
+                type=2,
+                component="system/user/index",
+                permission="system:user:list",
+                roles=["role_admin"],
+                sort=1,
+                keep_alive=True,
+            ),
+            _route(
+                id="12",
+                parent_id="10",
+                path="/system/role/index",
+                title="角色管理",
+                type=2,
+                component="system/role/index",
+                permission="system:role:list",
+                roles=["role_admin"],
+                sort=2,
+                keep_alive=True,
+            ),
+        ],
+    ),
 ]
 
 
-def _filter_by_role(routes: list[AsyncRouteItem], role: str) -> list[AsyncRouteItem]:
-    """按 roles 过滤；roles 为空表示所有角色可见"""
+def _filter_by_roles(routes: list[AsyncRouteItem], user_roles: list[str]) -> list[AsyncRouteItem]:
+    if is_super_admin(user_roles):
+        return routes
 
     def visible(item: AsyncRouteItem) -> bool:
         if item.status == "0":
             return False
         if item.type == 3:
             return False
-        if item.roles and role not in item.roles:
+        if item.roles and not set(item.roles) & set(user_roles):
             return False
         return True
 
@@ -104,6 +147,8 @@ def _filter_by_role(routes: list[AsyncRouteItem], role: str) -> list[AsyncRouteI
                 continue
             data = item.model_dump()
             data["children"] = walk(item.children)
+            if item.type == 1 and not data["children"] and item.children:
+                continue
             result.append(AsyncRouteItem(**data))
         return result
 
@@ -111,7 +156,7 @@ def _filter_by_role(routes: list[AsyncRouteItem], role: str) -> list[AsyncRouteI
 
 
 @router.get("/menu/routes", response_model=MenuRoutesResponse)
-def get_routes(current_user=Depends(get_current_user)):
-    role = getattr(current_user, "role", None) or "user"
-    routes = _filter_by_role(MOCK_ASYNC_ROUTES, role)
+def get_routes(current_user=Depends(get_current_user), db: Session = Depends(get_db)):
+    user_roles = get_effective_role_codes(db, current_user.id)
+    routes = _filter_by_roles(MOCK_ASYNC_ROUTES, user_roles)
     return MenuRoutesResponse(data=routes)

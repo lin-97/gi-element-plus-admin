@@ -206,3 +206,139 @@ class ApiResponse(BaseModel):
     code: int = 200
     message: str = "success"
     data: Optional[dict | list | str] = None
+
+
+STATUS_VALUES = frozenset({"0", "1"})
+
+
+def _validate_status(v: Any) -> str:
+    if v is None:
+        return "1"
+    s = str(v).strip()
+    if s not in STATUS_VALUES:
+        raise ValueError("状态只能是 0(禁用) 或 1(启用)")
+    return s
+
+
+class RoleCreate(BaseModel):
+    code: str = Field(..., min_length=1, max_length=50)
+    name: str = Field(..., min_length=1, max_length=50)
+    status: str = "1"
+    sort: int = 0
+    remark: Optional[str] = Field(None, max_length=500)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status_field(cls, v: Any) -> str:
+        return _validate_status(v)
+
+
+class RoleUpdate(BaseModel):
+    code: Optional[str] = Field(None, min_length=1, max_length=50)
+    name: Optional[str] = Field(None, min_length=1, max_length=50)
+    status: Optional[str] = None
+    sort: Optional[int] = None
+    remark: Optional[str] = Field(None, max_length=500)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status_field(cls, v: Any) -> Optional[str]:
+        if v is None:
+            return None
+        return _validate_status(v)
+
+
+class RoleBatchDelete(BaseModel):
+    ids: list[int] = Field(..., min_length=1)
+
+
+class SysUserCreate(BaseModel):
+    username: str = Field(..., min_length=1, max_length=50)
+    password: str = Field(..., min_length=6, max_length=128)
+    nickname: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar: Optional[str] = Field(None, max_length=500)
+    remark: Optional[str] = Field(None, max_length=500)
+    status: str = "1"
+    sort: int = 0
+    dept_id: Optional[int] = None
+    role_ids: list[int] = Field(default_factory=list)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status_field(cls, v: Any) -> str:
+        return _validate_status(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_field(cls, v: Any) -> Optional[str]:
+        return _validate_phone(v)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email_field(cls, v: Any) -> Optional[str]:
+        return _validate_email(v)
+
+    @field_validator("avatar", mode="before")
+    @classmethod
+    def validate_avatar_field(cls, v: Any) -> Optional[str]:
+        avatar = _optional_str(v)
+        if avatar is not None and len(avatar) > 500:
+            raise ValueError("头像URL不能超过500个字符")
+        return avatar
+
+
+class SysUserUpdate(BaseModel):
+    nickname: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    avatar: Optional[str] = Field(None, max_length=500)
+    remark: Optional[str] = Field(None, max_length=500)
+    status: Optional[str] = None
+    sort: Optional[int] = None
+    dept_id: Optional[int] = None
+    role_ids: Optional[list[int]] = None
+    password: Optional[str] = Field(None, min_length=6, max_length=128)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status_field(cls, v: Any) -> Optional[str]:
+        if v is None:
+            return None
+        return _validate_status(v)
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def validate_phone_field(cls, v: Any) -> Optional[str]:
+        return _validate_phone(v)
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def validate_email_field(cls, v: Any) -> Optional[str]:
+        return _validate_email(v)
+
+    @field_validator("avatar", mode="before")
+    @classmethod
+    def validate_avatar_field(cls, v: Any) -> Optional[str]:
+        avatar = _optional_str(v)
+        if avatar is not None and len(avatar) > 500:
+            raise ValueError("头像URL不能超过500个字符")
+        return avatar
+
+
+class SysUserBatchDelete(BaseModel):
+    ids: list[int] = Field(..., min_length=1)
+
+
+class SysUserPasswordReset(BaseModel):
+    password: str = Field(..., min_length=6, max_length=128)
+
+
+class SysUserStatusUpdate(BaseModel):
+    status: str
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def validate_status_field(cls, v: Any) -> str:
+        return _validate_status(v)

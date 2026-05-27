@@ -1,32 +1,16 @@
 from app.core.database import SessionLocal, engine, Base
 from app.core.security import get_password_hash
 from app.db.gender_migration import migrate_student_gender
-from app.models.models import User, Student
+from app.db.system_rbac_migration import migrate_system_rbac
+from app.models.models import Student, User
 
 
 def init_db():
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
-        existing_admin = db.query(User).filter(User.username == "admin").first()
-        if not existing_admin:
-            admin = User(
-                username="admin",
-                password=get_password_hash("123456"),
-                nickname="超级管理员",
-                role="admin"
-            )
-            db.add(admin)
-
-        existing_user = db.query(User).filter(User.username == "user").first()
-        if not existing_user:
-            user = User(
-                username="user",
-                password=get_password_hash("123456"),
-                nickname="普通用户",
-                role="user"
-            )
-            db.add(user)
+        migrate_student_gender(db)
+        migrate_system_rbac(db)
 
         sample_students = [
             Student(name="张三", student_no="S001", gender="1", age=18, phone="13800138001", email="zhangsan@example.com", address="北京市朝阳区"),
@@ -38,9 +22,8 @@ def init_db():
             if not existing:
                 db.add(s)
 
-        migrated = migrate_student_gender(db)
         db.commit()
-        print(f"数据库初始化完成! 性别迁移 {migrated} 条")
+        print("数据库初始化完成!")
     finally:
         db.close()
 
