@@ -1,4 +1,4 @@
-## ADDED Requirements
+## MODIFIED Requirements
 
 ### Requirement: Userinfo returns roles and permissions
 
@@ -13,15 +13,6 @@
 
 - **WHEN** a user has roles `role_user` and `operator` (both enabled) and `sys_role_menu` grants button permissions `crud:list` and `system:user:add`
 - **THEN** `permissions` includes both `crud:list` and `system:user:add`
-
-### Requirement: Login response alignment
-
-`POST /api/auth/login` success payload MUST include `user` object compatible with userinfo (including `roles`; `permissions` MAY be omitted on login if userinfo is fetched immediately after).
-
-#### Scenario: Login then permission store
-
-- **WHEN** frontend completes login and calls `fetchUserInfo`
-- **THEN** `usePermissionStore.setRoles` and `setPermissions` are invoked with API values
 
 ### Requirement: Menu routes filtered by roles
 
@@ -42,15 +33,6 @@
 - **WHEN** user has `role_admin`
 - **THEN** all enabled route menus (type 1 and 2) are returned
 
-### Requirement: Super admin guard on write APIs
-
-User and role mutation endpoints MUST require super-admin (holder of `role_admin` or equivalent guard replacing `role == "admin"`).
-
-#### Scenario: Normal user cannot create user
-
-- **WHEN** a user without `role_admin` calls `POST /api/user`
-- **THEN** the system returns HTTP 403
-
 ### Requirement: System management menu structure
 
 The menu data source (database seed, not MOCK) MUST include parent **系统管理** (`/system`) with children:
@@ -64,20 +46,11 @@ The menu data source (database seed, not MOCK) MUST include parent **系统管�
 - **WHEN** super admin logs in and `generateRoutes` runs
 - **THEN** sidebar shows 系统管理 with 用户管理, 角色管理, and 菜单管理 entries
 
-### Requirement: Frontend permission utilities wired
-
-After login or `fetchUserInfo`, frontend MUST populate `usePermissionStore` so `hasRole` and `hasPerm` work with `SUPER_ADMIN_ROLE` and `SUPER_ADMIN_PERMISSION` from `@/core/config`.
-
-#### Scenario: Button hidden without permission
-
-- **WHEN** a button uses `v-hasPerm="'system:user:add'"` and user lacks that permission
-- **THEN** the button is not rendered
+## ADDED Requirements
 
 ### Requirement: Frontend refresh routes after permission changes
 
 The frontend MUST expose `refreshRoutes()` that: removes previously registered dynamic routes, calls `fetchUserInfo` to refresh `permissions`, fetches `/api/menu/routes`, and re-registers routes via `setRoutes`. After menu CRUD success or role menu assignment success, the UI MUST invoke `refreshRoutes()` automatically for the current session.
-
-On login and logout, the frontend MUST reset the route-loaded flag and clear persisted dynamic routes so a different user receives the correct menu without re-login artifacts.
 
 #### Scenario: Menu save triggers refresh
 
@@ -93,17 +66,3 @@ On login and logout, the frontend MUST reset the route-loaded flag and clear per
 
 - **WHEN** super admin saves role menu permissions and the API returns success
 - **THEN** the frontend calls `refreshRoutes` and updates `usePermissionStore.permissions`
-
-#### Scenario: Switch user reloads menu
-
-- **WHEN** user A logs out and user B logs in within the same browser session
-- **THEN** the sidebar shows user B's authorized menus only
-
-### Requirement: Deprecated single role field
-
-The API MUST NOT rely on `user.role` as a single string for authorization after migration. **BREAKING** for clients expecting only `role: string`.
-
-#### Scenario: Old client reads userinfo
-
-- **WHEN** client expects `role: "admin"`
-- **THEN** client MUST migrate to `roles: string[]` (documented in change proposal)

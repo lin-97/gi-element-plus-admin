@@ -7,6 +7,8 @@ export function useTheme() {
     valueDark: 'dark',
     valueLight: '',
     storageKey: 'theme',
+    // 初始值
+    initialValue: 'light',
   })
 
   const toggleDark = useToggle(isDark)

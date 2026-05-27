@@ -1,6 +1,7 @@
 from app.core.database import SessionLocal, engine, Base
 from app.core.security import get_password_hash
 from app.db.gender_migration import migrate_student_gender
+from app.db.menu_migration import migrate_system_menu
 from app.db.system_rbac_migration import migrate_system_rbac
 from app.models.models import Student, User
 
@@ -11,6 +12,7 @@ def init_db():
     try:
         migrate_student_gender(db)
         migrate_system_rbac(db)
+        migrate_system_menu(db)
 
         sample_students = [
             Student(name="张三", student_no="S001", gender="1", age=18, phone="13800138001", email="zhangsan@example.com", address="北京市朝阳区"),

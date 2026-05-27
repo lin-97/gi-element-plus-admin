@@ -3,20 +3,20 @@ import NProgress from 'nprogress'
 import { appConfig } from '@/config'
 import { setRouteEmitter } from '@/core/hooks'
 import { useUserStore } from '@/stores/useUserStore'
+import { isRoutesLoadedState, markRoutesLoaded } from './route-load-state'
 import 'nprogress/nprogress.css'
 
 NProgress.configure({ showSpinner: false })
 
 const whiteList = [appConfig.loginPath, appConfig.notFoundPath]
 
-let isRoutesLoaded = false
+export { resetRoutesLoadedFlag } from './route-load-state'
 
 /** 注册路由守卫 */
 export function setupRouterGuard(router: Router) {
   router.beforeEach(async (to, _from, next) => {
     NProgress.start()
     const userStore = useUserStore()
-    // const permissionStore = usePermissionStore()
 
     if (userStore.isLogin) {
       if (to.path === appConfig.loginPath) {
@@ -24,9 +24,9 @@ export function setupRouterGuard(router: Router) {
         return
       }
 
-      if (!isRoutesLoaded) {
+      if (!isRoutesLoadedState()) {
         await userStore.generateRoutes()
-        isRoutesLoaded = true
+        markRoutesLoaded()
         next({ ...to, replace: true })
         return
       }

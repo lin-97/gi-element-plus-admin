@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
+import type { MenuItem } from '@/apis/menu'
 import type { RoleItem } from '@/apis/role'
 import { ElMessage } from 'element-plus'
-import { createRoleApi, STATUS_OPTIONS, updateRoleApi } from '@/apis/role'
+import { getMenuTreeApi } from '@/apis/menu'
+import {
+  createRoleApi,
+  getRoleMenusApi,
+  STATUS_OPTIONS,
+  updateRoleApi,
+  updateRoleMenusApi,
+} from '@/apis/role'
 import { SUPER_ADMIN_ROLE } from '@/core/config'
+import { useUserStore } from '@/stores/useUserStore'
 
 defineOptions({ name: 'SystemRoleFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
+
+const userStore = useUserStore()
 
 interface RoleFormData {
   code: string
@@ -23,6 +34,9 @@ const isEdit = ref(false)
 const isSystemRole = ref(false)
 const currentId = ref<number>()
 const formRef = ref<FormInstance>()
+const menuTreeRef = ref()
+const menuTreeData = ref<MenuItem[]>([])
+const checkedMenuIds = ref<number[]>([])
 const formData = ref<RoleFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑角色' : '新增角色'))
 
@@ -59,6 +73,19 @@ const formColumns = computed<FormColumnItem[]>(() => [
   },
 ])
 
+const menuTreeProps = { label: 'title', children: 'children' }
+
+async function loadMenuTree() {
+  menuTreeData.value = await getMenuTreeApi()
+}
+
+async function loadRoleMenus(roleId: number) {
+  const { menuIds } = await getRoleMenusApi(roleId)
+  checkedMenuIds.value = menuIds
+  await nextTick()
+  menuTreeRef.value?.setCheckedKeys(menuIds.map(String))
+}
+
 function toFormData(row: RoleItem): RoleFormData {
   return {
     code: row.code ?? '',
@@ -69,34 +96,62 @@ function toFormData(row: RoleItem): RoleFormData {
   }
 }
 
-function openAdd() {
+async function openAdd() {
   isEdit.value = false
   isSystemRole.value = false
   currentId.value = undefined
   formData.value = createEmptyForm()
+  checkedMenuIds.value = []
   visible.value = true
+  await loadMenuTree()
+  await nextTick()
+  menuTreeRef.value?.setCheckedKeys([])
 }
 
-function openEdit(row: RoleItem) {
+async function openEdit(row: RoleItem) {
   isEdit.value = true
   isSystemRole.value = row.code === SUPER_ADMIN_ROLE
   currentId.value = row.id
   formData.value = toFormData(row)
   visible.value = true
+  await loadMenuTree()
+  if (!isSystemRole.value)
+    await loadRoleMenus(row.id)
+}
+
+function getSelectedMenuIds(): number[] {
+  if (isSystemRole.value)
+    return []
+  const checked = (menuTreeRef.value?.getCheckedKeys(false) ?? []) as Array<string | number>
+  const half = (menuTreeRef.value?.getHalfCheckedKeys() ?? []) as Array<string | number>
+  return [...new Set([...checked, ...half])].map(id => Number(id))
 }
 
 async function handleBeforeOk() {
   try {
     await formRef.value?.formRef?.validate()
-    const { code, ...rest } = formData.value
-    if (isEdit.value && currentId.value) {
-      const payload = isSystemRole.value ? { name: rest.name, sort: rest.sort, remark: rest.remark } : rest
-      await updateRoleApi(currentId.value, payload)
+    const menuIds = getSelectedMenuIds()
+    let roleId = currentId.value
+    if (isEdit.value && roleId) {
+      const payload = isSystemRole.value
+        ? { name: formData.value.name, sort: formData.value.sort, remark: formData.value.remark }
+        : { name: formData.value.name, status: formData.value.status, sort: formData.value.sort, remark: formData.value.remark }
+      await updateRoleApi(roleId, payload)
+      if (!isSystemRole.value) {
+        await updateRoleMenusApi(roleId, menuIds)
+      }
       ElMessage.success('更新成功')
     }
     else {
-      await createRoleApi(formData.value)
+      const created = await createRoleApi(formData.value)
+      roleId = created.id
+      if (roleId && menuIds.length) {
+        await updateRoleMenusApi(roleId, menuIds)
+      }
       ElMessage.success('添加成功')
+    }
+    if (!isSystemRole.value) {
+      await userStore.refreshRoutes()
     }
     emit('success')
     return true
@@ -114,7 +169,7 @@ defineExpose({ openAdd, openEdit })
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
-    :style="{ maxWidth: '600px' }"
+    :style="{ maxWidth: '720px' }"
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
@@ -125,5 +180,29 @@ defineExpose({ openAdd, openEdit })
       :rules="formRules"
       label-width="90px"
     />
+    <el-divider content-position="left">
+      菜单权限
+    </el-divider>
+    <p v-if="isSystemRole" class="menu-tree-tip">
+      超级管理员拥有全部菜单，无需分配。
+    </p>
+    <el-tree
+      v-else
+      ref="menuTreeRef"
+      :data="menuTreeData"
+      show-checkbox
+      node-key="id"
+      :props="menuTreeProps"
+      default-expand-all
+      :default-checked-keys="checkedMenuIds"
+    />
   </GiDialog>
 </template>
+
+<style scoped>
+.menu-tree-tip {
+  margin: 0;
+  color: var(--el-text-color-secondary);
+  font-size: 13px;
+}
+</style>

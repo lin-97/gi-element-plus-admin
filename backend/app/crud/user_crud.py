@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
-from app.core.rbac import SUPER_ADMIN_ROLE, is_super_admin, resolve_permissions
+from app.core.rbac import SUPER_ADMIN_ROLE, is_super_admin
 from app.core.security import get_password_hash, verify_password
 from app.models.models import Role, User, UserRole
 
@@ -42,8 +42,10 @@ def get_effective_role_codes(db: Session, user_id: int) -> list[str]:
 
 
 def get_user_permissions(db: Session, user_id: int) -> list[str]:
+    from app.crud.menu_crud import get_permissions_from_menus
+
     codes = get_effective_role_codes(db, user_id)
-    return resolve_permissions(codes)
+    return get_permissions_from_menus(db, codes, user_id)
 
 
 def user_has_super_admin_role(db: Session, user_id: int) -> bool:

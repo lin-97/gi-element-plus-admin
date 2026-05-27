@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api import auth, menu, role, student, user
 from app.core.database import Base, SessionLocal, engine
 from app.db.gender_migration import migrate_student_gender
+from app.db.menu_migration import migrate_system_menu
 from app.db.system_rbac_migration import migrate_system_rbac
 
 
@@ -16,6 +17,7 @@ async def lifespan(app: FastAPI):
     try:
         migrate_student_gender(db)
         migrate_system_rbac(db)
+        migrate_system_menu(db)
     finally:
         db.close()
     yield

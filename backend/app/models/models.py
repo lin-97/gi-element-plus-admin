@@ -39,6 +39,7 @@ class Role(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     user_roles = relationship("UserRole", back_populates="role", cascade="all, delete-orphan")
+    role_menus = relationship("RoleMenu", back_populates="role", cascade="all, delete-orphan")
 
 
 class UserRole(Base):
@@ -51,6 +52,44 @@ class UserRole(Base):
 
     user = relationship("User", back_populates="user_roles")
     role = relationship("Role", back_populates="user_roles")
+
+
+class SysMenu(Base):
+    __tablename__ = "sys_menus"
+
+    id = Column(Integer, primary_key=True, index=True)
+    parent_id = Column(Integer, default=0, nullable=False, index=True)
+    type = Column(Integer, nullable=False, comment="1目录 2菜单 3按钮")
+    title = Column(String(50), nullable=False)
+    path = Column(String(200), default="")
+    component = Column(String(200), default="")
+    redirect = Column(String(200), default="")
+    icon = Column(String(50), default="")
+    permission = Column(String(100), default="", index=True)
+    sort = Column(Integer, default=0)
+    status = Column(String(1), default="1", nullable=False)
+    hidden = Column(Boolean, default=False)
+    keep_alive = Column(Boolean, default=False)
+    affix = Column(Boolean, default=False)
+    always_show = Column(Boolean, default=False)
+    breadcrumb = Column(Boolean, default=True)
+    show_in_tabs = Column(Boolean, default=True)
+    active_menu = Column(String(200), default="")
+    is_system = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+class RoleMenu(Base):
+    __tablename__ = "sys_role_menus"
+    __table_args__ = (UniqueConstraint("role_id", "menu_id", name="uq_role_menu"),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    role_id = Column(Integer, ForeignKey("sys_roles.id", ondelete="CASCADE"), nullable=False)
+    menu_id = Column(Integer, ForeignKey("sys_menus.id", ondelete="CASCADE"), nullable=False)
+
+    role = relationship("Role", back_populates="role_menus")
+    menu = relationship("SysMenu")
 
 
 class Student(Base):

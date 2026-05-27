@@ -1,18 +1,21 @@
 import type { UserInfo } from '@/apis/auth'
 import { defineStore } from 'pinia'
+import router from '@/router'
 import { getUserInfoApi, loginApi, logoutApi } from '@/apis/auth'
 import { getRoutesApi } from '@/apis/menu'
 import { usePermissionStore } from '@/core/stores/usePermissionStore'
 import { useRouteStore } from '@/core/stores/useRouteStore'
+import { useTabsStore } from '@/core/stores/useTabsStore'
+import { resetRoutesLoadedFlag } from '@/router/route-load-state'
 import { constantRoutes } from '@/router/routes'
 
 export const useUserStore = defineStore('user', () => {
   const routeStore = useRouteStore()
+  const tabsStore = useTabsStore()
   const permissionStore = usePermissionStore()
   const token = ref('')
   const userInfo = ref<UserInfo | null>(null)
 
-  /** 是否已登录 */
   const isLogin = computed(() => !!token.value)
 
   function applyPermissions(data: UserInfo) {
@@ -20,16 +23,24 @@ export const useUserStore = defineStore('user', () => {
     permissionStore.setPermissions(data.permissions ?? [])
   }
 
-  /** 登录 */
+  function resetRouteState() {
+    routeStore.resetDynamicRoutes()
+    routeStore.setRoutes({ constantRoutes, asyncData: [] })
+    tabsStore.reset()
+    resetRoutesLoadedFlag()
+  }
+
   async function login(params: { username: string, password: string }) {
+    resetRouteState()
     const res = await loginApi(params)
     token.value = res.token
     userInfo.value = res.user
     applyPermissions(res.user)
+    await fetchUserInfo()
+    await generateRoutes()
     return res
   }
 
-  /** 获取用户信息 */
   async function fetchUserInfo() {
     const data = await getUserInfoApi()
     userInfo.value = data
@@ -37,7 +48,6 @@ export const useUserStore = defineStore('user', () => {
     return data
   }
 
-  /** 退出登录 */
   async function logout() {
     try {
       await logoutApi()
@@ -47,19 +57,27 @@ export const useUserStore = defineStore('user', () => {
       userInfo.value = null
       permissionStore.setRoles([])
       permissionStore.setPermissions([])
+      resetRouteState()
     }
   }
 
   async function generateRoutes() {
-    try {
-      const data = await getRoutesApi()
-      routeStore.setRoutes({ constantRoutes, asyncData: data })
-      return true
+    const data = await getRoutesApi()
+    routeStore.resetDynamicRoutes()
+    routeStore.setRoutes({ constantRoutes, asyncData: data })
+    return true
+  }
+
+  async function refreshRoutes() {
+    routeStore.resetDynamicRoutes()
+    await fetchUserInfo()
+    const data = await getRoutesApi()
+    routeStore.setRoutes({ constantRoutes, asyncData: data })
+    const current = router.currentRoute.value
+    if (current.name && !router.hasRoute(current.name as string)) {
+      await router.replace(constantRoutes[0]?.path || '/')
     }
-    catch (error) {
-      console.error('[permission] generateRoutes error:', error)
-      throw error
-    }
+    return true
   }
 
   return {
@@ -70,6 +88,7 @@ export const useUserStore = defineStore('user', () => {
     fetchUserInfo,
     logout,
     generateRoutes,
+    refreshRoutes,
   }
 }, {
   persist: {

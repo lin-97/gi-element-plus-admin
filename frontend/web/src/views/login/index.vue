@@ -3,6 +3,7 @@ import type { FormInstance, FormRules } from 'element-plus'
 import { Lock, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { appConfig } from '@/config'
+import { markRoutesLoaded } from '@/router/route-load-state'
 import { useUserStore } from '@/stores/useUserStore'
 
 const router = useRouter()
@@ -26,9 +27,10 @@ async function handleLogin() {
   loading.value = true
   try {
     await userStore.login(form)
+    markRoutesLoaded()
     ElMessage.success('登录成功')
     const redirect = (route.query.redirect as string) || appConfig.homePath
-    router.push(redirect)
+    await router.push(redirect)
   }
   finally {
     loading.value = false

@@ -43,7 +43,7 @@ export function getRoleOptionsApi() {
 }
 
 export function createRoleApi(data: Partial<RoleItem>) {
-  return request({ url: '/role', method: 'post', data })
+  return request<RoleItem>({ url: '/role', method: 'post', data })
 }
 
 export function updateRoleApi(id: number, data: Partial<RoleItem>) {
@@ -56,4 +56,12 @@ export function updateRoleStatusApi(id: number, status: StatusValue) {
 
 export function deleteRoleApi(ids: string[]) {
   return request({ url: '/role/delete', method: 'post', data: { ids: ids.map(Number) } })
+}
+
+export function getRoleMenusApi(roleId: number) {
+  return request<{ menuIds: number[] }>({ url: `/role/${roleId}/menus`, method: 'get' })
+}
+
+export function updateRoleMenusApi(roleId: number, menuIds: number[]) {
+  return request({ url: `/role/${roleId}/menus`, method: 'put', data: { menuIds } })
 }

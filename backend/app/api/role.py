@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.api.formatters import role_option_to_dict, role_to_dict
 from app.core.database import get_db
 from app.core.deps import get_current_user, require_super_admin
+from app.core.rbac import is_system_role_code
 from app.crud.role_crud import (
     create_role,
     delete_roles,
@@ -14,6 +15,8 @@ from app.crud.role_crud import (
     get_roles,
     update_role,
 )
+from app.crud.role_menu_crud import get_role_menu_ids, set_role_menus
+from app.schemas.menu_admin import RoleMenuUpdate
 from app.schemas.schemas import RoleBatchDelete, RoleCreate, RoleUpdate
 
 router = APIRouter(prefix="/role", tags=["角色管理"])
@@ -53,6 +56,35 @@ def role_options(
         "message": "success",
         "data": [role_option_to_dict(r) for r in rows],
     }
+
+
+@router.get("/{role_id}/menus", response_model=dict)
+def get_role_menus(
+    role_id: int,
+    db: Session = Depends(get_db),
+    _current_user=Depends(require_super_admin),
+):
+    role = get_role(db, role_id)
+    if not role:
+        raise HTTPException(status_code=404, detail="角色不存在")
+    if is_system_role_code(role.code):
+        return {"code": 200, "message": "success", "data": {"menuIds": []}}
+    menu_ids = get_role_menu_ids(db, role_id)
+    return {"code": 200, "message": "success", "data": {"menuIds": menu_ids}}
+
+
+@router.put("/{role_id}/menus", response_model=dict)
+def update_role_menus(
+    role_id: int,
+    data: RoleMenuUpdate,
+    db: Session = Depends(get_db),
+    _current_user=Depends(require_super_admin),
+):
+    try:
+        set_role_menus(db, role_id, data.menuIds)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)) from e
+    return {"code": 200, "message": "保存成功", "data": {"menuIds": data.menuIds}}
 
 
 @router.get("/{role_id}", response_model=dict)

@@ -6,7 +6,7 @@ import {
   ArrowRight,
   Close,
   Minus,
-  Refresh,
+  RefreshRight,
 } from '@element-plus/icons-vue'
 import { HOME_PATH } from '@/core/config'
 import { useRouteListener } from '@/core/hooks'
@@ -113,7 +113,7 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
         </el-dropdown>
       </template>
       <template #right-extra>
-        <el-button text circle bg :icon="Refresh" @click="tabsStore.reloadPage" />
+        <el-button text circle bg :icon="RefreshRight" @click="tabsStore.reloadPage" />
       </template>
     </gi-nav-tabs>
   </div>
