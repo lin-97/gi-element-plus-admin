@@ -2,11 +2,6 @@ import { request } from './request'
 
 /** 性别：1-男 2-女（与后端存储一致） */
 export type GenderValue = '1' | '2'
-
-export const GENDER_OPTIONS: { label: string, value: GenderValue }[] = [
-  { label: '男', value: '1' },
-  { label: '女', value: '2' },
-]
 export interface StudentItem {
   id: number
   name: string

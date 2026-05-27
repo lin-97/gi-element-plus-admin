@@ -92,6 +92,43 @@ class RoleMenu(Base):
     menu = relationship("SysMenu")
 
 
+class SysDictType(Base):
+    __tablename__ = "sys_dict_types"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(50), nullable=False)
+    code = Column(String(50), unique=True, index=True, nullable=False)
+    status = Column(String(1), default="1", nullable=False)
+    sort = Column(Integer, default=0)
+    remark = Column(String(500))
+    is_system = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    dict_data = relationship(
+        "SysDictData",
+        back_populates="dict_type",
+        cascade="all, delete-orphan",
+    )
+
+
+class SysDictData(Base):
+    __tablename__ = "sys_dict_data"
+    __table_args__ = (UniqueConstraint("type_id", "value", name="uq_dict_type_value"),)
+
+    id = Column(Integer, primary_key=True, index=True)
+    type_id = Column(Integer, ForeignKey("sys_dict_types.id", ondelete="CASCADE"), nullable=False, index=True)
+    label = Column(String(100), nullable=False)
+    value = Column(String(100), nullable=False)
+    status = Column(String(1), default="1", nullable=False)
+    sort = Column(Integer, default=0)
+    remark = Column(String(500))
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    dict_type = relationship("SysDictType", back_populates="dict_data")
+
+
 class Student(Base):
     __tablename__ = "students"
 

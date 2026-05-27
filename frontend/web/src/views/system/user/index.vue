@@ -3,8 +3,8 @@ import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { StatusValue } from '@/apis/role'
 import type { SysUserItem } from '@/apis/user'
 import { ElMessage } from 'element-plus'
-import { STATUS_OPTIONS } from '@/apis/role'
 import { deleteUserApi, getUserListApi, updateUserStatusApi } from '@/apis/user'
+import { useDict } from '@/hooks/useDict'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 import ResetPasswordDialog from './ResetPasswordDialog.vue'
@@ -13,6 +13,7 @@ defineOptions({ name: 'SystemUser' })
 
 const FormDialogRef = useTemplateRef('FormDialogRef')
 const ResetPasswordDialogRef = useTemplateRef('ResetPasswordDialogRef')
+const { options: statusOptions } = useDict('STATUS')
 
 const queryForm = reactive({
   username: '',
@@ -20,16 +21,16 @@ const queryForm = reactive({
   status: undefined as StatusValue | undefined,
 })
 
-const formColumns: FormColumnItem[] = [
+const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'username', label: '用户名', type: 'input' },
   { field: 'phone', label: '手机', type: 'input' },
   {
     field: 'status',
     label: '状态',
     type: 'select-v2',
-    props: { options: STATUS_OPTIONS, clearable: true },
+    props: { options: statusOptions.value, clearable: true },
   },
-]
+])
 
 const tableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center', selectable: (row: SysUserItem) => !row.isSuperAdmin },

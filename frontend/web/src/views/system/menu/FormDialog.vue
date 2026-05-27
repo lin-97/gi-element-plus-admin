@@ -4,11 +4,13 @@ import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { MenuFormData, MenuItem, MenuType } from '@/apis/menu'
 import { ElMessage } from 'element-plus'
 import { createMenuApi, updateMenuApi } from '@/apis/menu'
-import { STATUS_OPTIONS } from '@/apis/role'
+import { useDict } from '@/hooks/useDict'
 
 defineOptions({ name: 'SystemMenuFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
+
+const { options: statusOptions } = useDict('STATUS')
 
 const TYPE_OPTIONS = [
   { label: '目录', value: 1 as MenuType },
@@ -91,7 +93,7 @@ const formColumns = computed<FormColumnItem[]>(() => {
       field: 'status',
       label: '状态',
       type: 'radio-group',
-      props: { options: STATUS_OPTIONS, disabled: isSystemMenu.value },
+      props: { options: statusOptions.value, disabled: isSystemMenu.value },
     },
     {
       field: 'sort',

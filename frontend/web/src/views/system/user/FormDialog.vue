@@ -4,12 +4,15 @@ import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { RoleOption } from '@/apis/role'
 import type { SysUserItem } from '@/apis/user'
 import { ElMessage } from 'element-plus'
-import { getRoleOptionsApi, STATUS_OPTIONS } from '@/apis/role'
+import { getRoleOptionsApi } from '@/apis/role'
 import { AVATAR_MAX_LENGTH, createUserApi, updateUserApi } from '@/apis/user'
+import { useDict } from '@/hooks/useDict'
 
 defineOptions({ name: 'SystemUserFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
+
+const { options: statusOptions } = useDict('STATUS')
 
 const PHONE_REG = /^1[3-9]\d{9}$/
 const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
@@ -121,7 +124,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     label: '状态',
     type: 'radio-group',
     props: {
-      options: STATUS_OPTIONS,
+      options: statusOptions.value,
       disabled: isSuperAdmin.value,
     },
   },

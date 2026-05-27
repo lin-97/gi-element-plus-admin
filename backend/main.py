@@ -3,8 +3,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, menu, role, student, user
+from app.api import auth, dict as dict_api, menu, role, student, user
 from app.core.database import Base, SessionLocal, engine
+from app.db.dict_migration import migrate_system_dict
 from app.db.gender_migration import migrate_student_gender
 from app.db.menu_migration import migrate_system_menu
 from app.db.system_rbac_migration import migrate_system_rbac
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
         migrate_student_gender(db)
         migrate_system_rbac(db)
         migrate_system_menu(db)
+        migrate_system_dict(db)
     finally:
         db.close()
     yield
@@ -38,6 +40,7 @@ app.include_router(student.router, prefix="/api")
 app.include_router(menu.router, prefix="/api")
 app.include_router(role.router, prefix="/api")
 app.include_router(user.router, prefix="/api")
+app.include_router(dict_api.router, prefix="/api")
 
 
 @app.get("/")

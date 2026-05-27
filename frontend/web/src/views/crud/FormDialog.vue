@@ -3,15 +3,14 @@ import type { FormItemRule, FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { ElMessage } from 'element-plus'
-import {
-  createStudentApi,
-  GENDER_OPTIONS,
-  updateStudentApi,
-} from '@/apis/student'
+import { createStudentApi, updateStudentApi } from '@/apis/student'
+import { useDict } from '@/hooks/useDict'
 
 defineOptions({ name: 'FormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
+
+const { options: genderOptions } = useDict('GENDER')
 
 const PHONE_REG = /^1[3-9]\d{9}$/
 const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
@@ -69,7 +68,7 @@ const formRules: FormRules = {
   }],
 }
 
-const formColumns: FormColumnItem[] = [
+const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'name', label: '姓名', type: 'input' },
   { field: 'student_no', label: '学号', type: 'input' },
   {
@@ -77,7 +76,7 @@ const formColumns: FormColumnItem[] = [
     label: '性别',
     type: 'radio-group',
     props: {
-      options: GENDER_OPTIONS,
+      options: genderOptions.value,
     },
   },
   {
@@ -95,7 +94,7 @@ const formColumns: FormColumnItem[] = [
     span: 24,
     props: { maxlength: 200, showWordLimit: true, rows: 3 },
   },
-]
+])
 
 function toFormData(student: StudentItem): StudentFormData {
   return {

@@ -1,6 +1,6 @@
 from app.core.rbac import is_system_role_code
 from app.core.serializers import format_create_time
-from app.models.models import Role, SysMenu, User
+from app.models.models import Role, SysDictData, SysDictType, SysMenu, User
 
 
 def role_to_dict(role: Role) -> dict:
@@ -43,6 +43,33 @@ def menu_to_dict(menu: SysMenu) -> dict:
         "isSystem": menu.is_system or False,
         "roles": [],
         "children": [],
+    }
+
+
+def dict_type_to_dict(row: SysDictType) -> dict:
+    return {
+        "id": row.id,
+        "name": row.name,
+        "code": row.code,
+        "status": row.status,
+        "sort": row.sort or 0,
+        "remark": row.remark or "",
+        "isSystem": row.is_system or False,
+        "createTime": format_create_time(row.created_at),
+        "updateTime": format_create_time(row.updated_at),
+    }
+
+
+def dict_data_to_dict(row: SysDictData) -> dict:
+    return {
+        "id": row.id,
+        "typeId": row.type_id,
+        "label": row.label,
+        "value": row.value,
+        "status": row.status,
+        "sort": row.sort or 0,
+        "remark": row.remark or "",
+        "createTime": format_create_time(row.created_at),
     }
 
 

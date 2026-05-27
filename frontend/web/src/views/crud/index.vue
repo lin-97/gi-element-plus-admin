@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
-import { deleteStudentApi, GENDER_OPTIONS, getStudentListApi } from '@/apis/student'
+import { deleteStudentApi, getStudentListApi } from '@/apis/student'
+import { useDict } from '@/hooks/useDict'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'Crud' })
 
 const FormDialogRef = useTemplateRef('FormDialogRef')
+const { options: genderOptions, getLabel: getGenderLabel } = useDict('GENDER')
 
 const queryForm = reactive({
   name: '',
@@ -16,24 +18,24 @@ const queryForm = reactive({
   age: '',
 })
 
-const formColumns: FormColumnItem[] = [
+const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'name', label: '姓名', type: 'input' },
   { field: 'student_no', label: '学号', type: 'input' },
   {
     field: 'gender',
     label: '性别',
     type: 'select-v2',
-    props: { options: GENDER_OPTIONS, clearable: true },
+    props: { options: genderOptions.value, clearable: true },
   },
   { field: 'age', label: '年龄', type: 'input' },
-]
+])
 
 const tableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center' },
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
   { prop: 'student_no', label: '学号' },
-  { prop: 'gender', label: '性别', render: ({ row }) => row.gender === '1' ? '男' : '女' },
+  { prop: 'gender', label: '性别', render: ({ row }) => getGenderLabel(row.gender) },
   { prop: 'age', label: '年龄' },
   { prop: 'phone', label: '电话' },
   {

@@ -2,14 +2,16 @@
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { RoleItem, StatusValue } from '@/apis/role'
 import { ElMessage } from 'element-plus'
-import { deleteRoleApi, getRoleListApi, STATUS_OPTIONS, updateRoleStatusApi } from '@/apis/role'
+import { deleteRoleApi, getRoleListApi, updateRoleStatusApi } from '@/apis/role'
 import { SUPER_ADMIN_ROLE } from '@/core/config'
+import { useDict } from '@/hooks/useDict'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'SystemRole' })
 
 const FormDialogRef = useTemplateRef('FormDialogRef')
+const { options: statusOptions } = useDict('STATUS')
 
 const queryForm = reactive({
   code: '',
@@ -17,16 +19,16 @@ const queryForm = reactive({
   status: undefined as StatusValue | undefined,
 })
 
-const formColumns: FormColumnItem[] = [
+const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'code', label: '角色标识', type: 'input' },
   { field: 'name', label: '角色名称', type: 'input' },
   {
     field: 'status',
     label: '状态',
     type: 'select-v2',
-    props: { options: STATUS_OPTIONS, clearable: true },
+    props: { options: statusOptions.value, clearable: true },
   },
-]
+])
 
 const tableColumns: TableColumnItem[] = [
   {

@@ -8,11 +8,11 @@ import { getMenuTreeApi } from '@/apis/menu'
 import {
   createRoleApi,
   getRoleMenusApi,
-  STATUS_OPTIONS,
   updateRoleApi,
   updateRoleMenusApi,
 } from '@/apis/role'
 import { SUPER_ADMIN_ROLE } from '@/core/config'
+import { useDict } from '@/hooks/useDict'
 import { useUserStore } from '@/stores/useUserStore'
 
 defineOptions({ name: 'SystemRoleFormDialog' })
@@ -20,6 +20,7 @@ defineOptions({ name: 'SystemRoleFormDialog' })
 const emit = defineEmits<{ success: [] }>()
 
 const userStore = useUserStore()
+const { options: statusOptions } = useDict('STATUS')
 
 interface RoleFormData {
   code: string
@@ -56,7 +57,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     field: 'status',
     label: '状态',
     type: 'radio-group',
-    props: { options: STATUS_OPTIONS, disabled: isSystemRole.value },
+    props: { options: statusOptions.value, disabled: isSystemRole.value },
   },
   {
     field: 'sort',
