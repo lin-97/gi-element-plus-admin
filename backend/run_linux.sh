@@ -73,75 +73,23 @@ show_banner() {
   echo ""
 }
 
-# ========== 从 env/.env.dev 读取数据库配置 ==========
-ENV_DEV_FILE="$SCRIPT_DIR/env/.env.dev"
-
-function to_lower() {
-  echo "$1" | tr '[:upper:]' '[:lower:]'
-}
-
+# ========== 从 .env.dev 文件中读取数据库配置 ==========
 function read_env_value() {
   local key="$1"
   local file="$2"
   grep -E "^${key}=" "$file" 2>/dev/null | head -n1 | cut -d'=' -f2- | sed 's/#.*//' | xargs
 }
 
-function parse_database_url() {
-  local url="$1"
-  local without_scheme="${url#*://}"
-  local userpass="${without_scheme%%@*}"
-  local hostpart="${without_scheme#*@}"
-  local hostport="${hostpart%%/*}"
-  local dbpath="${hostpart#*/}"
-  local queryless="${dbpath%%\?*}"
-
-  DATABASE_USER="${userpass%%:*}"
-  DATABASE_PASSWORD="${userpass#*:}"
-  DATABASE_HOST="${hostport%%:*}"
-  DATABASE_PORT="${hostport#*:}"
-  DATABASE_NAME="${queryless}"
-
-  if [[ "$DATABASE_HOST" == "$DATABASE_PORT" ]]; then
-    DATABASE_PORT=""
+function load_db_config() {
+  local env_file="$SCRIPT_DIR/env/.env.dev"
+  
+  if [ ! -f "$env_file" ]; then
+    error "未找到 $env_file 文件"
+    return 1
   fi
-
-  if [[ -z "$DATABASE_TYPE" ]]; then
-    if [[ "$url" == mysql* ]] || [[ "$url" == mariadb* ]]; then
-      DATABASE_TYPE="mysql"
-    elif [[ "$url" == postgres* ]]; then
-      DATABASE_TYPE="postgres"
-    fi
-  fi
-
-  case "$(to_lower "$DATABASE_TYPE")" in
-    mysql|mariadb)
-      DATABASE_PORT="${DATABASE_PORT:-3306}"
-      ;;
-    postgres|postgresql)
-      DATABASE_PORT="${DATABASE_PORT:-5432}"
-      ;;
-  esac
-}
-
-function build_database_url() {
-  case "$DATABASE_TYPE" in
-    mysql)
-      DATABASE_URL="mysql+pymysql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
-      ;;
-    postgres)
-      DATABASE_URL="postgresql+psycopg2://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
-      ;;
-    *)
-      error "无法构建 DATABASE_URL，未知数据库类型: $DATABASE_TYPE"
-      return 1
-      ;;
-  esac
-  return 0
-}
-
-function load_db_config_by_type() {
-  local env_file="$1"
-
+  
+  DATABASE_TYPE=$(read_env_value "DATABASE_TYPE" "$env_file")
+  DATABASE_TYPE=$(echo "${DATABASE_TYPE:-mysql}" | tr '[:upper:]' '[:lower:]')
   case "$DATABASE_TYPE" in
     mysql|mariadb)
       DATABASE_TYPE="mysql"
@@ -162,165 +110,18 @@ function load_db_config_by_type() {
       DATABASE_PORT="${DATABASE_PORT:-5432}"
       ;;
     *)
-      error "不支持的数据库类型: ${DATABASE_TYPE:-<未设置>}（仅支持 mysql / postgres）"
+      error "不支持的数据库类型: $DATABASE_TYPE"
       return 1
       ;;
   esac
+  
+  # 验证必要的配置
+  if [[ -z "$DATABASE_HOST" ]] || [[ -z "$DATABASE_PORT" ]] || [[ -z "$DATABASE_USER" ]] || [[ -z "$DATABASE_NAME" ]]; then
+    error "数据库配置不完整，请检查 $env_file 文件"
+    return 1
+  fi
+  
   return 0
-}
-
-function export_env_for_app() {
-  local env_file="$1"
-  local keys=(
-    SECRET_KEY
-    ALGORITHM
-    ACCESS_TOKEN_EXPIRE_MINUTES
-    REFRESH_TOKEN_EXPIRE_MINUTES
-    TOKEN_SLIDING_EXPIRE
-    REDIS_PORT
-    REDIS_USER
-    REDIS_PASSWORD
-  )
-  local key val
-
-  export DATABASE_TYPE DATABASE_URL
-  export DATABASE_HOST DATABASE_PORT DATABASE_USER DATABASE_PASSWORD DATABASE_NAME
-
-  for key in "${keys[@]}"; do
-    val=$(read_env_value "$key" "$env_file")
-    if [[ -n "$val" ]]; then
-      export "$key=$val"
-    fi
-  done
-}
-
-function load_db_config() {
-  local env_file="${ENV_DEV_FILE}"
-
-  if [ ! -f "$env_file" ]; then
-    error "未找到 $env_file 文件"
-    return 1
-  fi
-
-  DATABASE_TYPE=$(read_env_value "DATABASE_TYPE" "$env_file")
-  DATABASE_TYPE="$(to_lower "$DATABASE_TYPE")"
-  DATABASE_URL=$(read_env_value "DATABASE_URL" "$env_file")
-
-  if [[ -z "$DATABASE_TYPE" ]]; then
-    error "未配置 DATABASE_TYPE，请在 $env_file 中设置（mysql 或 postgres）"
-    return 1
-  fi
-
-  if [[ -n "$DATABASE_URL" ]]; then
-    parse_database_url "$DATABASE_URL"
-    case "$(to_lower "$DATABASE_TYPE")" in
-      mysql|mariadb) DATABASE_TYPE="mysql" ;;
-      postgres|postgresql) DATABASE_TYPE="postgres" ;;
-      *)
-        error "DATABASE_URL 与 DATABASE_TYPE 不匹配: $DATABASE_TYPE"
-        return 1
-        ;;
-    esac
-  else
-    load_db_config_by_type "$env_file" || return 1
-    build_database_url || return 1
-  fi
-
-  if [[ -z "$DATABASE_HOST" ]] || [[ -z "$DATABASE_USER" ]] || [[ -z "$DATABASE_NAME" ]]; then
-    error "数据库配置不完整，请在 $env_file 中按 DATABASE_TYPE 配置 MYSQL_* 或 POSTGRES_*（或设置 DATABASE_URL）"
-    return 1
-  fi
-
-  info "已加载 $env_file"
-  info "数据库类型: $DATABASE_TYPE | ${DATABASE_USER}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}"
-  return 0
-}
-
-function is_port_open() {
-  local host="$1"
-  local port="$2"
-  if command -v nc >/dev/null 2>&1; then
-    nc -z "$host" "$port" >/dev/null 2>&1
-    return $?
-  fi
-  (echo >/dev/tcp/"$host"/"$port") >/dev/null 2>&1
-}
-
-function try_start_service() {
-  local name="$1"
-  shift
-  local cmd
-  for cmd in "$@"; do
-    if eval "$cmd" >/dev/null 2>&1; then
-      info "已尝试启动 $name: $cmd"
-      return 0
-    fi
-  done
-  return 1
-}
-
-function ensure_mysql_service() {
-  if is_port_open "$DATABASE_HOST" "$DATABASE_PORT"; then
-    info "MySQL 已在运行 (${DATABASE_HOST}:${DATABASE_PORT})"
-    return 0
-  fi
-
-  warn "MySQL 未运行，正在尝试启动..."
-  try_start_service "MySQL" \
-    "brew services start mysql" \
-    "brew services start mysql@8.0" \
-    "brew services start mariadb" \
-    "sudo systemctl start mysql" \
-    "sudo systemctl start mysqld" \
-    "sudo service mysql start" \
-    "mysql.server start" || true
-
-  sleep 2
-  if is_port_open "$DATABASE_HOST" "$DATABASE_PORT"; then
-    info "MySQL 启动成功"
-    return 0
-  fi
-
-  error "无法启动 MySQL，请手动启动后重试（端口 ${DATABASE_PORT}）"
-  return 1
-}
-
-function ensure_postgres_service() {
-  if is_port_open "$DATABASE_HOST" "$DATABASE_PORT"; then
-    info "PostgreSQL 已在运行 (${DATABASE_HOST}:${DATABASE_PORT})"
-    return 0
-  fi
-
-  warn "PostgreSQL 未运行，正在尝试启动..."
-  try_start_service "PostgreSQL" \
-    "brew services start postgresql@16" \
-    "brew services start postgresql@15" \
-    "brew services start postgresql@14" \
-    "brew services start postgresql" \
-    "sudo systemctl start postgresql" \
-    "sudo service postgresql start" \
-    "pg_ctl -D /usr/local/var/postgres start" \
-    "pg_ctl -D /opt/homebrew/var/postgres start" || true
-
-  sleep 2
-  if is_port_open "$DATABASE_HOST" "$DATABASE_PORT"; then
-    info "PostgreSQL 启动成功"
-    return 0
-  fi
-
-  error "无法启动 PostgreSQL，请手动启动后重试（端口 ${DATABASE_PORT}）"
-  return 1
-}
-
-function start_database_service() {
-  case "$DATABASE_TYPE" in
-    mysql) ensure_mysql_service ;;
-    postgres) ensure_postgres_service ;;
-    *)
-      error "未知数据库类型: $DATABASE_TYPE"
-      return 1
-      ;;
-  esac
 }
 
 function mysql_exec() {
@@ -341,13 +142,7 @@ function ensure_database_exists() {
       exists=$(mysql_exec "SELECT SCHEMA_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='${DATABASE_NAME}';" 2>/dev/null | grep -c "$DATABASE_NAME" || true)
       if [[ "$exists" -eq 0 ]]; then
         warn "数据库 '$DATABASE_NAME' 不存在，正在创建..."
-        mysql_exec "CREATE DATABASE IF NOT EXISTS \`${DATABASE_NAME}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" || {
-          error "MySQL 数据库创建失败"
-          return 1
-        }
-        info "数据库 '$DATABASE_NAME' 创建成功 (utf8mb4)"
-      else
-        info "数据库 '$DATABASE_NAME' 已存在"
+        mysql_exec "CREATE DATABASE IF NOT EXISTS \`${DATABASE_NAME}\` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" || return 1
       fi
       ;;
     postgres)
@@ -355,42 +150,11 @@ function ensure_database_exists() {
       db_exists=$(PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -tAc "SELECT 1 FROM pg_database WHERE datname='$DATABASE_NAME';" 2>/dev/null || echo "")
       if [ "$db_exists" != "1" ]; then
         warn "数据库 '$DATABASE_NAME' 不存在，正在创建..."
-        local create_db_output
-        create_db_output=$(PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "CREATE DATABASE \"$DATABASE_NAME\" WITH ENCODING 'UTF8' LC_COLLATE 'C.UTF-8' LC_CTYPE 'C.UTF-8' TEMPLATE template0 OWNER $DATABASE_USER;" 2>&1)
-        if [ $? -ne 0 ]; then
-          error "PostgreSQL 数据库创建失败"
-          echo -e "${tty_red}$create_db_output${tty_reset}"
-          return 1
-        fi
-        info "数据库 '$DATABASE_NAME' 创建成功 (UTF8 编码, C.UTF-8 排序规则)"
-      else
-        info "数据库 '$DATABASE_NAME' 已存在"
+        PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "CREATE DATABASE \"$DATABASE_NAME\" WITH ENCODING 'UTF8' LC_COLLATE 'C.UTF-8' LC_CTYPE 'C.UTF-8' TEMPLATE template0 OWNER $DATABASE_USER;" || return 1
       fi
       ;;
   esac
-}
-
-function get_sql_init_dir() {
-  case "$DATABASE_TYPE" in
-    mysql) echo "$REPO_ROOT/backend/sql/mysql/init_data" ;;
-    postgres) echo "$REPO_ROOT/backend/sql/postgres/init_data" ;;
-  esac
-}
-
-function run_sql_file() {
-  local file="$1"
-  case "$DATABASE_TYPE" in
-    mysql)
-      if [[ -n "$DATABASE_PASSWORD" ]]; then
-        MYSQL_PWD="$DATABASE_PASSWORD" mysql -h"$DATABASE_HOST" -P"$DATABASE_PORT" -u"$DATABASE_USER" "$DATABASE_NAME" < "$file"
-      else
-        mysql -h"$DATABASE_HOST" -P"$DATABASE_PORT" -u"$DATABASE_USER" "$DATABASE_NAME" < "$file"
-      fi
-      ;;
-    postgres)
-      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$file"
-      ;;
-  esac
+  info "数据库 '$DATABASE_NAME' 已就绪"
 }
 
 # ========== FastAPI 功能函数 ==========
@@ -401,19 +165,13 @@ function start_dev_server() {
   echo -e "${tty_cyan}🚀 启动（uv run dev）...${tty_reset}"
   
   load_db_config || return 1
-
-  echo -e "${tty_blue}🗄️ 根据 DATABASE_TYPE 启动数据库服务...${tty_reset}"
-  start_database_service || return 1
-
+  
   echo -e "${tty_blue}🗄️ 检查并创建数据库...${tty_reset}"
   ensure_database_exists || return 1
-
-  export_env_for_app "$ENV_DEV_FILE"
-  info "已导出应用环境变量（DATABASE_URL 等）"
   
   print_separator
   cd "$SCRIPT_DIR"
-  uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+  uv run main.py run --env=dev
   JudgeSuccess "开发服务器启动"
   
   echo -e "${tty_green}🎉 开发服务器启动完成！${tty_reset}"
@@ -463,16 +221,8 @@ function reset_migration_records() {
   cd "$SCRIPT_DIR"
   echo -e "${tty_blue}🔄 正在重置迁移记录...${tty_reset}"
   
-  start_database_service || return 1
-
-  case "$DATABASE_TYPE" in
-    mysql)
-      mysql_exec "DELETE FROM alembic_version;" "$DATABASE_NAME" 2>/dev/null
-      ;;
-    postgres)
-      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "DELETE FROM alembic_version;" 2>/dev/null
-      ;;
-  esac
+  # 使用 psql 连接到数据库并重置迁移记录
+  PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "DELETE FROM alembic_version;" 2>/dev/null
   JudgeSuccess "迁移记录重置"
   
   echo -e "${tty_green}🎉 迁移记录重置完成！${tty_reset}"
@@ -496,16 +246,8 @@ function clean_database() {
   cd "$SCRIPT_DIR"
   echo -e "${tty_blue}🗄️ 清理数据库，删除所有现有的表...${tty_reset}"
   
-  start_database_service || return 1
-
-  case "$DATABASE_TYPE" in
-    mysql)
-      mysql_exec "SET FOREIGN_KEY_CHECKS = 0; SET GROUP_CONCAT_MAX_LEN=32768; SET @tables = NULL; SELECT GROUP_CONCAT('\`', table_name, '\`') INTO @tables FROM information_schema.tables WHERE table_schema = DATABASE(); SELECT IFNULL(@tables,'dummy') INTO @tables; SET @tables = CONCAT('DROP TABLE IF EXISTS ', @tables); PREPARE stmt FROM @tables; EXECUTE stmt; DEALLOCATE PREPARE stmt; SET FOREIGN_KEY_CHECKS = 1;" "$DATABASE_NAME" 2>/dev/null
-      ;;
-    postgres)
-      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev/null
-      ;;
-  esac
+  # 使用 psql 连接到数据库并删除所有表
+  PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev/null
   JudgeSuccess "数据库清理"
   
   echo -e "${tty_green}🎉 数据库清理完成！${tty_reset}"
@@ -551,17 +293,11 @@ function drop_database() {
   cd "$SCRIPT_DIR"
   echo -e "${tty_blue}🗑️ 正在删除数据库 '$db_name'...${tty_reset}"
   
-  start_database_service || return 1
-
-  case "$DATABASE_TYPE" in
-    mysql)
-      mysql_exec "DROP DATABASE IF EXISTS \`${db_name}\`;" 2>/dev/null
-      ;;
-    postgres)
-      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null
-      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "DROP DATABASE IF EXISTS \"$db_name\";" 2>/dev/null
-      ;;
-  esac
+  # 先断开所有连接到该数据库的连接
+  PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db_name' AND pid <> pg_backend_pid();" 2>/dev/null
+  
+  # 删除数据库
+  PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "postgres" -c "DROP DATABASE IF EXISTS \"$db_name\";" 2>/dev/null
   JudgeSuccess "数据库删除"
   
   echo -e "${tty_green}🎉 数据库 '$db_name' 删除完成！${tty_reset}"
@@ -574,7 +310,7 @@ function init_sql_data() {
   echo -e "${tty_cyan}🧰 初始化数据...${tty_reset}"
 
   local sql_dir
-  sql_dir="$(get_sql_init_dir)"
+  sql_dir="$REPO_ROOT/backend/sql/postgres/init_data"
   
   if [ ! -d "$sql_dir" ]; then
     error "未找到 SQL 目录: $sql_dir"
@@ -608,14 +344,13 @@ function init_sql_data() {
   fi
 
   load_db_config || return 1
-  start_database_service || return 1
 
   if [ "$choice" -eq 0 ]; then
     echo -e "${tty_blue}🚀 开始执行全部 SQL 文件...${tty_reset}"
     local file
     for file in "${sql_files[@]}"; do
       echo -e "${tty_blue}执行: $(basename "$file")${tty_reset}"
-      if run_sql_file "$file"; then
+      if PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$file"; then
         info "执行成功: $(basename "$file")"
       else
         error "执行失败: $(basename "$file")"
@@ -632,7 +367,7 @@ function init_sql_data() {
 
     local selected_file="${sql_files[$index]}"
     echo -e "${tty_blue}执行: $(basename "$selected_file")${tty_reset}"
-    if run_sql_file "$selected_file"; then
+    if PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$selected_file"; then
       info "执行成功: $(basename "$selected_file")"
       info "SQL 初始化完成"
     else

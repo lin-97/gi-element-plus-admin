@@ -1,0 +1,19 @@
+                                                                                                                                     
+                                                                            dddddddd                                                 
+        GGGGGGGGGGGGG  iiii                      AAA                        d::::::d                          iiii                   
+     GGG::::::::::::G i::::i                    A:::A                       d::::::d                         i::::i                  
+   GG:::::::::::::::G  iiii                    A:::::A                      d::::::d                          iiii                   
+  G:::::GGGGGGGG::::G                         A:::::::A                     d:::::d                                                  
+ G:::::G       GGGGGGiiiiiii                 A:::::::::A            ddddddddd:::::d    mmmmmmm    mmmmmmm   iiiiiiinnnn  nnnnnnnn    
+G:::::G              i:::::i                A:::::A:::::A         dd::::::::::::::d  mm:::::::m  m:::::::mm i:::::in:::nn::::::::nn  
+G:::::G               i::::i               A:::::A A:::::A       d::::::::::::::::d m::::::::::mm::::::::::m i::::in::::::::::::::nn 
+G:::::G    GGGGGGGGGG i::::i              A:::::A   A:::::A     d:::::::ddddd:::::d m::::::::::::::::::::::m i::::inn:::::::::::::::n
+G:::::G    G::::::::G i::::i             A:::::A     A:::::A    d::::::d    d:::::d m:::::mmm::::::mmm:::::m i::::i  n:::::nnnn:::::n
+G:::::G    GGGGG::::G i::::i            A:::::AAAAAAAAA:::::A   d:::::d     d:::::d m::::m   m::::m   m::::m i::::i  n::::n    n::::n
+G:::::G        G::::G i::::i           A:::::::::::::::::::::A  d:::::d     d:::::d m::::m   m::::m   m::::m i::::i  n::::n    n::::n
+ G:::::G       G::::G i::::i          A:::::AAAAAAAAAAAAA:::::A d:::::d     d:::::d m::::m   m::::m   m::::m i::::i  n::::n    n::::n
+  G:::::GGGGGGGG::::Gi::::::i        A:::::A             A:::::Ad::::::ddddd::::::ddm::::m   m::::m   m::::mi::::::i n::::n    n::::n
+   GG:::::::::::::::Gi::::::i       A:::::A               A:::::Ad:::::::::::::::::dm::::m   m::::m   m::::mi::::::i n::::n    n::::n
+     GGG::::::GGG:::Gi::::::i      A:::::A                 A:::::Ad:::::::::ddd::::dm::::m   m::::m   m::::mi::::::i n::::n    n::::n
+        GGGGGG   GGGGiiiiiiii     AAAAAAA                   AAAAAAAddddddddd   dddddmmmmmm   mmmmmm   mmmmmmiiiiiiii nnnnnn    nnnnnn
+                                                                                                                                     

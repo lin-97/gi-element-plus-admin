@@ -125,6 +125,8 @@ ignore = [
     "B009",  # Do not use getattr() with a constant attribute value.
     "E712",  # Avoid equality comparisons to `False`; use `not getattr(self.model, "is_deleted"):` for false checks
     "W293",  # blank line with whitespace
+    "FAST002",  # Annotated dependencies are optional; compact FastAPI Depends style is accepted here
+    "UP046",  # Keep traditional Generic syntax for Python tooling readability
 ]
 
 [tool.ruff.lint.per-file-ignores]
