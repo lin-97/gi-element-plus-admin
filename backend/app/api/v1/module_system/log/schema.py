@@ -1,11 +1,11 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, BaseModel, Field
+
+from app.core.base_schema import CamelModel
 
 
-class OperationLogOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class OperationLogOutSchema(CamelModel):
     id: int
     type: int
     request_path: str
@@ -14,7 +14,11 @@ class OperationLogOutSchema(BaseModel):
     response_code: int | None = None
     process_time: str | None = None
     description: str | None = None
-    created_time: datetime | None = None
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )
 
 
 class OperationLogQueryParam(BaseModel):

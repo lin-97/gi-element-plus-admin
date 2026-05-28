@@ -1,25 +1,37 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, BaseModel, Field
+
+from app.core.base_schema import CamelModel
 
 
-class PositionCreateSchema(BaseModel):
+class PositionCreateSchema(CamelModel):
     name: str
     code: str
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class PositionUpdateSchema(BaseModel):
+class PositionUpdateSchema(CamelModel):
     name: str | None = None
     code: str | None = None
-    order: int | None = None
+    order: int | None = Field(
+        default=None,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class PositionOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class PositionOutSchema(CamelModel):
     id: int
     name: str
     code: str
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     status: str = "0"
 
 

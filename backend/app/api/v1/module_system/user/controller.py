@@ -30,7 +30,7 @@ register_crud_routes(
 
 @UserRouter.get("/current/info")
 async def current_info(auth=Depends(get_current_user)):
-    return SuccessResponse(data=UserOutSchema.model_validate(auth.user).model_dump(mode="json"))
+    return SuccessResponse(data=UserOutSchema.model_validate(auth.user))
 
 
 @UserRouter.put("/current/password/change")

@@ -39,7 +39,7 @@ def register_crud_routes(
         obj = await crud_cls(auth).get(id=id)
         if not obj:
             raise CustomException(msg="数据不存在", code=404, status_code=404)
-        return SuccessResponse(data=out_schema.model_validate(obj).model_dump(mode="json"))
+        return SuccessResponse(data=out_schema.model_validate(obj))
 
     @router.post("")
     async def create_controller(
@@ -49,7 +49,7 @@ def register_crud_routes(
         crud = crud_cls(auth)
         method = getattr(crud, "create_with_relations", crud.create)
         obj = await method(data)
-        return SuccessResponse(data=out_schema.model_validate(obj).model_dump(mode="json"), msg="创建成功")
+        return SuccessResponse(data=out_schema.model_validate(obj), msg="创建成功")
 
     @router.put("/{id}")
     async def update_controller(
@@ -60,7 +60,7 @@ def register_crud_routes(
         crud = crud_cls(auth)
         method = getattr(crud, "update_with_relations", crud.update)
         obj = await method(id, data)
-        return SuccessResponse(data=out_schema.model_validate(obj).model_dump(mode="json"), msg="更新成功")
+        return SuccessResponse(data=out_schema.model_validate(obj), msg="更新成功")
 
     @router.delete("/{id}")
     async def delete_controller(
@@ -77,4 +77,4 @@ def register_crud_routes(
         auth=Depends(AuthPermission([f"{permission_prefix}:update"])),
     ):
         obj = await crud_cls(auth).update(id, {"status": status})
-        return SuccessResponse(data=out_schema.model_validate(obj).model_dump(mode="json"), msg="更新成功")
+        return SuccessResponse(data=out_schema.model_validate(obj), msg="更新成功")

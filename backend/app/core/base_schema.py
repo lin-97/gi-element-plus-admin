@@ -1,28 +1,47 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
-class BaseSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+def to_camel(value: str) -> str:
+    parts = value.split("_")
+    return parts[0] + "".join(part.capitalize() for part in parts[1:])
+
+
+class CamelModel(BaseModel):
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        from_attributes=True,
+        populate_by_name=True,
+    )
+
+
+class BaseSchema(CamelModel):
 
     id: int
     uuid: str | None = None
     status: str = "0"
     description: str | None = None
-    created_time: datetime | None = None
-    updated_time: datetime | None = None
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )
+    updated_time: datetime | None = Field(
+        default=None,
+        serialization_alias="updateTime",
+        validation_alias=AliasChoices("updated_time", "updatedTime", "updateTime"),
+    )
 
 
-class BatchSetAvailable(BaseModel):
+class BatchSetAvailable(CamelModel):
     ids: list[int] = Field(default_factory=list)
     status: str = "0"
 
 
-class PageResultSchema(BaseModel):
-    page_no: int
-    page_size: int
+class PageResultSchema(CamelModel):
+    page: int
+    size: int
     total: int
-    has_next: bool
-    items: list[Any]
+    list: list[Any]

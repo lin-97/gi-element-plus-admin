@@ -13,6 +13,7 @@ from app.api.v1.module_system.auth.schema import (
     RefreshTokenPayloadSchema,
 )
 from app.api.v1.module_system.user.crud import UserCRUD
+from app.api.v1.module_system.user.schema import UserOutSchema
 from app.common.enums import RedisKey
 from app.common.response import SuccessResponse
 from app.config.setting import settings
@@ -37,7 +38,7 @@ AuthRouter = APIRouter(route_class=OperationLogRoute, prefix="/auth", tags=["认
 @AuthRouter.get("/captcha/get")
 async def get_captcha(redis: Redis | None = Depends(redis_getter)):
     if not settings.REDIS_ENABLE or not settings.CAPTCHA_ENABLE:
-        return SuccessResponse(data=CaptchaOutSchema(enable=False).model_dump())
+        return SuccessResponse(data=CaptchaOutSchema(enable=False))
     key = uuid4().hex
     text = random_captcha_text()
     await RedisCRUD(redis).set(
@@ -46,7 +47,7 @@ async def get_captcha(redis: Redis | None = Depends(redis_getter)):
         settings.CAPTCHA_EXPIRE_SECONDS,
     )
     return SuccessResponse(
-        data=CaptchaOutSchema(enable=True, key=key, img_base=create_captcha_image(text)).model_dump()
+        data=CaptchaOutSchema(enable=True, key=key, img_base=create_captcha_image(text))
     )
 
 
@@ -107,12 +108,17 @@ async def login(
         )
     user.last_login = datetime.now()
     await db.flush()
+    jwt = JWTOutSchema(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+    )
     return SuccessResponse(
-        data=JWTOutSchema(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        ).model_dump(),
+        data={
+            **jwt.model_dump(mode="json", by_alias=True),
+            "token": access_token,
+            "user": UserOutSchema.model_validate(user),
+        },
         msg="登录成功",
     )
 
@@ -137,7 +143,7 @@ async def refresh_token(
             access_token=access_token,
             refresh_token=payload.refresh_token,
             expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        ).model_dump(),
+        ),
         msg="刷新成功",
     )
 

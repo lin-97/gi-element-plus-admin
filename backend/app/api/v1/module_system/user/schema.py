@@ -1,9 +1,11 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import AliasChoices, BaseModel, EmailStr, Field
+
+from app.core.base_schema import CamelModel
 
 
-class UserCreateSchema(BaseModel):
+class UserCreateSchema(CamelModel):
     username: str
     password: str = "123456"
     name: str
@@ -16,7 +18,7 @@ class UserCreateSchema(BaseModel):
     position_ids: list[int] = []
 
 
-class UserUpdateSchema(BaseModel):
+class UserUpdateSchema(CamelModel):
     name: str | None = None
     mobile: str | None = None
     email: EmailStr | None = None
@@ -27,9 +29,7 @@ class UserUpdateSchema(BaseModel):
     position_ids: list[int] | None = None
 
 
-class UserOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class UserOutSchema(CamelModel):
     id: int
     username: str
     name: str
@@ -40,15 +40,19 @@ class UserOutSchema(BaseModel):
     is_superuser: bool = False
     status: str = "0"
     dept_id: int | None = None
-    created_time: datetime | None = None
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )
 
 
-class ResetPasswordSchema(BaseModel):
+class ResetPasswordSchema(CamelModel):
     user_id: int
     password: str
 
 
-class ChangePasswordSchema(BaseModel):
+class ChangePasswordSchema(CamelModel):
     old_password: str
     new_password: str
 

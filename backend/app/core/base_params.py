@@ -1,12 +1,18 @@
 from typing import Annotated
 
 from fastapi import Query
-from pydantic import BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field
 
 
 class PaginationQueryParam(BaseModel):
-    page_no: Annotated[int, Query(ge=1)] = Field(default=1)
-    page_size: Annotated[int, Query(ge=1, le=200)] = Field(default=10)
+    page_no: Annotated[int, Query(ge=1)] = Field(
+        default=1,
+        validation_alias=AliasChoices("page_no", "pageNo", "page"),
+    )
+    page_size: Annotated[int, Query(ge=1, le=200)] = Field(
+        default=10,
+        validation_alias=AliasChoices("page_size", "pageSize", "size"),
+    )
 
     @property
     def offset(self) -> int:

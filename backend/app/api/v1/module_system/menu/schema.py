@@ -1,15 +1,27 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, BaseModel, Field, computed_field
+
+from app.core.base_schema import CamelModel
 
 
-class MenuCreateSchema(BaseModel):
-    name: str
+class MenuCreateSchema(CamelModel):
+    name: str = Field(validation_alias=AliasChoices("name", "title"))
     type: int = 2
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     permission: str | None = None
     icon: str | None = None
     route_name: str | None = None
-    route_path: str | None = None
-    component_path: str | None = None
+    route_path: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("route_path", "routePath", "path"),
+    )
+    component_path: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("component_path", "componentPath", "component"),
+    )
     redirect: str | None = None
     hidden: bool = False
     keep_alive: bool = True
@@ -19,23 +31,34 @@ class MenuCreateSchema(BaseModel):
 
 
 class MenuUpdateSchema(MenuCreateSchema):
-    name: str | None = None
+    name: str | None = Field(default=None, validation_alias=AliasChoices("name", "title"))
 
 
-class MenuOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class MenuOutSchema(CamelModel):
     id: int
     name: str
     type: int
-    order: int
+    order: int = Field(serialization_alias="sort", validation_alias=AliasChoices("order", "sort"))
     permission: str | None = None
     icon: str | None = None
     route_name: str | None = None
-    route_path: str | None = None
-    component_path: str | None = None
+    route_path: str | None = Field(
+        default=None,
+        serialization_alias="path",
+        validation_alias=AliasChoices("route_path", "routePath", "path"),
+    )
+    component_path: str | None = Field(
+        default=None,
+        serialization_alias="component",
+        validation_alias=AliasChoices("component_path", "componentPath", "component"),
+    )
     parent_id: int | None = None
     status: str = "0"
+
+    @computed_field(alias="title")
+    @property
+    def display_title(self) -> str:
+        return self.name
 
 
 class MenuQueryParam(BaseModel):

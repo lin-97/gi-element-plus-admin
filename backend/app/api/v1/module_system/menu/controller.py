@@ -13,6 +13,53 @@ from app.core.dependencies import get_current_user
 from app.core.router_class import OperationLogRoute
 
 MenuRouter = APIRouter(route_class=OperationLogRoute, prefix="/menu", tags=["菜单管理"])
+
+
+def build_tree(items):
+    item_map = {item["id"]: {**item, "children": []} for item in items}
+    roots = []
+    for item in item_map.values():
+        parent_id = item.get("parentId")
+        if parent_id and parent_id in item_map:
+            item_map[parent_id]["children"].append(item)
+        else:
+            roots.append(item)
+    return roots
+
+
+def menu_to_route_item(menu):
+    return {
+        "activeMenu": getattr(menu, "active_menu", None) or "",
+        "alwaysShow": bool(menu.always_show),
+        "breadcrumb": getattr(menu, "breadcrumb", None) if getattr(menu, "breadcrumb", None) is not None else True,
+        "children": [],
+        "component": menu.component_path or ("Layout" if menu.type == 1 else ""),
+        "hidden": bool(menu.hidden),
+        "icon": menu.icon or "",
+        "id": str(menu.id),
+        "keepAlive": bool(menu.keep_alive),
+        "parentId": str(menu.parent_id) if menu.parent_id else "0",
+        "path": menu.route_path or "",
+        "permission": menu.permission or "",
+        "redirect": menu.redirect or "",
+        "roles": [],
+        "showInTabs": getattr(menu, "show_in_tabs", None) if getattr(menu, "show_in_tabs", None) is not None else True,
+        "sort": menu.order or 0,
+        "status": menu.status,
+        "title": menu.title or menu.name,
+        "type": menu.type,
+        "affix": bool(menu.affix),
+    }
+
+
+@MenuRouter.get("/routes")
+async def routes(auth=Depends(get_current_user)):
+    menus = await MenuCRUD(auth).list(order_by=[{"order": "asc"}])
+    visible = [m for m in menus if m.type in (1, 2) and m.status == "0" and not m.hidden]
+    items = [menu_to_route_item(m) for m in visible]
+    return SuccessResponse(data=build_tree(items))
+
+
 register_crud_routes(
     MenuRouter,
     MenuCRUD,
@@ -22,40 +69,3 @@ register_crud_routes(
     MenuQueryParam,
     "module_system:menu",
 )
-
-
-def build_tree(items):
-    item_map = {item["id"]: {**item, "children": []} for item in items}
-    roots = []
-    for item in item_map.values():
-        parent_id = item.get("parent_id")
-        if parent_id and parent_id in item_map:
-            item_map[parent_id]["children"].append(item)
-        else:
-            roots.append(item)
-    return roots
-
-
-@MenuRouter.get("/routes")
-async def routes(auth=Depends(get_current_user)):
-    menus = await MenuCRUD(auth).list(order_by=[{"order": "asc"}])
-    visible = [m for m in menus if m.type in (1, 2) and m.status == "0" and not m.hidden]
-    items = [
-        {
-            "id": m.id,
-            "parent_id": m.parent_id,
-            "path": m.route_path or "",
-            "name": m.route_name,
-            "component": m.component_path or "Layout",
-            "redirect": m.redirect,
-            "meta": {
-                "title": m.title or m.name,
-                "icon": m.icon,
-                "hidden": m.hidden,
-                "keepAlive": m.keep_alive,
-                "affix": m.affix,
-            },
-        }
-        for m in visible
-    ]
-    return SuccessResponse(data=build_tree(items))

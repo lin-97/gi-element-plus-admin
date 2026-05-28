@@ -9,6 +9,7 @@ from sqlalchemy import asc, desc, func, select
 from sqlalchemy.orm import selectinload
 
 from app.core.base_model import MappedBase
+from app.core.base_schema import PageResultSchema
 from app.core.exceptions import CustomException
 from app.core.permission import Permission
 
@@ -63,13 +64,12 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         total = (await self.auth.db.execute(count_sql)).scalar() or 0
         result = await self.auth.db.execute(sql.offset(offset).limit(limit))
         objs = result.scalars().all()
-        return {
-            "page_no": offset // limit + 1 if limit else 1,
-            "page_size": limit,
-            "total": total,
-            "has_next": offset + limit < total,
-            "items": [out_schema.model_validate(obj).model_dump(mode="json") for obj in objs],
-        }
+        return PageResultSchema(
+            page=offset // limit + 1 if limit else 1,
+            size=limit,
+            total=total,
+            list=[out_schema.model_validate(obj).model_dump(mode="json", by_alias=True) for obj in objs],
+        )
 
     async def create(self, data: CreateSchemaType | dict) -> ModelType:
         obj_dict = data if isinstance(data, dict) else data.model_dump(exclude_unset=True)

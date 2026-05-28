@@ -1,9 +1,11 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic import AliasChoices, BaseModel, EmailStr, Field
+
+from app.core.base_schema import CamelModel
 
 
-class StudentCreateSchema(BaseModel):
+class StudentCreateSchema(CamelModel):
     name: str
     student_no: str | None = None
     gender: str | None = None
@@ -13,7 +15,7 @@ class StudentCreateSchema(BaseModel):
     address: str | None = None
 
 
-class StudentUpdateSchema(BaseModel):
+class StudentUpdateSchema(CamelModel):
     name: str | None = None
     student_no: str | None = None
     gender: str | None = None
@@ -23,9 +25,7 @@ class StudentUpdateSchema(BaseModel):
     address: str | None = None
 
 
-class StudentOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class StudentOutSchema(CamelModel):
     id: int
     name: str
     student_no: str | None = None
@@ -34,8 +34,16 @@ class StudentOutSchema(BaseModel):
     phone: str | None = None
     email: str | None = None
     address: str | None = None
-    created_time: datetime | None = None
-    updated_time: datetime | None = None
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )
+    updated_time: datetime | None = Field(
+        default=None,
+        serialization_alias="updateTime",
+        validation_alias=AliasChoices("updated_time", "updatedTime", "updateTime"),
+    )
 
 
 class StudentQueryParam(BaseModel):

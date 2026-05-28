@@ -1,48 +1,108 @@
-from pydantic import BaseModel, ConfigDict
+from datetime import datetime
+
+from pydantic import AliasChoices, Field, computed_field
+
+from app.core.base_schema import CamelModel
 
 
-class DictTypeCreateSchema(BaseModel):
+class DictTypeCreateSchema(CamelModel):
     name: str
-    dict_type: str
-    order: int = 999
+    dict_type: str = Field(validation_alias=AliasChoices("dict_type", "dictType", "code"))
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class DictTypeUpdateSchema(BaseModel):
+class DictTypeUpdateSchema(CamelModel):
     name: str | None = None
-    dict_type: str | None = None
-    order: int | None = None
+    dict_type: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("dict_type", "dictType", "code"),
+    )
+    order: int | None = Field(
+        default=None,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class DictTypeOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DictTypeOutSchema(CamelModel):
     id: int
     name: str
     dict_type: str
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     status: str = "0"
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )
+    updated_time: datetime | None = Field(
+        default=None,
+        serialization_alias="updateTime",
+        validation_alias=AliasChoices("updated_time", "updatedTime", "updateTime"),
+    )
+
+    @computed_field(alias="code")
+    @property
+    def code(self) -> str:
+        return self.dict_type
 
 
-class DictDataCreateSchema(BaseModel):
+class DictDataCreateSchema(CamelModel):
     label: str
     value: str
     dict_type: str
-    order: int = 999
+    dict_type_id: int | None = Field(
+        default=None,
+        serialization_alias="typeId",
+        validation_alias=AliasChoices("dict_type_id", "dictTypeId", "typeId"),
+    )
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class DictDataUpdateSchema(BaseModel):
+class DictDataUpdateSchema(CamelModel):
     label: str | None = None
     value: str | None = None
     dict_type: str | None = None
-    order: int | None = None
+    dict_type_id: int | None = Field(
+        default=None,
+        validation_alias=AliasChoices("dict_type_id", "dictTypeId", "typeId"),
+    )
+    order: int | None = Field(
+        default=None,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
 
 
-class DictDataOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DictDataOutSchema(CamelModel):
     id: int
     label: str
     value: str
     dict_type: str
-    order: int = 999
+    dict_type_id: int | None = Field(
+        default=None,
+        validation_alias=AliasChoices("dict_type_id", "dictTypeId", "typeId"),
+    )
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     status: str = "0"
+    created_time: datetime | None = Field(
+        default=None,
+        serialization_alias="createTime",
+        validation_alias=AliasChoices("created_time", "createdTime", "createTime"),
+    )

@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 from starlette.background import BackgroundTask
 
 from app.common.constant import DATE_DISPLAY_FMT, DATETIME_DISPLAY_FMT, RET, TIME_DISPLAY_FMT
+from app.core.base_schema import to_camel
 
 T = TypeVar("T")
 
@@ -18,16 +19,33 @@ _JSON_ENCODER: dict[type[Any], Any] = {
     time: lambda t: t.strftime(TIME_DISPLAY_FMT),
 }
 
+_KEY_ALIASES = {
+    "created_time": "createTime",
+    "updated_time": "updateTime",
+}
+
 
 def jsonable_response_content(content: Any) -> Any:
-    return jsonable_encoder(content, custom_encoder=_JSON_ENCODER)
+    return jsonable_encoder(camelize_json(content), custom_encoder=_JSON_ENCODER)
+
+
+def camelize_json(content: Any) -> Any:
+    if isinstance(content, BaseModel):
+        return camelize_json(content.model_dump(mode="json", by_alias=True))
+    if isinstance(content, Mapping):
+        return {
+            _KEY_ALIASES.get(str(key), to_camel(str(key))): camelize_json(value)
+            for key, value in content.items()
+        }
+    if isinstance(content, list | tuple | set):
+        return [camelize_json(item) for item in content]
+    return content
 
 
 class ResponseSchema(BaseModel, Generic[T]):
     code: int = Field(default=RET.OK.code, description="业务状态码")
-    msg: str = Field(default=RET.OK.msg, description="响应消息")
+    message: str = Field(default=RET.OK.msg, description="响应消息")
     data: T | None = Field(default=None, description="响应数据")
-    status_code: int = Field(default=status.HTTP_200_OK, description="HTTP状态码")
     success: bool = Field(default=True, description="是否成功")
 
 
@@ -42,9 +60,8 @@ class SuccessResponse(JSONResponse):
     ) -> None:
         content = ResponseSchema(
             code=code,
-            msg=msg,
+            message=msg,
             data=data,
-            status_code=status_code,
             success=success,
         ).model_dump()
         super().__init__(content=jsonable_response_content(content), status_code=status_code)
@@ -61,9 +78,8 @@ class ErrorResponse(JSONResponse):
     ) -> None:
         content = ResponseSchema(
             code=code,
-            msg=msg,
+            message=msg,
             data=data,
-            status_code=status_code,
             success=success,
         ).model_dump()
         super().__init__(content=jsonable_response_content(content), status_code=status_code)

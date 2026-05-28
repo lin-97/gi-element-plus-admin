@@ -1,21 +1,21 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+
+from app.core.base_schema import CamelModel
 
 
-class ParamsCreateSchema(BaseModel):
+class ParamsCreateSchema(CamelModel):
     name: str
     key: str
     value: str | None = None
 
 
-class ParamsUpdateSchema(BaseModel):
+class ParamsUpdateSchema(CamelModel):
     name: str | None = None
     key: str | None = None
     value: str | None = None
 
 
-class ParamsOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class ParamsOutSchema(CamelModel):
     id: int
     name: str
     key: str

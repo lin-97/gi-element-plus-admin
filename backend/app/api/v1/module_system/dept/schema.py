@@ -1,10 +1,16 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import AliasChoices, BaseModel, Field
+
+from app.core.base_schema import CamelModel
 
 
-class DeptCreateSchema(BaseModel):
+class DeptCreateSchema(CamelModel):
     name: str
     code: str | None = None
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     parent_id: int | None = None
 
 
@@ -12,13 +18,15 @@ class DeptUpdateSchema(DeptCreateSchema):
     name: str | None = None
 
 
-class DeptOutSchema(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
+class DeptOutSchema(CamelModel):
     id: int
     name: str
     code: str | None = None
-    order: int = 999
+    order: int = Field(
+        default=999,
+        serialization_alias="sort",
+        validation_alias=AliasChoices("order", "sort"),
+    )
     parent_id: int | None = None
     status: str = "0"
 
