@@ -57,7 +57,7 @@ def register_routers(app: FastAPI) -> None:
     from app.core.discover import get_dynamic_router
 
     app.include_router(api_v1_router)
-    app.include_router(get_dynamic_router(), prefix="/api/v1/plugin")
+    app.include_router(get_dynamic_router(), prefix="/api/v1")
 
 
 def register_files(app: FastAPI) -> None:

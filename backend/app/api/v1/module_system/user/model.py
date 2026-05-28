@@ -54,6 +54,7 @@ class UserModel(ModelMixin, UserMixin):
     gender: Mapped[str | None] = mapped_column(String(1), default="2")
     avatar: Mapped[str | None] = mapped_column(String(255))
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
+    order: Mapped[int] = mapped_column(Integer, default=0)
     last_login: Mapped[datetime | None] = mapped_column(DateTime)
     dept_id: Mapped[int | None] = mapped_column(
         Integer,

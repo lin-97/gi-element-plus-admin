@@ -18,5 +18,7 @@ register_crud_routes(
     StudentUpdateSchema,
     StudentOutSchema,
     StudentQueryParam,
-    "module_student:student",
+    "crud",
+    permission_actions={"create": "add", "update": "edit"},
+    extra_query_permissions=["crud"],
 )

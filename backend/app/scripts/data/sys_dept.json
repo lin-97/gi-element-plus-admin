@@ -1,4 +1,16 @@
 [
-  {"id": 1, "uuid": "seed-dept-root", "name": "总公司", "code": "root", "order": 1, "parent_id": null, "status": "1"}
+  {
+    "name": "总公司",
+    "code": "root",
+    "order": 1,
+    "parent_id": null,
+    "id": 1,
+    "uuid": "seed-dept-root",
+    "status": "1",
+    "description": null,
+    "created_time": "2026-05-28 14:52:24",
+    "updated_time": "2026-05-28 14:52:24",
+    "is_deleted": false,
+    "deleted_time": null
+  }
 ]
-

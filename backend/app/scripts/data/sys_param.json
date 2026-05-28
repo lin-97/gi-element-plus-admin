@@ -1,4 +1,15 @@
 [
-  {"id": 1, "uuid": "seed-param-demo", "name": "演示模式", "key": "demo_enable", "value": "false", "status": "1"}
+  {
+    "name": "演示模式",
+    "key": "demo_enable",
+    "value": "false",
+    "id": 1,
+    "uuid": "seed-param-demo",
+    "status": "1",
+    "description": null,
+    "created_time": "2026-05-28 14:52:25",
+    "updated_time": "2026-05-28 14:52:25",
+    "is_deleted": false,
+    "deleted_time": null
+  }
 ]
-

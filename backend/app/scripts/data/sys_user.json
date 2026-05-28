@@ -1,5 +1,50 @@
 [
-  {"id": 1, "uuid": "seed-user-admin", "username": "admin", "password": "123456", "name": "超级管理员", "is_superuser": true, "dept_id": 1, "status": "1"},
-  {"id": 2, "uuid": "seed-user-user", "username": "user", "password": "123456", "name": "普通用户", "is_superuser": false, "dept_id": 1, "status": "1"}
+  {
+    "username": "admin",
+    "password": "123456",
+    "name": "超级管理员",
+    "mobile": "19977526962",
+    "email": "768831579@qq.com",
+    "gender": "2",
+    "avatar": "https://img0.baidu.com/it/u=2746352008,2041591833&fm=253&fmt=auto&app=138&f=JPEG?w=360&h=360",
+    "is_superuser": true,
+    "order": 1,
+    "last_login": "2026-05-28 15:08:59",
+    "dept_id": 1,
+    "id": 1,
+    "uuid": "seed-user-admin",
+    "status": "1",
+    "description": "最高权限",
+    "created_time": "2026-05-28 14:52:25",
+    "updated_time": "2026-05-28 16:43:11",
+    "is_deleted": false,
+    "deleted_time": null,
+    "created_id": null,
+    "updated_id": 1,
+    "deleted_id": null
+  },
+  {
+    "username": "user",
+    "password": "123456",
+    "name": "普通用户",
+    "mobile": "19977526862",
+    "email": "326010228@qq.com",
+    "gender": "2",
+    "avatar": "https://s1.ax1x.com/2022/06/14/XhtSwF.jpg",
+    "is_superuser": false,
+    "order": 2,
+    "last_login": null,
+    "dept_id": 1,
+    "id": 2,
+    "uuid": "seed-user-user",
+    "status": "1",
+    "description": null,
+    "created_time": "2026-05-28 14:52:25",
+    "updated_time": "2026-05-28 16:43:26",
+    "is_deleted": false,
+    "deleted_time": null,
+    "created_id": null,
+    "updated_id": 1,
+    "deleted_id": null
+  }
 ]
-

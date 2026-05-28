@@ -13,14 +13,14 @@ const { options: genderOptions, getLabel: getGenderLabel } = useDict('GENDER')
 
 const queryForm = reactive({
   name: '',
-  student_no: '',
+  studentNo: '',
   gender: undefined as GenderValue | undefined,
   age: '',
 })
 
 const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'name', label: '姓名', type: 'input' },
-  { field: 'student_no', label: '学号', type: 'input' },
+  { field: 'studentNo', label: '学号', type: 'input' },
   {
     field: 'gender',
     label: '性别',
@@ -34,7 +34,7 @@ const tableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center' },
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
-  { prop: 'student_no', label: '学号' },
+  { prop: 'studentNo', label: '学号' },
   { prop: 'gender', label: '性别', render: ({ row }) => getGenderLabel(row.gender) },
   { prop: 'age', label: '年龄' },
   { prop: 'phone', label: '电话' },
@@ -63,7 +63,7 @@ const {
     listAPI: p => getStudentListApi({
       ...p,
       name: queryForm.name || undefined,
-      student_no: queryForm.student_no || undefined,
+      studentNo: queryForm.studentNo || undefined,
       gender: queryForm.gender,
       age: queryForm.age ? Number(queryForm.age) : undefined,
     }),
@@ -77,7 +77,7 @@ function handleSearch() {
 
 function handleReset() {
   queryForm.name = ''
-  queryForm.student_no = ''
+  queryForm.studentNo = ''
   queryForm.gender = undefined
   queryForm.age = ''
   search()

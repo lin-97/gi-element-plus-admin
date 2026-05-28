@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MenuItem } from '@/apis/menu'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteMenuApi, getMenuTreeApi } from '@/apis/menu'
 import { useUserStore } from '@/stores/useUserStore'
 import FormDialog from './FormDialog.vue'
@@ -15,6 +15,12 @@ const tableData = ref<MenuItem[]>([])
 const expandAll = ref(true)
 
 const typeLabel: Record<number, string> = { 1: '目录', 2: '菜单', 3: '按钮' }
+
+const typeTagType: Record<number, 'primary' | 'success' | 'info'> = {
+  1: 'primary',
+  2: 'success',
+  3: 'info',
+}
 
 async function loadTree() {
   loading.value = true
@@ -53,6 +59,11 @@ async function handleDelete(row: MenuItem) {
     return
   }
   try {
+    await ElMessageBox.confirm(
+      `确定删除「${row.title}」吗？`,
+      '提示',
+      { type: 'warning', confirmButtonText: '确定', cancelButtonText: '取消' },
+    )
     await deleteMenuApi([row.id])
     ElMessage.success('删除成功')
     await loadTree()
@@ -95,14 +106,20 @@ onMounted(() => {
       :tree-props="{ children: 'children' }"
     >
       <el-table-column prop="title" label="标题" min-width="160" />
-      <el-table-column label="类型" width="80" align="center">
+      <el-table-column label="类型" width="88" align="center">
         <template #default="{ row }">
-          {{ typeLabel[row.type] ?? row.type }}
+          <el-tag
+            size="small"
+            :type="typeTagType[row.type] ?? 'info'"
+            effect="light"
+          >
+            {{ typeLabel[row.type] ?? row.type }}
+          </el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="path" label="路径" min-width="160" show-overflow-tooltip />
-      <el-table-column prop="permission" label="权限标识" min-width="140" show-overflow-tooltip />
       <el-table-column prop="component" label="组件" min-width="140" show-overflow-tooltip />
+      <el-table-column prop="permission" label="权限标识" min-width="140" show-overflow-tooltip />
       <el-table-column prop="sort" label="排序" width="72" align="center" />
       <el-table-column label="状态" width="80" align="center">
         <template #default="{ row }">

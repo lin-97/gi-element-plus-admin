@@ -1,4 +1,28 @@
 [
-  {"id": 1, "uuid": "seed-dict-status", "name": "通用状态", "dict_type": "STATUS", "order": 1, "status": "1"}
+  {
+    "name": "状态",
+    "dict_type": "STATUS",
+    "order": 1,
+    "id": 1,
+    "uuid": "seed-dict-status",
+    "status": "1",
+    "description": "系统内置",
+    "created_time": "2026-05-28 14:52:25",
+    "updated_time": "2026-05-28 16:40:16",
+    "is_deleted": false,
+    "deleted_time": null
+  },
+  {
+    "name": "性别",
+    "dict_type": "GENDER",
+    "order": 0,
+    "id": 2,
+    "uuid": "d6a3ed0259a1412caf8c756df859e79e",
+    "status": "1",
+    "description": "系统内置",
+    "created_time": "2026-05-28 16:31:45",
+    "updated_time": "2026-05-28 16:40:05",
+    "is_deleted": false,
+    "deleted_time": null
+  }
 ]
-

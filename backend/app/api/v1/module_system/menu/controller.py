@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.v1.module_system.common_controller import register_crud_routes
+from app.api.v1.module_system.compat import menu_to_api
 from app.api.v1.module_system.menu.crud import MenuCRUD
 from app.api.v1.module_system.menu.schema import (
     MenuCreateSchema,
@@ -21,7 +22,7 @@ def build_tree(items):
     roots = []
     for item in item_map.values():
         parent_id = item.get("parentId")
-        if parent_id and parent_id in item_map:
+        if parent_id and parent_id != "0" and parent_id in item_map:
             item_map[parent_id]["children"].append(item)
         else:
             roots.append(item)
@@ -30,9 +31,9 @@ def build_tree(items):
 
 def menu_to_route_item(menu):
     return {
-        "activeMenu": getattr(menu, "active_menu", None) or "",
+        "activeMenu": "",
         "alwaysShow": bool(menu.always_show),
-        "breadcrumb": getattr(menu, "breadcrumb", None) if getattr(menu, "breadcrumb", None) is not None else True,
+        "breadcrumb": True,
         "children": [],
         "component": menu.component_path or ("Layout" if menu.type == 1 else ""),
         "hidden": bool(menu.hidden),
@@ -44,7 +45,7 @@ def menu_to_route_item(menu):
         "permission": menu.permission or "",
         "redirect": menu.redirect or "",
         "roles": [],
-        "showInTabs": getattr(menu, "show_in_tabs", None) if getattr(menu, "show_in_tabs", None) is not None else True,
+        "showInTabs": True,
         "sort": menu.order or 0,
         "status": menu.status,
         "title": menu.title or menu.name,
@@ -61,18 +62,15 @@ async def routes(auth=Depends(get_current_user)):
     return SuccessResponse(data=build_tree(items))
 
 
-def menu_to_tree_item(menu) -> dict:
-    item = MenuOutSchema.model_validate(menu).model_dump(mode="json", by_alias=True)
-    item["id"] = str(item["id"])
-    item["parentId"] = str(menu.parent_id) if menu.parent_id else "0"
-    return item
-
-
 @MenuRouter.get("/tree")
 async def menu_tree(auth=Depends(AuthPermission(["module_system:menu:query"]))):
     menus = await MenuCRUD(auth).list(order_by=[{"order": "asc"}])
-    items = [menu_to_tree_item(m) for m in menus]
+    items = [menu_to_api(m) for m in menus]
     return SuccessResponse(data=build_tree(items))
+
+
+async def _before_delete_menu(auth, ids: list[int]) -> None:
+    await MenuCRUD(auth).ensure_can_delete(ids)
 
 
 register_crud_routes(
@@ -83,4 +81,16 @@ register_crud_routes(
     MenuOutSchema,
     MenuQueryParam,
     "module_system:menu",
+    include_create=False,
+    serialize_out=menu_to_api,
+    before_batch_delete=_before_delete_menu,
 )
+
+
+@MenuRouter.post("")
+async def create_menu_override(
+    data: MenuCreateSchema,
+    auth=Depends(AuthPermission(["module_system:menu:create"])),
+):
+    obj = await MenuCRUD(auth).create_menu(data)
+    return SuccessResponse(data=menu_to_api(obj), msg="创建成功")

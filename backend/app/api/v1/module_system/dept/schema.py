@@ -33,5 +33,10 @@ class DeptOutSchema(CamelModel):
 
 
 class DeptQueryParam(BaseModel):
-    name__like: str | None = None
+    model_config = {"populate_by_name": True}
+
+    name__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("name", "name__like", "nameLike"),
+    )
     status: str | None = None

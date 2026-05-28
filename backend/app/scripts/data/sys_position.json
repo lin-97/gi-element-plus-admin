@@ -1,5 +1,28 @@
 [
-  {"id": 1, "uuid": "seed-position-admin", "name": "管理员", "code": "admin", "order": 1, "status": "1"},
-  {"id": 2, "uuid": "seed-position-user", "name": "普通员工", "code": "user", "order": 2, "status": "1"}
+  {
+    "name": "管理员",
+    "code": "admin",
+    "order": 1,
+    "id": 1,
+    "uuid": "seed-position-admin",
+    "status": "1",
+    "description": null,
+    "created_time": "2026-05-28 14:52:24",
+    "updated_time": "2026-05-28 14:52:24",
+    "is_deleted": false,
+    "deleted_time": null
+  },
+  {
+    "name": "普通员工",
+    "code": "user",
+    "order": 2,
+    "id": 2,
+    "uuid": "seed-position-user",
+    "status": "1",
+    "description": null,
+    "created_time": "2026-05-28 14:52:24",
+    "updated_time": "2026-05-28 14:52:24",
+    "is_deleted": false,
+    "deleted_time": null
+  }
 ]
-

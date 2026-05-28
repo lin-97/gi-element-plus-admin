@@ -71,7 +71,11 @@ def get_dynamic_router() -> APIRouter:
             attr = getattr(module, attr_name)
             if isinstance(attr, APIRouter) and id(attr) not in seen_router_ids:
                 seen_router_ids.add(id(attr))
-                container.include_router(attr)
+                router_prefix = (attr.prefix or "").strip("/")
+                if router_prefix == suffix:
+                    root_router.include_router(attr)
+                else:
+                    container.include_router(attr)
                 registered += 1
         if registered == 0:
             log.warning(f"插件控制器未导出 APIRouter: {module_path}")

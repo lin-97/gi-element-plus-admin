@@ -34,7 +34,6 @@ export const useUserStore = defineStore('user', () => {
     resetRouteState()
     const res = await loginApi(params)
     token.value = res.token
-    await fetchUserInfo()
     await generateRoutes()
     return res
   }
@@ -60,6 +59,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function generateRoutes() {
+    await fetchUserInfo()
     const data = await getRoutesApi()
     routeStore.resetDynamicRoutes()
     routeStore.setRoutes({ constantRoutes, asyncData: data })
@@ -68,9 +68,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function refreshRoutes() {
     routeStore.resetDynamicRoutes()
-    await fetchUserInfo()
-    const data = await getRoutesApi()
-    routeStore.setRoutes({ constantRoutes, asyncData: data })
+    await generateRoutes()
     const current = router.currentRoute.value
     if (current.name && !router.hasRoute(current.name as string)) {
       await router.replace(constantRoutes[0]?.path || '/')

@@ -51,10 +51,10 @@ const dataFormColumns = computed<FormColumnItem[]>(() => [
 
 const dataTableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center' },
-  { prop: 'id', label: '序号', width: 80 },
   { prop: 'label', label: '数据标签', minWidth: 120 },
   { prop: 'value', label: '数据键值', minWidth: 120 },
   { prop: 'status', label: '状态', width: 100, align: 'center', slotName: 'status' },
+  { prop: 'sort', label: '排序', width: 80, align: 'center' },
   { prop: 'createTime', label: '创建时间', width: 180 },
   { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true },
   {

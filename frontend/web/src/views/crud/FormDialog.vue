@@ -17,7 +17,7 @@ const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
 
 interface StudentFormData {
   name: string
-  student_no: string
+  studentNo: string
   gender?: GenderValue
   age?: number
   phone: string
@@ -35,7 +35,7 @@ const dialogTitle = computed(() => (isEdit.value ? '编辑学生' : '新增学�
 function createEmptyForm(): StudentFormData {
   return {
     name: '',
-    student_no: '',
+    studentNo: '',
     gender: '1',
     age: 18,
     phone: '',
@@ -55,7 +55,7 @@ function optionalPatternValidator(pattern: RegExp, message: string): FormItemRul
 
 const formRules: FormRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
-  student_no: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+  studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
   phone: [{ validator: optionalPatternValidator(PHONE_REG, '请输入正确的11位手机号'), trigger: 'blur' }],
   email: [{ validator: optionalPatternValidator(EMAIL_REG, '请输入正确的邮箱地址'), trigger: 'blur' }],
   address: [{
@@ -70,7 +70,7 @@ const formRules: FormRules = {
 
 const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'name', label: '姓名', type: 'input' },
-  { field: 'student_no', label: '学号', type: 'input' },
+  { field: 'studentNo', label: '学号', type: 'input' },
   {
     field: 'gender',
     label: '性别',
@@ -99,7 +99,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
 function toFormData(student: StudentItem): StudentFormData {
   return {
     name: student.name ?? '',
-    student_no: student.student_no ?? '',
+    studentNo: student.studentNo ?? '',
     gender: student.gender,
     age: student.age,
     phone: student.phone ?? '',
@@ -112,7 +112,7 @@ function toPayload(data: StudentFormData): Partial<StudentItem> {
   const trim = (v: string) => v.trim()
   return {
     name: trim(data.name),
-    student_no: trim(data.student_no),
+    studentNo: trim(data.studentNo),
     ...(data.gender && { gender: data.gender }),
     ...(data.age != null && { age: data.age }),
     ...(trim(data.phone) && { phone: trim(data.phone) }),

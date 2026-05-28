@@ -1,9 +1,15 @@
 from datetime import datetime
 
-from pydantic import AliasChoices, BaseModel, Field
+from pydantic import AliasChoices, BaseModel, Field, model_validator
 
 from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
+
+
+def _map_remark(data: dict) -> dict:
+    if "remark" in data and data.get("remark") is not None and data.get("description") is None:
+        data["description"] = data["remark"]
+    return data
 
 
 class RoleCreateSchema(CamelModel):
@@ -15,8 +21,20 @@ class RoleCreateSchema(CamelModel):
         validation_alias=AliasChoices("order", "sort"),
     )
     data_scope: int = 1
-    menu_ids: list[int] = []
-    dept_ids: list[int] = []
+    menu_ids: list[int] = Field(default_factory=list)
+    dept_ids: list[int] = Field(default_factory=list)
+    status: str = CommonStatus.ENABLED
+    description: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("description", "remark"),
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize(cls, data):
+        if isinstance(data, dict):
+            return _map_remark(data)
+        return data
 
 
 class RoleUpdateSchema(CamelModel):
@@ -30,6 +48,18 @@ class RoleUpdateSchema(CamelModel):
     data_scope: int | None = None
     menu_ids: list[int] | None = None
     dept_ids: list[int] | None = None
+    status: str | None = None
+    description: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("description", "remark"),
+    )
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize(cls, data):
+        if isinstance(data, dict):
+            return _map_remark(data)
+        return data
 
 
 class RoleOutSchema(CamelModel):
@@ -51,6 +81,14 @@ class RoleOutSchema(CamelModel):
 
 
 class RoleQueryParam(BaseModel):
-    name__like: str | None = None
-    code__like: str | None = None
+    model_config = {"populate_by_name": True}
+
+    name__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("name", "name__like", "nameLike"),
+    )
+    code__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("code", "code__like", "codeLike"),
+    )
     status: str | None = None

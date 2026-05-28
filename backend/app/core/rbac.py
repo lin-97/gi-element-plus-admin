@@ -1,6 +1,6 @@
 """RBAC 常量与权限聚合"""
 
-SUPER_ADMIN_ROLE = "role_admin"
+SUPER_ADMIN_ROLE = "admin"
 
 
 def is_super_admin(role_codes: list[str]) -> bool:
@@ -8,7 +8,7 @@ def is_super_admin(role_codes: list[str]) -> bool:
 
 
 def is_system_role_code(code: str) -> bool:
-    """仅 role_admin 为系统内置角色"""
+    """仅 admin 为系统内置角色"""
     return code == SUPER_ADMIN_ROLE
 
 

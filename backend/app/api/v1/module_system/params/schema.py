@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 
 from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
@@ -25,6 +25,14 @@ class ParamsOutSchema(CamelModel):
 
 
 class ParamsQueryParam(BaseModel):
-    name__like: str | None = None
-    key__like: str | None = None
+    model_config = {"populate_by_name": True}
+
+    name__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("name", "name__like", "nameLike"),
+    )
+    key__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("key", "key__like", "keyLike"),
+    )
     status: str | None = None

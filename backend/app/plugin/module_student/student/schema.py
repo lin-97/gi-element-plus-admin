@@ -47,6 +47,16 @@ class StudentOutSchema(CamelModel):
 
 
 class StudentQueryParam(BaseModel):
-    name__like: str | None = None
-    student_no__like: str | None = None
+    model_config = {"populate_by_name": True}
+
+    name__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("name", "name__like", "nameLike"),
+    )
+    student_no__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("student_no", "student_no__like", "studentNo", "studentNoLike"),
+    )
+    gender: str | None = None
+    age: int | None = None
     status: str | None = None

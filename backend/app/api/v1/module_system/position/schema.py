@@ -37,6 +37,14 @@ class PositionOutSchema(CamelModel):
 
 
 class PositionQueryParam(BaseModel):
-    name__like: str | None = None
-    code__like: str | None = None
+    model_config = {"populate_by_name": True}
+
+    name__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("name", "name__like", "nameLike"),
+    )
+    code__like: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("code", "code__like", "codeLike"),
+    )
     status: str | None = None
