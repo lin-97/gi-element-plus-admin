@@ -106,7 +106,7 @@ async function handleLogout() {
           <el-avatar :size="28" :src="userStore.userInfo?.avatar ?? undefined">
             <el-icon><User /></el-icon>
           </el-avatar>
-          <span>{{ userStore.userInfo?.name || '用户' }}</span>
+          <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>

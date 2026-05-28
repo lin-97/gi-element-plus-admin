@@ -3,9 +3,9 @@ import { request } from './request'
 
 /** GET /auth/userinfo */
 export interface UserInfo {
-  id: number
+  id: string
   username: string
-  name: string
+  nickname: string
   avatar?: string | null
   isSuperuser: boolean
   permissions: string[]
@@ -54,7 +54,11 @@ export function getUserInfoApi() {
   return request<UserInfo>({ url: '/auth/userinfo', method: 'get' })
 }
 
-/** 退出登录 */
-export function logoutApi() {
-  return request({ url: '/auth/logout', method: 'post' })
+/** 退出登录（需 JSON body，否则后端 422） */
+export function logoutApi(token?: string) {
+  return request({
+    url: '/auth/logout',
+    method: 'post',
+    data: token ? { token } : {},
+  })
 }

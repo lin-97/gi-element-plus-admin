@@ -12,6 +12,7 @@ from app.api.v1.module_system.auth.schema import (
     LogoutPayloadSchema,
     RefreshTokenPayloadSchema,
 )
+from app.api.v1.module_system.compat import userinfo_to_api
 from app.api.v1.module_system.user.crud import UserCRUD
 from app.api.v1.module_system.user.schema import UserOutSchema
 from app.common.enums import CommonStatus, RedisKey
@@ -181,13 +182,8 @@ async def userinfo(auth=Depends(get_current_user)):
         }
     )
     return SuccessResponse(
-        data={
-            "id": user.id,
-            "username": user.username,
-            "name": user.name,
-            "avatar": user.avatar,
-            "is_superuser": user.is_superuser,
-            "permissions": ["*:*:*"] if user.is_superuser else permissions,
-            "roles": [role.code for role in user.roles],
-        }
+        data=userinfo_to_api(
+            user,
+            ["*:*:*"] if user.is_superuser else permissions,
+        ),
     )

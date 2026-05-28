@@ -76,6 +76,30 @@ const formColumns = computed<FormColumnItem[]>(() => [
 
 const menuTreeProps = { label: 'title', children: 'children' }
 
+function buildMenuByIdMap(items: MenuItem[]): Map<string, MenuItem> {
+  const map = new Map<string, MenuItem>()
+  const walk = (nodes: MenuItem[]) => {
+    for (const node of nodes) {
+      map.set(node.id, node)
+      if (node.children?.length)
+        walk(node.children)
+    }
+  }
+  walk(items)
+  return map
+}
+
+/** 为已选节点补齐祖先 ID，保证页面/目录进入角色菜单（侧栏只展示 type 1/2） */
+function appendAncestorIds(checked: Set<string>, menuById: Map<string, MenuItem>) {
+  for (const id of [...checked]) {
+    let current = menuById.get(id)
+    while (current?.parentId && current.parentId !== '0') {
+      checked.add(current.parentId)
+      current = menuById.get(current.parentId)
+    }
+  }
+}
+
 async function loadMenuTree() {
   menuTreeData.value = await getMenuTreeApi()
 }
@@ -120,14 +144,19 @@ async function openEdit(row: RoleItem) {
     await loadRoleMenus(row.id)
 }
 
-/** 仅提交叶子节点，避免半选父节点在后端 expand 时把未勾选的子节点一并写入 */
+/**
+ * 提交全部勾选节点，并为每个节点补齐祖先菜单。
+ * 半选父节点不会出现在 getCheckedKeys 中，避免目录误展开未勾选的子节点。
+ */
 function getSelectedMenuIds(): string[] {
   if (isSystemRole.value)
     return []
   const tree = menuTreeRef.value
   if (!tree)
     return []
-  return (tree.getCheckedKeys(true) as string[]).map(String)
+  const checked = new Set((tree.getCheckedKeys(false) as string[]).map(String))
+  appendAncestorIds(checked, buildMenuByIdMap(menuTreeData.value))
+  return [...checked]
 }
 
 async function handleBeforeOk() {

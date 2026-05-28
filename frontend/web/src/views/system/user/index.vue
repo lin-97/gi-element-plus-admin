@@ -36,6 +36,7 @@ const tableColumns: TableColumnItem[] = [
   { type: 'selection', width: 48, align: 'center', selectable: (row: SysUserItem) => !row.isSuperAdmin },
   { prop: 'avatar', label: '头像', width: 72, slotName: 'avatar' },
   { prop: 'username', label: '用户名', minWidth: 100 },
+  { prop: 'nickname', label: '昵称', minWidth: 100 },
   { prop: 'phone', label: '手机', minWidth: 120 },
   { prop: 'email', label: '邮箱', minWidth: 180 },
   { prop: 'roles', label: '角色', minWidth: 140, align: 'center', slotName: 'roles' },

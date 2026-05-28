@@ -68,6 +68,18 @@ def is_system_dict_type(row: DictTypeModel) -> bool:
     return row.dict_type in SYSTEM_DICT_TYPE_CODES
 
 
+def userinfo_to_api(user: UserModel, permissions: list[str]) -> dict[str, Any]:
+    return {
+        "id": str(user.id),
+        "username": user.username,
+        "nickname": user.name,
+        "avatar": user.avatar,
+        "is_superuser": bool(user.is_superuser),
+        "permissions": permissions,
+        "roles": [role.code for role in (user.roles or [])],
+    }
+
+
 def user_to_api(user: UserModel) -> dict[str, Any]:
     roles = list(user.roles or [])
     return {

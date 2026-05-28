@@ -1,7 +1,7 @@
 [
   {
     "name": "超级管理员",
-    "code": "admin",
+    "code": "role_admin",
     "order": 1,
     "data_scope": 4,
     "id": 1,
@@ -15,7 +15,7 @@
   },
   {
     "name": "普通用户",
-    "code": "user",
+    "code": "role_user",
     "order": 3,
     "data_scope": 1,
     "id": 2,

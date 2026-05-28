@@ -50,11 +50,12 @@ const dataFormColumns = computed<FormColumnItem[]>(() => [
 ])
 
 const dataTableColumns: TableColumnItem[] = [
-  { type: 'selection', width: 48, align: 'center' },
+  { type: 'selection', width: 48, align: 'center', selectable: () => !selectedType?.value?.isSystem },
   { prop: 'label', label: '数据标签', minWidth: 120 },
   { prop: 'value', label: '数据键值', minWidth: 120 },
   { prop: 'status', label: '状态', width: 100, align: 'center', slotName: 'status' },
   { prop: 'sort', label: '排序', width: 80, align: 'center' },
+  { prop: 'isSystem', label: '是否系统内置', width: 120, align: 'center', slotName: 'isSystem' },
   { prop: 'createTime', label: '创建时间', width: 180 },
   { prop: 'remark', label: '备注', minWidth: 200, showOverflowTooltip: true },
   {
@@ -128,6 +129,7 @@ function handleTypeSearch() {
 }
 
 function handleTypeStatusChange() {
+  tableData.value = []
   loadTypes()
 }
 
@@ -295,10 +297,10 @@ onMounted(loadTypes)
 
     <template #tool>
       <el-space>
-        <gi-button type="add" :disabled="!canAddData" @click="handleDataAdd">
+        <gi-button type="add" :disabled="!canAddData || selectedType?.isSystem" @click="handleDataAdd">
           新增
         </gi-button>
-        <el-button type="danger" :disabled="!selectedKeys.length" @click="onBatchDeleteData">
+        <el-button type="danger" :disabled="!selectedKeys.length || selectedType?.isSystem" @click="onBatchDeleteData">
           批量删除
         </el-button>
       </el-space>
@@ -319,15 +321,24 @@ onMounted(loadTypes)
           inline-prompt
           active-text="启用"
           inactive-text="禁用"
+          :disabled="selectedType?.isSystem"
           @change="(val: string | number | boolean) => handleDataStatusSwitch(row, val)"
         />
       </template>
+      <template #isSystem>
+        <el-tag v-if="selectedType?.isSystem" type="success">
+          是
+        </el-tag>
+        <el-tag v-else type="info">
+          否
+        </el-tag>
+      </template>
       <template #action="{ row }">
         <el-space :size="4">
-          <el-button type="primary" link @click="handleDataEdit(row)">
+          <el-button type="primary" link :disabled="selectedType?.isSystem" @click="handleDataEdit(row)">
             编辑
           </el-button>
-          <el-button type="danger" link @click="onDeleteData(row)">
+          <el-button type="danger" link :disabled="selectedType?.isSystem" @click="onDeleteData(row)">
             删除
           </el-button>
         </el-space>
