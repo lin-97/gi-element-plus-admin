@@ -96,7 +96,7 @@ class Settings(BaseSettings):
     REDIS_DB_NAME: int = 1
     REDIS_USER: str = ""
     REDIS_PASSWORD: str = ""
-    CAPTCHA_ENABLE: bool = True
+    CAPTCHA_ENABLE: bool = False
     CAPTCHA_EXPIRE_SECONDS: int = 60
     REQUEST_LIMITER_ENABLE: bool = True
     REQUEST_LIMITER_REDIS_PREFIX: str = "gi-admin:request-limiter:"

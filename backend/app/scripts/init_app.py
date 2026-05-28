@@ -12,8 +12,8 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config.setting import settings
-from app.core.docs import get_custom_ui_html
 from app.core.database import redis_connect
+from app.core.docs import get_custom_ui_html
 from app.core.exceptions import handle_exception
 from app.core.logger import log
 from app.core.middlewares import CustomCORSMiddleware, CustomGZipMiddleware, RequestLogMiddleware
