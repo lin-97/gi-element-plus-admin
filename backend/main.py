@@ -30,6 +30,7 @@ def create_app() -> FastAPI:
         register_files,
         register_middlewares,
         register_routers,
+        reset_api_docs,
     )
 
     setup_logging(settings.LOGGER_LEVEL)
@@ -38,6 +39,7 @@ def create_app() -> FastAPI:
     register_middlewares(app)
     register_routers(app)
     register_files(app)
+    reset_api_docs(app)
     return app
 
 

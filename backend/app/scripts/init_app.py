@@ -3,9 +3,16 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html,
+    get_swagger_ui_oauth2_redirect_html,
+)
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config.setting import settings
+from app.core.docs import get_custom_ui_html
 from app.core.database import redis_connect
 from app.core.exceptions import handle_exception
 from app.core.logger import log
@@ -58,3 +65,39 @@ def register_files(app: FastAPI) -> None:
         settings.STATIC_ROOT.mkdir(parents=True, exist_ok=True)
         settings.UPLOAD_FILE_PATH.mkdir(parents=True, exist_ok=True)
         app.mount(settings.STATIC_URL, StaticFiles(directory=settings.STATIC_ROOT), name="static")
+
+
+def reset_api_docs(app: FastAPI) -> None:
+    @app.get(str(app.swagger_ui_oauth2_redirect_url), include_in_schema=False)
+    async def swagger_ui_redirect() -> HTMLResponse:
+        return get_swagger_ui_oauth2_redirect_html()
+
+    @app.get(settings.DOCS_URL, include_in_schema=False)
+    async def custom_swagger_ui_html() -> HTMLResponse:
+        return get_swagger_ui_html(
+            openapi_url=str(app.openapi_url),
+            title=f"{app.title} - Swagger UI",
+            oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+            swagger_js_url=settings.SWAGGER_JS_URL,
+            swagger_css_url=settings.SWAGGER_CSS_URL,
+            swagger_favicon_url=settings.FAVICON_URL,
+        )
+
+    @app.get(settings.REDOC_URL, include_in_schema=False)
+    async def custom_redoc_html() -> HTMLResponse:
+        return get_redoc_html(
+            openapi_url=str(app.openapi_url),
+            title=f"{app.title} - ReDoc",
+            redoc_js_url=settings.REDOC_JS_URL,
+            redoc_favicon_url=settings.FAVICON_URL,
+        )
+
+    @app.get(settings.LJDOC_URL, include_in_schema=False)
+    async def custom_ljdoc_html() -> HTMLResponse:
+        return get_custom_ui_html(
+            openapi_url=str(app.openapi_url),
+            title=f"{app.title} - LangJin UI",
+            swagger_js_url=settings.CUSTOM_JS_URL,
+            swagger_css_url=settings.CUSTOM_CSS_URL,
+            swagger_favicon_url=settings.FAVICON_URL,
+        )

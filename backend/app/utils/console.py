@@ -31,6 +31,7 @@ def console_run(*, database_ready: bool = True, redis_ready: bool | None = None)
     docs_info.append("API 文档", style="bold magenta")
     docs_info.append(f"\nSwagger: {base_url}{settings.DOCS_URL}", style="blue link")
     docs_info.append(f"\nReDoc: {base_url}{settings.REDOC_URL}", style="blue link")
+    docs_info.append(f"\nLangJin: {base_url}{settings.LJDOC_URL}", style="blue link")
     docs_info.append(f"\nOpenAPI: {base_url}/openapi.json", style="blue link")
 
     console.print(

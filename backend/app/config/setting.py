@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     DESCRIPTION: str = "GI Element Plus Admin backend service"
     DOCS_URL: str = "/docs"
     REDOC_URL: str = "/redoc"
+    LJDOC_URL: str = "/ljdoc"
     ROOT_PATH: str = "/api/v1"
 
     LOGGER_LEVEL: str = "INFO"
@@ -54,8 +55,16 @@ class Settings(BaseSettings):
         "/health",
         "/docs",
         "/redoc",
+        "/ljdoc",
         "/openapi.json",
     ]
+
+    SWAGGER_CSS_URL: str = "static/swagger/swagger-ui/swagger-ui.css"
+    SWAGGER_JS_URL: str = "static/swagger/swagger-ui/swagger-ui-bundle.js"
+    REDOC_JS_URL: str = "static/swagger/redoc/bundles/redoc.standalone.js"
+    CUSTOM_CSS_URL: str = "static/swagger/custom-ui/styles.css"
+    CUSTOM_JS_URL: str = "static/swagger/custom-ui/scripts.js"
+    FAVICON_URL: str = "https://fastapi.tiangolo.com/img/favicon.png"
 
     SQL_DB_ENABLE: bool = True
     DATABASE_TYPE: Literal["mysql", "postgres", "sqlite"] = "mysql"
@@ -121,8 +130,8 @@ class Settings(BaseSettings):
             "title": self.TITLE,
             "version": self.VERSION,
             "description": self.DESCRIPTION,
-            "docs_url": self.DOCS_URL,
-            "redoc_url": self.REDOC_URL,
+            "docs_url": None,
+            "redoc_url": None,
             "root_path": "",
         }
 
