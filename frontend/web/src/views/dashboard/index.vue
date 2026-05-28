@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import { GiCard } from 'gi-component'
 import VChart from 'vue-echarts'
 import { useChart } from '@/hooks/useChart'
-import dayjs from 'dayjs'
 
 defineOptions({ name: 'Dashboard' })
 

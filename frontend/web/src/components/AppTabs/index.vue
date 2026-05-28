@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DropdownInstance } from 'element-plus'
 import type { NavTabItem } from 'gi-component'
+import type { RouteLocationNormalized } from 'vue-router'
 import {
   ArrowLeft,
   ArrowRight,
@@ -31,7 +32,9 @@ const activeValue = computed({
   },
 })
 
-const tabList = computed<NavTabItem[]>(() =>
+type TabItem = RouteLocationNormalized & NavTabItem & { value: string }
+
+const tabList = computed<TabItem[]>(() =>
   tabsStore.tabList
     .map(tab => ({
       label: (tab.meta?.title as string) || '未命名',
