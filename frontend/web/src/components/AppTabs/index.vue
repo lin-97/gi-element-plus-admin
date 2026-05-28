@@ -89,7 +89,6 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
             :color="active ? 'primary' : 'info'"
             size="large"
             :closable="true"
-            style="height: 26px;"
             @close="tabsStore.close('current', item.value)"
           >
             {{ item.label }}
