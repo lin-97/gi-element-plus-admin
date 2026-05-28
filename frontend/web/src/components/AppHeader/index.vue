@@ -11,10 +11,11 @@ import {
 } from '@element-plus/icons-vue'
 import { useFullscreen } from '@vueuse/core'
 import { ElMessageBox, ElSpace } from 'element-plus'
-import AppMenuItem from '@/components/AppMenuItem.vue'
+import AppBreadcrumb from '@/components/AppBreadcrumb/index.vue'
+import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import AppSettingDrawer from '@/components/AppSettingDrawer/index.vue'
 import { appConfig } from '@/config'
-import { useBreadcrumb, useTheme } from '@/core/hooks'
+import { useTheme } from '@/core/hooks'
 import { useAppStore } from '@/core/stores'
 import { useMenu } from '@/hooks/useMenu'
 import { useUserStore } from '@/stores/useUserStore'
@@ -28,7 +29,6 @@ const appStore = useAppStore()
 const { isDark, toggleDark } = useTheme()
 const userStore = useUserStore()
 const { toggle: toggleFullscreen } = useFullscreen()
-const { breadcrumbs } = useBreadcrumb()
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 
 const settingVisible = ref(false)
@@ -73,15 +73,7 @@ async function handleLogout() {
           :icon="appStore.isMenuCollapse ? Expand : Fold"
           @click="appStore.setMenuCollapse(!appStore.isMenuCollapse)"
         />
-        <el-breadcrumb v-if="breadcrumbs.length" separator="/">
-          <el-breadcrumb-item
-            v-for="item in breadcrumbs"
-            :key="item.path"
-            :to="item.to"
-          >
-            {{ item.title }}
-          </el-breadcrumb-item>
-        </el-breadcrumb>
+        <AppBreadcrumb />
       </template>
     </div>
 

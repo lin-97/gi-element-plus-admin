@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppMenuItem from '@/components/AppMenuItem.vue'
+import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import { useAppStore } from '@/core/stores'
 import { useMenu } from '@/hooks/useMenu'
 

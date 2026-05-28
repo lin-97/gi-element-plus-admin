@@ -14,7 +14,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
     AppHeader: typeof import('./components/AppHeader/index.vue')['default']
-    AppMenuItem: typeof import('./components/AppMenuItem.vue')['default']
+    AppMenuItem: typeof import('./components/AppMenuItem/index.vue')['default']
     AppSettingDrawer: typeof import('./components/AppSettingDrawer/index.vue')['default']
     AppSidebar: typeof import('./components/AppSidebar/index.vue')['default']
     AppTabs: typeof import('./components/AppTabs/index.vue')['default']
@@ -71,7 +71,7 @@ declare module 'vue' {
 declare global {
   const AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
   const AppHeader: typeof import('./components/AppHeader/index.vue')['default']
-  const AppMenuItem: typeof import('./components/AppMenuItem.vue')['default']
+  const AppMenuItem: typeof import('./components/AppMenuItem/index.vue')['default']
   const AppSettingDrawer: typeof import('./components/AppSettingDrawer/index.vue')['default']
   const AppSidebar: typeof import('./components/AppSidebar/index.vue')['default']
   const AppTabs: typeof import('./components/AppTabs/index.vue')['default']

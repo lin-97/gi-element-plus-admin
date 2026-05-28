@@ -1,23 +1,27 @@
 <script setup lang="ts">
 import { useBreadcrumb } from '@/core/hooks'
 
-const { breadcrumbList } = useBreadcrumb()
+defineOptions({ name: 'AppBreadcrumb' })
+
+const { breadcrumbs } = useBreadcrumb()
 </script>
 
 <template>
-  <el-breadcrumb v-if="breadcrumbList.length" class="app-breadcrumb" separator="/">
+  <el-breadcrumb v-if="breadcrumbs.length" class="app-breadcrumb" separator="/">
     <el-breadcrumb-item
-      v-for="item in breadcrumbList"
+      v-for="item in breadcrumbs"
       :key="item.path"
-      :to="item.path"
+      :to="item.to"
     >
-      {{ item.meta?.title }}
+      {{ item.title }}
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
 
 <style lang="scss" scoped>
 .app-breadcrumb {
-  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: flex;
 }
 </style>
