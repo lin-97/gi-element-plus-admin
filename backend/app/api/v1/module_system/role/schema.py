@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import AliasChoices, BaseModel, Field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -41,7 +42,7 @@ class RoleOutSchema(CamelModel):
         validation_alias=AliasChoices("order", "sort"),
     )
     data_scope: int = 1
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
     created_time: datetime | None = Field(
         default=None,
         serialization_alias="createTime",

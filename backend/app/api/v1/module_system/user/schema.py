@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import AliasChoices, BaseModel, EmailStr, Field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -38,7 +39,7 @@ class UserOutSchema(CamelModel):
     gender: str | None = None
     avatar: str | None = None
     is_superuser: bool = False
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
     dept_id: int | None = None
     created_time: datetime | None = Field(
         default=None,

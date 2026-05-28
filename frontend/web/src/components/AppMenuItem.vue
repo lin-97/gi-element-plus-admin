@@ -12,7 +12,10 @@ const { item } = defineProps<{
 function getIcon(name?: string) {
   if (!name)
     return undefined
-  const iconName = name.charAt(0).toUpperCase() + name.slice(1)
+  const iconName = name
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')
   return (ElementPlusIcons as Record<string, Component>)[iconName]
 }
 

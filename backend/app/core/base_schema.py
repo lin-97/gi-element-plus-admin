@@ -3,6 +3,8 @@ from typing import Any
 
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
+from app.common.enums import CommonStatus
+
 
 def to_camel(value: str) -> str:
     parts = value.split("_")
@@ -21,7 +23,7 @@ class BaseSchema(CamelModel):
 
     id: int
     uuid: str | None = None
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
     description: str | None = None
     created_time: datetime | None = Field(
         default=None,
@@ -37,7 +39,7 @@ class BaseSchema(CamelModel):
 
 class BatchSetAvailable(CamelModel):
     ids: list[int] = Field(default_factory=list)
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
 
 
 class PageResultSchema(CamelModel):

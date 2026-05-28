@@ -111,10 +111,10 @@ async function handleLogout() {
       </el-tooltip>
       <el-dropdown trigger="click">
         <span class="app-header__user">
-          <el-avatar :size="28" :src="userStore.userInfo?.avatar">
+          <el-avatar :size="28" :src="userStore.userInfo?.avatar ?? undefined">
             <el-icon><User /></el-icon>
           </el-avatar>
-          <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
+          <span>{{ userStore.userInfo?.name || '用户' }}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>

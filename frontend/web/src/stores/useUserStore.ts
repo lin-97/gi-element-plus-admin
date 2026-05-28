@@ -19,8 +19,8 @@ export const useUserStore = defineStore('user', () => {
   const isLogin = computed(() => !!token.value)
 
   function applyPermissions(data: UserInfo) {
-    permissionStore.setRoles(data.roles ?? [])
-    permissionStore.setPermissions(data.permissions ?? [])
+    permissionStore.setRoles(data.roles)
+    permissionStore.setPermissions(data.permissions)
   }
 
   function resetRouteState() {
@@ -34,8 +34,6 @@ export const useUserStore = defineStore('user', () => {
     resetRouteState()
     const res = await loginApi(params)
     token.value = res.token
-    userInfo.value = res.user
-    applyPermissions(res.user)
     await fetchUserInfo()
     await generateRoutes()
     return res

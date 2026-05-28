@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import AliasChoices, Field, computed_field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -37,7 +38,7 @@ class DictTypeOutSchema(CamelModel):
         serialization_alias="sort",
         validation_alias=AliasChoices("order", "sort"),
     )
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
     created_time: datetime | None = Field(
         default=None,
         serialization_alias="createTime",
@@ -100,7 +101,7 @@ class DictDataOutSchema(CamelModel):
         serialization_alias="sort",
         validation_alias=AliasChoices("order", "sort"),
     )
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
     created_time: datetime | None = Field(
         default=None,
         serialization_alias="createTime",

@@ -1,5 +1,6 @@
 from pydantic import AliasChoices, BaseModel, Field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -28,7 +29,7 @@ class DeptOutSchema(CamelModel):
         validation_alias=AliasChoices("order", "sort"),
     )
     parent_id: int | None = None
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
 
 
 class DeptQueryParam(BaseModel):

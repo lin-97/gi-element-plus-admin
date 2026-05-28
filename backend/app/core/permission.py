@@ -3,7 +3,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.sql.elements import ColumnElement
 
-from app.common.enums import PermissionFilterStrategy
+from app.common.enums import CommonStatus, PermissionFilterStrategy
 
 
 class Permission:
@@ -43,7 +43,7 @@ class Permission:
         roles = getattr(self.auth.user, "roles", []) or []
         menu_ids: set[int] = set()
         for role in roles:
-            menu_ids.update(menu.id for menu in getattr(role, "menus", []) if menu.status == "0")
+            menu_ids.update(menu.id for menu in getattr(role, "menus", []) if menu.status == CommonStatus.ENABLED)
         id_attr = getattr(self.model, "id", None)
         if id_attr is None:
             return None

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -20,7 +21,7 @@ class ParamsOutSchema(CamelModel):
     name: str
     key: str
     value: str | None = None
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
 
 
 class ParamsQueryParam(BaseModel):

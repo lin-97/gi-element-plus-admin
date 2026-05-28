@@ -19,3 +19,10 @@ class RedisKey(StrEnum):
     ACCESS_TOKEN = "access_token"
     REFRESH_TOKEN = "refresh_token"
     CAPTCHA = "captcha_codes"
+
+
+class CommonStatus(StrEnum):
+    """通用启用状态：1=正常，0=禁用"""
+
+    DISABLED = "0"
+    ENABLED = "1"

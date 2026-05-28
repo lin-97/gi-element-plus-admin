@@ -1,5 +1,6 @@
 from pydantic import AliasChoices, BaseModel, Field, computed_field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -53,7 +54,7 @@ class MenuOutSchema(CamelModel):
         validation_alias=AliasChoices("component_path", "componentPath", "component"),
     )
     parent_id: int | None = None
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
 
     @computed_field(alias="title")
     @property

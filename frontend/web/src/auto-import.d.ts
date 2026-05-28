@@ -105,7 +105,7 @@ declare global {
   const refWithControl: typeof import('@vueuse/core').refWithControl
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveGlobModule: typeof import('./utils/modules').resolveGlobModule
-  const resolveMenuPath: typeof import('./utils/menu').resolveMenuPath
+  const resolveMenuPath: typeof import('./utils/index').resolveMenuPath
   const resolveRef: typeof import('@vueuse/core').resolveRef
   const resolveUnref: typeof import('@vueuse/core').resolveUnref
   const setActivePinia: typeof import('pinia').setActivePinia

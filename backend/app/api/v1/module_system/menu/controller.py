@@ -8,8 +8,9 @@ from app.api.v1.module_system.menu.schema import (
     MenuQueryParam,
     MenuUpdateSchema,
 )
+from app.common.enums import CommonStatus
 from app.common.response import SuccessResponse
-from app.core.dependencies import get_current_user
+from app.core.dependencies import AuthPermission, get_current_user
 from app.core.router_class import OperationLogRoute
 
 MenuRouter = APIRouter(route_class=OperationLogRoute, prefix="/menu", tags=["菜单管理"])
@@ -55,8 +56,22 @@ def menu_to_route_item(menu):
 @MenuRouter.get("/routes")
 async def routes(auth=Depends(get_current_user)):
     menus = await MenuCRUD(auth).list(order_by=[{"order": "asc"}])
-    visible = [m for m in menus if m.type in (1, 2) and m.status == "0" and not m.hidden]
+    visible = [m for m in menus if m.type in (1, 2) and m.status == CommonStatus.ENABLED and not m.hidden]
     items = [menu_to_route_item(m) for m in visible]
+    return SuccessResponse(data=build_tree(items))
+
+
+def menu_to_tree_item(menu) -> dict:
+    item = MenuOutSchema.model_validate(menu).model_dump(mode="json", by_alias=True)
+    item["id"] = str(item["id"])
+    item["parentId"] = str(menu.parent_id) if menu.parent_id else "0"
+    return item
+
+
+@MenuRouter.get("/tree")
+async def menu_tree(auth=Depends(AuthPermission(["module_system:menu:query"]))):
+    menus = await MenuCRUD(auth).list(order_by=[{"order": "asc"}])
+    items = [menu_to_tree_item(m) for m in menus]
     return SuccessResponse(data=build_tree(items))
 
 

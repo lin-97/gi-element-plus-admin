@@ -11,6 +11,7 @@ from app.api.v1.module_system.user.model import UserModel
 from app.common.enums import RedisKey
 from app.config.setting import settings
 from app.core.database import db_getter
+from app.common.enums import CommonStatus
 from app.core.exceptions import CustomException
 from app.core.redis_crud import RedisCRUD
 from app.core.security import OAuth2Schema, decode_token
@@ -59,7 +60,7 @@ async def get_current_user(
     )
     if not user:
         raise CustomException(msg="用户不存在", code=10401, status_code=401)
-    if user.status == "1":
+    if user.status == CommonStatus.DISABLED:
         raise CustomException(msg="用户已停用", code=10401, status_code=401)
     request.scope["user_id"] = user.id
     request.scope["username"] = user.username
@@ -85,7 +86,7 @@ class AuthPermission:
             menu.permission
             for role in user.roles
             for menu in getattr(role, "menus", []) or []
-            if menu.permission and menu.status == "0"
+            if menu.permission and menu.status == CommonStatus.ENABLED
         }
         if not any(permission in user_permissions for permission in self.permissions):
             raise CustomException(msg="权限不足", code=10403, status_code=403)

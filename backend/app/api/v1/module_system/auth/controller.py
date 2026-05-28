@@ -14,7 +14,7 @@ from app.api.v1.module_system.auth.schema import (
 )
 from app.api.v1.module_system.user.crud import UserCRUD
 from app.api.v1.module_system.user.schema import UserOutSchema
-from app.common.enums import RedisKey
+from app.common.enums import CommonStatus, RedisKey
 from app.common.response import SuccessResponse
 from app.config.setting import settings
 from app.core.database import db_getter
@@ -71,7 +71,7 @@ async def login(
     user = await UserCRUD(auth).get_by_username(login_form.username, preload=["roles", "positions", "dept"])
     if not user or not verify_password(login_form.password, user.password):
         raise CustomException(msg="用户名或密码错误", code=10401, status_code=401)
-    if user.status == "1":
+    if user.status == CommonStatus.DISABLED:
         raise CustomException(msg="用户已停用", code=10401, status_code=401)
 
     session_id = new_session_id()
@@ -177,7 +177,7 @@ async def userinfo(auth=Depends(get_current_user)):
             menu.permission
             for role in user.roles
             for menu in getattr(role, "menus", []) or []
-            if menu.permission and menu.status == "0"
+            if menu.permission and menu.status == CommonStatus.ENABLED
         }
     )
     return SuccessResponse(

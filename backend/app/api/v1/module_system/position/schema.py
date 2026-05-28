@@ -1,5 +1,6 @@
 from pydantic import AliasChoices, BaseModel, Field
 
+from app.common.enums import CommonStatus
 from app.core.base_schema import CamelModel
 
 
@@ -32,7 +33,7 @@ class PositionOutSchema(CamelModel):
         serialization_alias="sort",
         validation_alias=AliasChoices("order", "sort"),
     )
-    status: str = "0"
+    status: str = CommonStatus.ENABLED
 
 
 class PositionQueryParam(BaseModel):
