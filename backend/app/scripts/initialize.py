@@ -1,8 +1,9 @@
+import asyncio
 import json
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, func, select, text
+from sqlalchemy import create_engine, func, inspect, select, text
 from sqlalchemy.engine import URL
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,10 +14,12 @@ from app.api.v1.module_system.params.model import ParamsModel
 from app.api.v1.module_system.position.model import PositionModel
 from app.api.v1.module_system.role.model import RoleDeptsModel, RoleMenusModel, RoleModel
 from app.api.v1.module_system.user.model import UserModel, UserPositionsModel, UserRolesModel
-from app.config.path_conf import BASE_DIR, SCRIPT_DATA_DIR
+from app.config.path_conf import ALEMBIC_VERSION_DIR, BASE_DIR, SCRIPT_DATA_DIR
 from app.config.setting import settings
-from app.core.database import async_db_session
+from app.core.base_model import MappedBase
+from app.core.database import async_db_session, async_engine, create_tables
 from app.core.logger import log
+from app.utils.import_util import ImportUtil
 from app.core.security import get_password_hash
 from app.plugin.module_student.student.model import StudentModel
 
@@ -80,10 +83,40 @@ def _ensure_postgres_database() -> None:
         engine.dispose()
 
 
+def _has_alembic_revisions() -> bool:
+    if not ALEMBIC_VERSION_DIR.exists():
+        return False
+    return any(ALEMBIC_VERSION_DIR.glob("*.py"))
+
+
+def _ensure_orm_metadata() -> None:
+    if not MappedBase.metadata.tables:
+        ImportUtil.find_models(MappedBase)
+
+
+async def _core_table_exists() -> bool:
+    async with async_engine.connect() as conn:
+
+        def check(sync_conn) -> bool:
+            return inspect(sync_conn).has_table(DeptModel.__tablename__)
+
+        return await conn.run_sync(check)
+
+
 async def run_alembic_upgrade() -> None:
     ensure_database_exists()
     cfg = Config(str(BASE_DIR / "alembic.ini"))
-    command.upgrade(cfg, "head")
+
+    if _has_alembic_revisions():
+        await asyncio.to_thread(command.upgrade, cfg, "head")
+    else:
+        log.warning("未发现 Alembic 迁移脚本，跳过 upgrade")
+
+    if not await _core_table_exists():
+        log.warning("核心表不存在，使用 metadata.create_all 建表")
+        _ensure_orm_metadata()
+        await create_tables()
+        log.info("表结构初始化完成")
 
 
 class InitializeData:
