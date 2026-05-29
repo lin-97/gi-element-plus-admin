@@ -203,6 +203,44 @@ backend/env/.env.dev
 
 ### 3. 启动开发服务
 
+推荐使用项目自带的交互脚本，会自动读取 `backend/env/.env.dev`、检查并创建数据库，再执行与下方命令等价的启动流程。
+
+#### 方式一：脚本启动（推荐）
+
+**Linux / macOS**
+
+```bash
+cd backend
+chmod +x run_linux.sh   # 首次使用需赋予执行权限
+bash run_linux.sh
+```
+
+**Windows**
+
+在 `cmd` 或 PowerShell 中执行：
+
+```bat
+cd backend
+run_win.bat
+```
+
+脚本交互菜单还支持（开发/运维常用）：
+
+| 选项 | 说明 |
+| --- | --- |
+| 1 | 启动开发服务（`uv run main.py run --env=dev`） |
+| 2 | 生成 Alembic 迁移文件 |
+| 3 | 应用迁移 |
+| 4 | 重置库内迁移记录（危险操作，需确认） |
+| 5 | 清理数据库所有表（危险操作，需确认） |
+| 6 | 删除数据库（危险操作，需确认） |
+| 7 | 执行 `backend/sql/` 下的 SQL 初始化脚本 |
+| 0 | 退出 |
+
+> 使用前请已完成 [安装依赖](#1-安装依赖) 与 [配置环境变量](#2-配置环境变量)，并确保本机已安装 [uv](https://docs.astral.sh/uv/)。脚本会按 `DATABASE_TYPE` 连接 MySQL 或 PostgreSQL。
+
+#### 方式二：命令行启动
+
 ```bash
 cd backend
 uv run main.py run --env=dev
@@ -245,21 +283,9 @@ cd backend
 uv run main.py init-data --env=dev
 ```
 
-### 5. 脚本启动
+### 5. 脚本辅助操作
 
-Linux / macOS 可以使用项目提供的脚本：
-
-```bash
-cd backend
-./run_linux.sh
-```
-
-Windows 可以使用：
-
-```bat
-cd backend
-run_win.bat
-```
+除 [启动开发服务](#3-启动开发服务) 外，迁移生成、应用迁移、清库等操作也可通过 `run_linux.sh` / `run_win.bat` 菜单完成，无需记忆对应 `uv run main.py` 子命令。危险操作（选项 4～6）执行前脚本会要求二次确认。
 
 ## 前端使用方法
 
