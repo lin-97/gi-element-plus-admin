@@ -5,11 +5,19 @@ import { request } from './request'
 export interface UserInfo {
   id: string
   username: string
-  nickname: string
+  nickname?: string
+  phone?: string
+  email?: string
   avatar?: string | null
-  isSuperuser: boolean
-  permissions: string[]
+  remark?: string
+  status: string
+  sort?: number
+  createTime?: string
+  deptId?: string | null
+  roleIds?: string[]
+  roleNames?: string[]
   roles: string[]
+  permissions: string[]
 }
 
 /** POST /auth/login 响应中的 user（UserOutSchema） */

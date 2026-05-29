@@ -10,7 +10,7 @@ defineOptions({ name: 'DictTypeFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
 
-const { options: statusOptions } = useDict('STATUS')
+const { dictData } = useDict(['STATUS'] as const)
 
 interface DictTypeFormData {
   name: string
@@ -48,7 +48,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     field: 'status',
     label: '状态',
     type: 'radio-group',
-    props: { options: statusOptions.value },
+    props: { options: dictData.value.STATUS },
   },
   {
     field: 'sort',

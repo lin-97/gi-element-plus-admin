@@ -2,14 +2,14 @@
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { deleteStudentApi, getStudentListApi } from '@/apis/student'
-import { useDict } from '@/hooks/useDict'
+import { getDictLabel, useDict } from '@/hooks/useDict'
 import { useTable } from '@/hooks/useTable'
 import FormDialog from './FormDialog.vue'
 
 defineOptions({ name: 'Crud' })
 
 const FormDialogRef = useTemplateRef('FormDialogRef')
-const { options: genderOptions, getLabel: getGenderLabel } = useDict('GENDER')
+const { dictData } = useDict(['GENDER'] as const)
 
 const queryForm = reactive({
   name: '',
@@ -25,7 +25,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     field: 'gender',
     label: '性别',
     type: 'select-v2',
-    props: { options: genderOptions.value, clearable: true },
+    props: { options: dictData.value.GENDER, clearable: true },
   },
   { field: 'age', label: '年龄', type: 'input' },
 ])
@@ -35,7 +35,7 @@ const tableColumns: TableColumnItem[] = [
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
   { prop: 'studentNo', label: '学号' },
-  { prop: 'gender', label: '性别', render: ({ row }) => getGenderLabel(row.gender) },
+  { prop: 'gender', label: '性别', render: ({ row }) => getDictLabel(dictData.value.GENDER, row.gender) },
   { prop: 'age', label: '年龄' },
   { prop: 'phone', label: '电话' },
   {

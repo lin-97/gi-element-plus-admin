@@ -10,7 +10,7 @@ defineOptions({ name: 'FormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
 
-const { options: genderOptions } = useDict('GENDER')
+const { dictData } = useDict(['GENDER'] as const)
 
 const PHONE_REG = /^1[3-9]\d{9}$/
 const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
@@ -76,7 +76,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     label: '性别',
     type: 'radio-group',
     props: {
-      options: genderOptions.value,
+      options: dictData.value.GENDER,
     },
   },
   {

@@ -173,10 +173,11 @@ async def logout(
 @AuthRouter.get("/userinfo")
 async def userinfo(auth=Depends(get_current_user)):
     user = auth.user
+    enabled_roles = [role for role in user.roles if role.status == CommonStatus.ENABLED]
     permissions = sorted(
         {
             menu.permission
-            for role in user.roles
+            for role in enabled_roles
             for menu in getattr(role, "menus", []) or []
             if menu.permission and menu.status == CommonStatus.ENABLED
         }

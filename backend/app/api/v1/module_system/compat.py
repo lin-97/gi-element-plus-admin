@@ -12,6 +12,7 @@ from app.api.v1.module_system.dict.model import DictDataModel, DictTypeModel
 from app.api.v1.module_system.menu.model import MenuModel
 from app.api.v1.module_system.role.model import RoleModel
 from app.api.v1.module_system.user.model import UserModel
+from app.common.enums import CommonStatus
 from app.core.rbac import is_system_role_code
 
 # 内置字典类型 code（不可删）
@@ -68,20 +69,24 @@ def is_system_dict_type(row: DictTypeModel) -> bool:
     return row.dict_type in SYSTEM_DICT_TYPE_CODES
 
 
+def _user_roles(user: UserModel) -> list[RoleModel]:
+    return list(user.roles or [])
+
+
+def _enabled_role_codes(user: UserModel) -> list[str]:
+    return [role.code for role in _user_roles(user) if role.status == CommonStatus.ENABLED]
+
+
 def userinfo_to_api(user: UserModel, permissions: list[str]) -> dict[str, Any]:
-    return {
-        "id": str(user.id),
-        "username": user.username,
-        "nickname": user.name,
-        "avatar": user.avatar,
-        "is_superuser": bool(user.is_superuser),
-        "permissions": permissions,
-        "roles": [role.code for role in (user.roles or [])],
-    }
+    data = user_to_api(user)
+    data.pop("isSuperAdmin", None)
+    data["permissions"] = permissions
+    data["roles"] = _enabled_role_codes(user)
+    return data
 
 
 def user_to_api(user: UserModel) -> dict[str, Any]:
-    roles = list(user.roles or [])
+    roles = _user_roles(user)
     return {
         "id": str(user.id),
         "username": user.username,
@@ -97,7 +102,7 @@ def user_to_api(user: UserModel) -> dict[str, Any]:
         "deptId": str(user.dept_id) if user.dept_id else None,
         "roleIds": [str(r.id) for r in roles],
         "roleNames": [r.name for r in roles],
-        "roles": [r.name for r in roles],
+        "roles": [r.code for r in roles],
     }
 
 

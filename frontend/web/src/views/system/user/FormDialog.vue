@@ -12,7 +12,7 @@ defineOptions({ name: 'SystemUserFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
 
-const { options: statusOptions } = useDict('STATUS')
+const { dictData } = useDict(['STATUS'] as const)
 
 const PHONE_REG = /^1[3-9]\d{9}$/
 const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
@@ -124,7 +124,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     label: '状态',
     type: 'radio-group',
     props: {
-      options: statusOptions.value,
+      options: dictData.value.STATUS,
       disabled: isSuperAdmin.value,
     },
   },

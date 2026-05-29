@@ -11,7 +11,7 @@ import FormDialog from './FormDialog.vue'
 defineOptions({ name: 'SystemRole' })
 
 const FormDialogRef = useTemplateRef('FormDialogRef')
-const { options: statusOptions } = useDict('STATUS')
+const { dictData } = useDict(['STATUS'] as const)
 
 const queryForm = reactive({
   code: '',
@@ -26,7 +26,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     field: 'status',
     label: '状态',
     type: 'select-v2',
-    props: { options: statusOptions.value, clearable: true },
+    props: { options: dictData.value.STATUS, clearable: true },
   },
 ])
 
@@ -99,13 +99,10 @@ function handleEdit(row: RoleItem) {
 }
 
 async function handleStatusSwitch(row: RoleItem, val: string | number | boolean) {
-  const next: StatusValue = val ? '1' : '0'
-  if (row.status === next)
-    return
+  const status = val as StatusValue
   try {
-    await updateRoleStatusApi(row.id, next)
-    row.status = next
-    ElMessage.success(next === '1' ? '已启用' : '已禁用')
+    await updateRoleStatusApi(row.id, status)
+    ElMessage.success(status === '1' ? '已启用' : '已禁用')
   }
   catch {
     refresh()
@@ -150,11 +147,13 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
       <template #status="{ row }">
         <el-switch
           v-if="!isSystemRole(row)"
-          :model-value="row.status === '1'"
+          v-model="row.status"
+          active-value="1"
+          inactive-value="0"
           inline-prompt
           active-text="启用"
           inactive-text="禁用"
-          @change="(val: string | number | boolean) => handleStatusSwitch(row, val)"
+          @change="val => handleStatusSwitch(row, val)"
         />
         <el-tag v-else type="success">
           启用

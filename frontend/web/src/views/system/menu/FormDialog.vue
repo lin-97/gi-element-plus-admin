@@ -10,7 +10,7 @@ defineOptions({ name: 'SystemMenuFormDialog' })
 
 const emit = defineEmits<{ success: [] }>()
 
-const { options: statusOptions } = useDict('STATUS')
+const { dictData } = useDict(['STATUS'] as const)
 
 const TYPE_OPTIONS = [
   { label: '目录', value: 1 as MenuType },
@@ -93,7 +93,7 @@ const formColumns = computed<FormColumnItem[]>(() => {
       field: 'status',
       label: '状态',
       type: 'radio-group',
-      props: { options: statusOptions.value, disabled: isSystemMenu.value },
+      props: { options: dictData.value.STATUS, disabled: isSystemMenu.value },
     },
     {
       field: 'sort',

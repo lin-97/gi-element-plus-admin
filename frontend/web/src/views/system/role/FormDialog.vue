@@ -20,7 +20,7 @@ defineOptions({ name: 'SystemRoleFormDialog' })
 const emit = defineEmits<{ success: [] }>()
 
 const userStore = useUserStore()
-const { options: statusOptions } = useDict('STATUS')
+const { dictData } = useDict(['STATUS'] as const)
 
 interface RoleFormData {
   code: string
@@ -57,7 +57,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
     field: 'status',
     label: '状态',
     type: 'radio-group',
-    props: { options: statusOptions.value, disabled: isSystemRole.value },
+    props: { options: dictData.value.STATUS, disabled: isSystemRole.value },
   },
   {
     field: 'sort',
