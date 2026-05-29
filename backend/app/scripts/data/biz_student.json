@@ -2,7 +2,7 @@
   {
     "name": "张三",
     "student_no": "S001",
-    "gender": "男",
+    "gender": "1",
     "age": 18,
     "phone": "13800138001",
     "email": "zhangsan@example.com",
@@ -22,7 +22,7 @@
   {
     "name": "李四",
     "student_no": "S002",
-    "gender": "女",
+    "gender": "2",
     "age": 19,
     "phone": "13800138002",
     "email": "lisi@example.com",
