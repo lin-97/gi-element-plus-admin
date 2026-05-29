@@ -209,6 +209,26 @@ if not "!DATABASE_PASSWORD!"=="" (
 mysql -h"!DATABASE_HOST!" -P"!DATABASE_PORT!" -u"!DATABASE_USER!" !_db_arg! -e "!_sql!"
 exit /b !errorlevel!
 
+:exec_sql_file
+set "sql_file=%~1"
+if "!DATABASE_TYPE!"=="mysql" (
+    if not "!DATABASE_PASSWORD!"=="" (
+        set "MYSQL_PWD=!DATABASE_PASSWORD!"
+        mysql -h"!DATABASE_HOST!" -P"!DATABASE_PORT!" -u"!DATABASE_USER!" -D"!DATABASE_NAME!" < "!sql_file!"
+        set "_sql_exec_error=!errorlevel!"
+        set "MYSQL_PWD="
+        exit /b !_sql_exec_error!
+    )
+    mysql -h"!DATABASE_HOST!" -P"!DATABASE_PORT!" -u"!DATABASE_USER!" -D"!DATABASE_NAME!" < "!sql_file!"
+    exit /b !errorlevel!
+)
+
+set "PGPASSWORD=!DATABASE_PASSWORD!"
+psql -h "!DATABASE_HOST!" -p "!DATABASE_PORT!" -U "!DATABASE_USER!" -d "!DATABASE_NAME!" -f "!sql_file!"
+set "_sql_exec_error=!errorlevel!"
+set "PGPASSWORD="
+exit /b !_sql_exec_error!
+
 :ensure_database_exists
 if "!DATABASE_TYPE!"=="mysql" (
     rem MySQL 使用幂等建库语句，已存在时不会修改现有数据库。
@@ -388,7 +408,11 @@ exit /b 0
 call :print_separator
 echo 初始化数据...
 
-set "sql_dir=%REPO_ROOT%\backend\sql\postgres\init_data"
+call :load_db_config
+if errorlevel 1 exit /b 1
+
+set "sql_dir=%REPO_ROOT%\backend\sql\!DATABASE_TYPE!\init_data"
+echo 数据库类型: !DATABASE_TYPE!，SQL 目录: !sql_dir!
 
 if not exist "%sql_dir%\" (
     call :error "未找到 SQL 目录: %sql_dir%"
@@ -420,20 +444,14 @@ if errorlevel 1 (
     exit /b 1
 )
 
-call :load_db_config
-if errorlevel 1 exit /b 1
-
 if "!choice!"=="0" (
     echo 开始执行全部 SQL 文件...
     for /l %%i in (1,1,!file_count!) do (
         echo 执行: !sql_name_%%i!
-        set "PGPASSWORD=!DATABASE_PASSWORD!"
-        psql -h "!DATABASE_HOST!" -p "!DATABASE_PORT!" -U "!DATABASE_USER!" -d "!DATABASE_NAME!" -f "!sql_file_%%i!"
-        set "_psql_error=!errorlevel!"
-        set "PGPASSWORD="
-        if not "!_psql_error!"=="0" (
+        call :exec_sql_file "!sql_file_%%i!"
+        if errorlevel 1 (
             call :error "执行失败: !sql_name_%%i!"
-            exit /b !_psql_error!
+            exit /b 1
         )
         call :info "执行成功: !sql_name_%%i!"
     )
@@ -449,13 +467,10 @@ if "!choice!"=="0" (
     )
 
     echo 执行: !sql_name_%choice%!
-    set "PGPASSWORD=!DATABASE_PASSWORD!"
-    psql -h "!DATABASE_HOST!" -p "!DATABASE_PORT!" -U "!DATABASE_USER!" -d "!DATABASE_NAME!" -f "!sql_file_%choice%!"
-    set "_psql_error=!errorlevel!"
-    set "PGPASSWORD="
-    if not "!_psql_error!"=="0" (
+    call :exec_sql_file "!sql_file_%choice%!"
+    if errorlevel 1 (
         call :error "执行失败: !sql_name_%choice%!"
-        exit /b !_psql_error!
+        exit /b 1
     )
     call :info "执行成功: !sql_name_%choice%!"
     call :info "SQL 初始化完成"

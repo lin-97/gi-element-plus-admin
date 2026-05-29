@@ -135,6 +135,26 @@ function mysql_exec() {
   fi
 }
 
+function exec_sql_file() {
+  local file="$1"
+  case "$DATABASE_TYPE" in
+    mysql)
+      if [[ -n "$DATABASE_PASSWORD" ]]; then
+        MYSQL_PWD="$DATABASE_PASSWORD" mysql -h"$DATABASE_HOST" -P"$DATABASE_PORT" -u"$DATABASE_USER" -D"$DATABASE_NAME" < "$file"
+      else
+        mysql -h"$DATABASE_HOST" -P"$DATABASE_PORT" -u"$DATABASE_USER" -D"$DATABASE_NAME" < "$file"
+      fi
+      ;;
+    postgres)
+      PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$file"
+      ;;
+    *)
+      error "不支持的数据库类型: $DATABASE_TYPE"
+      return 1
+      ;;
+  esac
+}
+
 function ensure_database_exists() {
   case "$DATABASE_TYPE" in
     mysql)
@@ -309,9 +329,12 @@ function init_sql_data() {
   print_separator
   echo -e "${tty_cyan}🧰 初始化数据...${tty_reset}"
 
+  load_db_config || return 1
+
   local sql_dir
-  sql_dir="$REPO_ROOT/backend/sql/postgres/init_data"
-  
+  sql_dir="$REPO_ROOT/backend/sql/${DATABASE_TYPE}/init_data"
+  echo -e "${tty_blue}数据库类型: ${DATABASE_TYPE}，SQL 目录: ${sql_dir}${tty_reset}"
+
   if [ ! -d "$sql_dir" ]; then
     error "未找到 SQL 目录: $sql_dir"
     return 1
@@ -343,14 +366,12 @@ function init_sql_data() {
     return 1
   fi
 
-  load_db_config || return 1
-
   if [ "$choice" -eq 0 ]; then
     echo -e "${tty_blue}🚀 开始执行全部 SQL 文件...${tty_reset}"
     local file
     for file in "${sql_files[@]}"; do
       echo -e "${tty_blue}执行: $(basename "$file")${tty_reset}"
-      if PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$file"; then
+      if exec_sql_file "$file"; then
         info "执行成功: $(basename "$file")"
       else
         error "执行失败: $(basename "$file")"
@@ -367,7 +388,7 @@ function init_sql_data() {
 
     local selected_file="${sql_files[$index]}"
     echo -e "${tty_blue}执行: $(basename "$selected_file")${tty_reset}"
-    if PGPASSWORD="$DATABASE_PASSWORD" psql -h "$DATABASE_HOST" -p "$DATABASE_PORT" -U "$DATABASE_USER" -d "$DATABASE_NAME" -f "$selected_file"; then
+    if exec_sql_file "$selected_file"; then
       info "执行成功: $(basename "$selected_file")"
       info "SQL 初始化完成"
     else
