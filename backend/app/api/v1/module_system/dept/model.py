@@ -13,16 +13,18 @@ if TYPE_CHECKING:
 
 class DeptModel(ModelMixin):
     __tablename__ = "sys_dept"
+    __table_args__ = {"comment": "部门表"}
     __permission_strategy__ = PermissionFilterStrategy.DEPT_BASED
 
-    name: Mapped[str] = mapped_column(String(64), nullable=False)
-    code: Mapped[str | None] = mapped_column(String(64), unique=True)
-    order: Mapped[int] = mapped_column(Integer, default=999)
+    name: Mapped[str] = mapped_column(String(64), nullable=False, comment="部门名称")
+    code: Mapped[str | None] = mapped_column(String(64), unique=True, comment="部门编码")
+    order: Mapped[int] = mapped_column(Integer, default=999, comment="显示排序，数值越小越靠前")
     parent_id: Mapped[int | None] = mapped_column(
         Integer,
         ForeignKey("sys_dept.id", ondelete="SET NULL"),
         nullable=True,
         index=True,
+        comment="上级部门 ID",
     )
     parent: Mapped["DeptModel | None"] = relationship(
         back_populates="children",

@@ -11,10 +11,11 @@ if TYPE_CHECKING:
 
 class PositionModel(ModelMixin):
     __tablename__ = "sys_position"
+    __table_args__ = {"comment": "岗位表"}
 
-    name: Mapped[str] = mapped_column(String(64), nullable=False)
-    code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
-    order: Mapped[int] = mapped_column(Integer, default=999)
+    name: Mapped[str] = mapped_column(String(64), nullable=False, comment="岗位名称")
+    code: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, comment="岗位编码")
+    order: Mapped[int] = mapped_column(Integer, default=999, comment="显示排序，数值越小越靠前")
 
     users: Mapped[list["UserModel"]] = relationship(
         secondary="sys_user_positions",
