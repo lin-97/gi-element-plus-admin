@@ -7,6 +7,20 @@ export const PRESET_THEME_COLORS = [
   '#13C2C2',
   '#52C41A',
   '#EB2F96',
+  '#18A058',
+  '#2d8cf0',
+  '#007AFF',
+  '#5ac8fa',
+  '#5856D6',
+  '#536dfe',
+  '#9c27b0',
+  '#AF52DE',
+  '#0096c7',
+  '#00C1D4',
+  '#43a047',
+  '#e53935',
+  '#f4511e',
+  '#6d4c41',
 ] as const
 
 // Element Plus 暗色模式背景色，用于生成 primary-light 色阶

@@ -1,14 +1,24 @@
 <script setup lang="ts">
+import { ColorPicker } from 'vue-color-kit'
 import { useAppStore } from '@/core/stores'
 import { PRESET_THEME_COLORS } from '@/core/utils/theme'
+import 'vue-color-kit/dist/vue-color-kit.css'
+
+defineOptions({ name: 'AppSettingDrawer' })
 
 const visible = defineModel({ default: false })
 
 const appStore = useAppStore()
+
+const presetColors = [...PRESET_THEME_COLORS]
+
+function handleChangeColor(color: { hex: string }) {
+  appStore.themeColor = color.hex
+}
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="系统设置" direction="rtl" size="360px" :append-to-body="true">
+  <el-drawer v-model="visible" title="系统设置" direction="rtl" size="320px" :append-to-body="true">
     <el-divider content-position="center">
       布局模式
     </el-divider>
@@ -25,7 +35,14 @@ const appStore = useAppStore()
       主题色
     </el-divider>
     <el-row justify="center">
-      <el-color-picker-panel v-model="appStore.themeColor" :predefine="[...PRESET_THEME_COLORS]" :border="false" />
+      <ColorPicker
+        :color="appStore.themeColor"
+        theme="dark"
+        :colors-default="presetColors"
+        :sucker-hide="true"
+        style="width: 218px;"
+        @change-color="handleChangeColor"
+      />
     </el-row>
 
     <el-divider content-position="center">

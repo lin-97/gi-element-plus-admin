@@ -160,12 +160,6 @@ async function handleLogout() {
     flex: 1;
     min-width: 0;
     border-bottom: none;
-
-    :deep(.el-menu-item),
-    :deep(.el-sub-menu__title) {
-      height: 50px;
-      line-height: 50px;
-    }
   }
 
   &__user {
