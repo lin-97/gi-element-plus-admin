@@ -1,9 +1,17 @@
 // 设计令牌 - 亮色主题
 :root {
+  --color-bg-1: var(--el-bg-color);
+  --color-bg-2: #fff;
+  --color-bg-3: #fff;
+  --color-bg-4: #fff;
 }
 
 // 暗黑主题
 html.dark {
+  --color-bg-1: var(--el-bg-color);
+  --color-bg-2: #232324;
+  --color-bg-3: #2a2a2b;
+  --color-bg-4: #313132;
 }
 
 body {

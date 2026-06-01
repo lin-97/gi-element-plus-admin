@@ -10,6 +10,7 @@ import 'element-plus/theme-chalk/dark/css-vars.css'
 import 'animate.css/animate.min.css'
 import 'virtual:svg-icons-register'
 import '@/plugins/echarts'
+import '@/plugins/iconify'
 import '@/styles/index.scss'
 
 const app = createApp(App)

@@ -14,8 +14,8 @@
     "lint:style:fix": "stylelint \"**/*.{vue,scss,css}\" --cache --fix"
   },
   "dependencies": {
-    "@arco-design/color": "^0.4.0",
     "@element-plus/icons-vue": "^2.3.1",
+    "@iconify/vue": "^5.0.0",
     "@vueuse/core": "^13.6.0",
     "animate.css": "^4.1.1",
     "axios": "^1.9.0",
@@ -38,6 +38,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^7.0.1",
     "@iconify-json/ep": "^1.2.2",
+    "@iconify-json/icon-park-outline": "^1.2.4",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.2.0",
     "@types/nprogress": "^0.2.3",

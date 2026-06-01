@@ -126,6 +126,8 @@ function handleDataEdit(row: DictDataItem) {
 }
 
 async function handleDataStatusSwitch(row: DictDataItem, val: string | number | boolean) {
+  if (!row?.id)
+    return
   const status = val as StatusValue
   try {
     await updateDictDataStatusApi(row.id, status)

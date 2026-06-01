@@ -7,8 +7,8 @@ import {
   ArrowRight,
   Close,
   Minus,
-  RefreshRight,
 } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { HOME_PATH } from '@/core/config'
 import { useRouteListener } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
@@ -115,7 +115,9 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
         </el-dropdown>
       </template>
       <template #right-extra>
-        <el-button text circle bg :icon="RefreshRight" @click="tabsStore.reloadPage" />
+        <el-button text circle class="app-tabs__reload" @click="tabsStore.reloadPage()">
+          <Icon icon="custom:reload" width="17" height="17" />
+        </el-button>
       </template>
     </gi-nav-tabs>
   </div>
@@ -132,5 +134,10 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
   :deep(.gi-tag) {
     cursor: pointer;
   }
+}
+
+.app-tabs__reload {
+  border-radius: 4px;
+  color: var(--el-color-text-primary);
 }
 </style>

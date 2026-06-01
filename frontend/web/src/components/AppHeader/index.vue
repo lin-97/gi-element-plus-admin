@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import {
-  Expand,
-  Fold,
-  FullScreen,
-  Moon,
-  Setting,
-  Sunny,
-  SwitchButton,
-  User,
-} from '@element-plus/icons-vue'
+import { Expand, Fold } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { useFullscreen } from '@vueuse/core'
-import { ElMessageBox, ElSpace } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 import AppBreadcrumb from '@/components/AppBreadcrumb/index.vue'
 import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import AppSettingDrawer from '@/components/AppSettingDrawer/index.vue'
@@ -20,6 +12,8 @@ import { useAppStore } from '@/core/stores'
 import { useMenu } from '@/hooks/useMenu'
 import { useUserStore } from '@/stores/useUserStore'
 
+defineOptions({ name: 'AppHeader' })
+
 const { mode = 'default' } = defineProps<{
   mode?: 'default' | 'top'
 }>()
@@ -28,7 +22,7 @@ const router = useRouter()
 const appStore = useAppStore()
 const { isDark, toggleDark } = useTheme()
 const userStore = useUserStore()
-const { toggle: toggleFullscreen } = useFullscreen()
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 
 const settingVisible = ref(false)
@@ -70,54 +64,73 @@ async function handleLogout() {
           bg
           text
           circle
-          :icon="appStore.isMenuCollapse ? Expand : Fold"
           @click="appStore.setMenuCollapse(!appStore.isMenuCollapse)"
-        />
+        >
+          <Icon
+            :icon="appStore.isMenuCollapse ? 'custom:menu-unfold' : 'custom:menu-fold'"
+            width="18"
+            height="18"
+          />
+        </el-button>
         <AppBreadcrumb />
       </template>
     </div>
 
-    <ElSpace :size="8">
-      <el-tooltip content="全屏">
-        <el-button type="primary" bg text circle :icon="FullScreen" @click="toggleFullscreen" />
-      </el-tooltip>
-      <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
-        <el-button
-          type="primary"
-          bg
-          text
-          circle
-          :icon="isDark ? Sunny : Moon"
-          @click="toggleDark()"
-        />
-      </el-tooltip>
-      <el-tooltip content="系统设置">
-        <el-button
-          type="primary"
-          bg
-          text
-          circle
-          :icon="Setting"
-          @click="settingVisible = true"
-        />
-      </el-tooltip>
+    <el-space :size="8">
+      <el-space :size="4">
+        <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'">
+          <el-button type="primary" text circle @click="toggleFullscreen">
+            <Icon
+              :icon="isFullscreen ? 'custom:off-screen' : 'custom:full-screen'"
+              width="18"
+              height="18"
+            />
+          </el-button>
+        </el-tooltip>
+        <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
+          <el-button
+            type="primary"
+            text
+            circle
+            @click="toggleDark()"
+          >
+            <Icon
+              :icon="!isDark ? 'custom:sun-fill' : 'custom:moon-fill'"
+              width="18"
+              height="18"
+            />
+          </el-button>
+        </el-tooltip>
+        <el-tooltip content="系统设置">
+          <el-button
+            type="primary"
+            text
+            circle
+            @click="settingVisible = true"
+          >
+            <Icon icon="custom:setting" width="18" height="18" />
+          </el-button>
+        </el-tooltip>
+      </el-space>
       <el-dropdown trigger="click">
         <span class="app-header__user">
           <el-avatar :size="28" :src="userStore.userInfo?.avatar ?? undefined">
-            <el-icon><User /></el-icon>
+            <Icon icon="icon-park-outline:user" width="18" height="18" />
           </el-avatar>
           <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="handleLogout">
-              <el-icon><SwitchButton /></el-icon>
+              <el-icon>
+                <Icon icon="icon-park-outline:logout" width="16" height="16" />
+              </el-icon>
               退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-    </ElSpace>
+    </el-space>
 
     <AppSettingDrawer v-model="settingVisible" />
   </header>
@@ -172,5 +185,9 @@ async function handleLogout() {
 
 :deep(.el-button) {
   border-radius: 4px;
+}
+
+.el-button--primary.is-text {
+  --el-button-text-color: var(--el-color-text-primary);
 }
 </style>

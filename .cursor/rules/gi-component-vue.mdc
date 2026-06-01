@@ -1,0 +1,57 @@
+---
+description: Vue 模板中 Gi 组件全局注册，无需 import
+globs: frontend/web/**/*.vue
+alwaysApply: false
+---
+
+# Gi 组件（gi-component）
+
+`gi-component` 已在 `frontend/web/src/main.ts` 通过 `app.use(GiComponent)` **全局注册**，模板中可直接使用，**禁止**为组件本身编写 `import { GiXxx } from 'gi-component'`。
+
+## 模板用法
+
+```vue
+<template>
+  <GiPageLayout>
+    <GiForm v-model="queryForm" :columns="formColumns" />
+    <GiTable :data="tableData" :columns="tableColumns" />
+    <GiDialog v-model="visible" title="编辑">
+      <GiForm v-model="form" :columns="dialogColumns" />
+    </GiDialog>
+    <GiCard bordered title="标题">内容</GiCard>
+  </GiPageLayout>
+</template>
+```
+
+## script 中仅类型可 import
+
+列配置、表单实例等 **TypeScript 类型** 仍从 `gi-component` 按需 `import type`：
+
+```typescript
+import type { FormColumnItem, TableColumnItem, FormInstance } from 'gi-component'
+```
+
+## 常用 Gi 组件
+
+| 组件 | 用途 |
+|------|------|
+| `GiPageLayout` | 页面布局（列表页） |
+| `GiForm` | 搜索/表单 |
+| `GiTable` | 数据表格 |
+| `GiDialog` | 弹窗 |
+| `GiCard` | 卡片容器 |
+| `GiDrawer` | 抽屉 |
+| `GiFlex` / `GiGrid` | 布局 |
+| `GiButton` / `GiTag` | 按钮、标签 |
+
+Element Plus 组件（`el-row`、`el-col`、`el-statistic` 等）同样为全局注册，无需 import。
+
+## 禁止
+
+```typescript
+// ❌ 不要为模板组件写值 import
+import { GiCard, GiForm, GiTable, GiPageLayout, GiDialog } from 'gi-component'
+
+// ✅ 仅类型
+import type { FormColumnItem } from 'gi-component'
+```

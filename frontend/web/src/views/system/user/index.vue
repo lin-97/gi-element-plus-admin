@@ -103,6 +103,8 @@ function handleResetPassword(row: SysUserItem) {
 }
 
 async function handleStatusSwitch(row: SysUserItem, val: string | number | boolean) {
+  if (!row?.id)
+    return
   const status = val as StatusValue
   try {
     await updateUserStatusApi(row.id, status)

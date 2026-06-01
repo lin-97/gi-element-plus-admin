@@ -99,6 +99,8 @@ function handleEdit(row: RoleItem) {
 }
 
 async function handleStatusSwitch(row: RoleItem, val: string | number | boolean) {
+  if (!row?.id)
+    return
   const status = val as StatusValue
   try {
     await updateRoleStatusApi(row.id, status)

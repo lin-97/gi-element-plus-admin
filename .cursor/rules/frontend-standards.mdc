@@ -23,7 +23,7 @@ alwaysApply: true
 
 - Vue 3 **Composition API** + `<script setup lang="ts">`
 - 每个 SFC 必须 `defineOptions({ name: 'Xxx' })`
-- UI 组件库：优先使用 `gi-component`（GiPageLayout、GiForm、GiTable、GiDialog）
+- UI 组件库：优先使用 `gi-component`（GiPageLayout、GiForm、GiTable、GiDialog、GiCard 等）；**模板中直接使用，无需 import**（详见 `.cursor/rules/gi-component-vue.mdc`）；`script` 中仅 `import type` 类型
 - 状态：Pinia；路由：Vue Router 4
 - HTTP：`@/apis/request`，统一响应类型 `ApiResponse<T>`
 
@@ -77,4 +77,5 @@ export function getXxxListApi(params: XxxListQuery) {
 - ❌ 绕过 `@/apis/request` 直接裸用 axios
 - ❌ 表格页自行实现分页/删除逻辑，而不使用 `useTable`
 - ❌ 表格页使用原生 el-table 替代 GiTable（除非用户明确要求）
+- ❌ `import { GiForm, GiTable, GiCard, ... } from 'gi-component'`（Gi 组件已全局注册）
 - ❌ 在用户未要求时添加测试、文档或无关注释

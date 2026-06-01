@@ -68,6 +68,9 @@ function handleChangeColor(color: { hex: string }) {
 </template>
 
 <style lang="scss" scoped>
+:deep(.el-descriptions__body) {
+  background-color: transparent;
+}
 :deep(.el-descriptions__cell) {
   display: flex;
   align-items: center;
