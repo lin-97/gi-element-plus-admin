@@ -26,9 +26,15 @@ export function setupRouterGuard(router: Router) {
 
       if (!isRoutesLoadedState()) {
         // 刷新页面时重新拉取用户信息、权限与动态路由（generateRoutes 内含 fetchUserInfo）
-        await userStore.generateRoutes()
-        markRoutesLoaded()
-        next({ ...to, replace: true })
+        try {
+          await userStore.generateRoutes()
+          markRoutesLoaded()
+          next({ ...to, replace: true })
+        }
+        catch {
+          await userStore.logout()
+          next(`${appConfig.loginPath}?redirect=${to.fullPath}`)
+        }
         return
       }
 

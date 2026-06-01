@@ -46,15 +46,19 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function logout() {
-    try {
-      await logoutApi(token.value || undefined)
-    }
-    finally {
-      token.value = ''
-      userInfo.value = null
-      permissionStore.setRoles([])
-      permissionStore.setPermissions([])
-      resetRouteState()
+    const currentToken = token.value
+    token.value = ''
+    userInfo.value = null
+    permissionStore.setRoles([])
+    permissionStore.setPermissions([])
+    resetRouteState()
+    if (currentToken) {
+      try {
+        await logoutApi(currentToken)
+      }
+      catch {
+        // token 已过期时退出接口可能 401，忽略即可
+      }
     }
   }
 

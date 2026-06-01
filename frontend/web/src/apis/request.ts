@@ -9,9 +9,33 @@ import { useUserStore } from '@/stores/useUserStore'
 export enum HttpCode {
   SUCCESS = 200,
   UNAUTHORIZED = 401,
+  /** 后端业务认证失败码（CustomException code=10401） */
+  AUTH_FAILED = 10401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
   SERVER_ERROR = 500,
+}
+
+function isAuthError(status?: number, code?: number) {
+  return status === HttpCode.UNAUTHORIZED
+    || code === HttpCode.UNAUTHORIZED
+    || code === HttpCode.AUTH_FAILED
+}
+
+function shouldSkipAuthRedirect(url?: string) {
+  if (!url)
+    return false
+  return url.includes('/auth/login') || url.includes('/auth/logout')
+}
+
+function handleAuthExpired(configUrl?: string) {
+  if (shouldSkipAuthRedirect(configUrl))
+    return
+  const userStore = useUserStore()
+  if (!userStore.isLogin)
+    return
+  userStore.logout()
+  router.push(appConfig.loginPath)
 }
 
 /** 创建 axios 实例 */
@@ -40,16 +64,18 @@ service.interceptors.response.use(
     if (res.code === HttpCode.SUCCESS)
       return response
 
-    if (res.code === HttpCode.UNAUTHORIZED) {
-      const userStore = useUserStore()
-      userStore.logout()
-      router.push(appConfig.loginPath)
-    }
+    if (isAuthError(undefined, res.code))
+      handleAuthExpired(response.config.url)
     return Promise.reject(new Error(res.message || '请求失败'))
   },
   (error) => {
+    const status = error.response?.status as number | undefined
+    const res = error.response?.data as ApiResponse | undefined
+    if (isAuthError(status, res?.code))
+      handleAuthExpired(error.config?.url)
+
     const detail = error.response?.data?.detail
-    const message = error.response?.data?.message
+    const message = res?.message
       || (typeof detail === 'string' ? detail : Array.isArray(detail) ? detail[0]?.msg : undefined)
       || error.message
       || '网络异常'
