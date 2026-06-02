@@ -1,7 +1,10 @@
-import type { IconifyJSON } from '@iconify/types'
+interface CustomIconSet {
+  prefix: string
+  icons: Record<string, { body: string, width?: number, height?: number }>
+}
 
 /** 项目自定义 Iconify 图标集，使用方式：custom:图标名 */
-export const customIcons: IconifyJSON = {
+export const customIcons: CustomIconSet = {
   prefix: 'custom',
   icons: {
     'sun-fill': {

@@ -230,20 +230,21 @@ function storeSetup() {
 
   /**
    * 重新加载当前页面
-   * @description 清除当前页面的缓存并重新加载
+   * @description 先移出 keep-alive 缓存，再切换 reloadFlag 触发组件 remount
    */
-  const reloadPage = () => {
+  const reloadPage = async () => {
     const route = router.currentRoute.value
-    if (!route.name)
-      return
+    const routeName = route.name
 
-    updateCache(route.name, false) // 删除缓存
+    if (routeName)
+      updateCache(routeName, false)
+
     reloadFlag.value = false
+    await nextTick()
+    reloadFlag.value = true
 
-    nextTick(() => {
-      reloadFlag.value = true
-      updateCache(route.name, route.meta?.keepAlive) // 重新添加缓存
-    })
+    if (routeName)
+      updateCache(routeName, route.meta?.keepAlive)
   }
 
   return {

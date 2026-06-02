@@ -60,10 +60,11 @@ function handleChangeColor(color: { hex: string }) {
       </el-descriptions-item>
     </el-descriptions>
 
-    <el-divider content-position="left" />
-    <el-button type="primary" plain style="width: 100%" @click="appStore.resetSetting()">
-      恢复默认
-    </el-button>
+    <template #footer>
+      <el-button type="primary" style="width: 100%" @click="appStore.resetSetting()">
+        恢复默认配置
+      </el-button>
+    </template>
   </el-drawer>
 </template>
 
