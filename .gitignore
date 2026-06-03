@@ -57,6 +57,7 @@ backend/alembic/versions/*
 backend/env/.env.dev
 backend/env/.env.prod
 docker/.env
+docker/.env.prod
 docker/nginx/ssl/*
 !docker/nginx/ssl/.gitkeep
 frontend/.env.development

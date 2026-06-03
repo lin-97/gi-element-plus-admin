@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Usage:
-#   bash docker/backend-api/request_letsencrypt.sh -d a.app.yizhuanyiyuan.cn -e coderxslee@qq.com
+# 用法:
+#   bash docker/backend/request_letsencrypt.sh -d a.app.yizhuanyiyuan.cn -e coderxslee@qq.com
 #
-# What this script does:
-# 1) Ensure acme.sh is installed
-# 2) Stop docker nginx service temporarily (free 80 port for standalone challenge)
-# 3) Issue Let's Encrypt cert by standalone mode
-# 4) Install cert to docker/nginx/ssl/server.pem and server.key
-# 5) Start nginx service again
+# 脚本流程:
+# 1) 检查并安装 acme.sh
+# 2) 临时停止 Docker Nginx 服务，释放 80 端口给 standalone 校验
+# 3) 使用 Let's Encrypt 签发证书
+# 4) 将证书安装到 docker/nginx/ssl/server.pem 和 server.key
+# 5) 异常退出时自动恢复原本运行中的 Nginx 服务
 
 DOMAIN=""
 EMAIL=""
@@ -36,7 +36,7 @@ done
 print_help() {
   cat <<'EOF'
 用法:
-  bash docker/backend-api/request_letsencrypt.sh -d <domain> -e <email>
+  bash docker/backend/request_letsencrypt.sh -d <domain> -e <email>
 
 参数:
   -d  域名，例如 aizhongyi.abrdns.com
