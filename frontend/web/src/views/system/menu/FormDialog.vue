@@ -27,6 +27,7 @@ const currentId = ref('')
 const formRef = useTemplateRef<FormInstance>('formRef')
 const formData = ref<MenuFormData>(createEmptyForm(2))
 const dialogTitle = computed(() => (isEdit.value ? '编辑菜单' : '新增菜单'))
+const hasIconPreview = computed(() => !!formData.value.icon?.trim())
 
 function createEmptyForm(type: MenuType, parentId = '0'): MenuFormData {
   return {
@@ -73,14 +74,8 @@ const formColumns = computed<FormColumnItem[]>(() => {
       {
         field: 'icon',
         label: '图标',
-        type: 'textarea',
+        type: 'slot',
         span: 24,
-        props: {
-          rows: 4,
-          maxlength: 8000,
-          showWordLimit: true,
-          placeholder: 'Iconify（如 icon-park-outline:user、custom:setting）、Element Plus 图标名（如 Monitor）或完整 SVG 字符串',
-        },
       },
     )
   }
@@ -202,6 +197,71 @@ defineExpose({ openAdd, openEdit })
       :columns="formColumns"
       :rules="formRules"
       label-width="96px"
-    />
+    >
+      <template #icon>
+        <div class="menu-form-dialog__icon-row">
+          <el-input
+            v-model="formData.icon"
+            type="textarea"
+            class="menu-form-dialog__icon-input"
+            :rows="4"
+            :maxlength="8000"
+            show-word-limit
+            placeholder="Iconify（如 icon-park-outline:user、custom:setting）、Element Plus 图标名（如 Monitor）或完整 SVG 字符串"
+          />
+          <div
+            class="menu-form-dialog__icon-preview"
+            :class="{ 'menu-form-dialog__icon-preview--empty': !hasIconPreview }"
+          >
+            <AppMenuIcon
+              v-if="hasIconPreview"
+              :icon="formData.icon"
+              :wrap="false"
+              :size="28"
+            />
+            <span v-else class="menu-form-dialog__icon-preview-placeholder">预览</span>
+          </div>
+        </div>
+      </template>
+    </gi-form>
   </gi-dialog>
 </template>
+
+<style lang="scss" scoped>
+.menu-form-dialog {
+  &__icon-row {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    align-items: flex-start;
+  }
+
+  &__icon-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__icon-preview {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border: 1px dashed var(--el-border-color);
+    border-radius: var(--el-border-radius-base);
+    background: var(--el-fill-color-lighter);
+    color: var(--el-text-color-primary);
+    font-size: 28px;
+
+    &--empty {
+      font-size: 12px;
+      color: var(--el-text-color-placeholder);
+    }
+  }
+
+  &__icon-preview-placeholder {
+    user-select: none;
+  }
+}
+</style>
