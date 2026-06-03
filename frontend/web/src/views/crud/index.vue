@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { deleteStudentApi, getStudentListApi } from '@/apis/student'
@@ -93,9 +93,9 @@ function handleEdit(row: StudentItem) {
 </script>
 
 <template>
-  <GiPageLayout class="g-page-layout">
+  <gi-page-layout class="g-page-layout">
     <template #header>
-      <GiForm
+      <gi-form
         :model-value="queryForm" :columns="formColumns" search :grid-item-props="{
           span: { xs: 24, sm: 12, md: 12, lg: 8, xl: 6, xxl: 6 },
         }" @update:model-value="Object.assign(queryForm, $event)" @search="handleSearch" @reset="handleReset"
@@ -118,7 +118,7 @@ function handleEdit(row: StudentItem) {
       </el-space>
     </template>
 
-    <GiTable
+    <gi-table
       v-loading="loading"
       border
       :data="tableData"
@@ -135,10 +135,10 @@ function handleEdit(row: StudentItem) {
           删除
         </el-button>
       </template>
-    </GiTable>
+    </gi-table>
 
     <FormDialog ref="FormDialogRef" @success="refresh" />
-  </GiPageLayout>
+  </gi-page-layout>
 </template>
 
 <style lang="scss" scoped>

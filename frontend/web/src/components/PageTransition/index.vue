@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useAppStore } from '@/core/stores/useAppStore'
-import { useTabsStore } from '@/core/stores/useTabsStore'
+import { useAppStore, useTabsStore } from '@/core/stores'
+
+defineOptions({ name: 'PageTransition' })
 
 const appStore = useAppStore()
 const tabsStore = useTabsStore()

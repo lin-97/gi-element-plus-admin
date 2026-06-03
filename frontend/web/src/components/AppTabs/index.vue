@@ -13,6 +13,8 @@ import { HOME_PATH } from '@/core/config'
 import { useRouteListener } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
 
+defineOptions({ name: 'AppTabs' })
+
 const isHomeTab = (path: string) => path === '/' || path === HOME_PATH
 
 const router = useRouter()

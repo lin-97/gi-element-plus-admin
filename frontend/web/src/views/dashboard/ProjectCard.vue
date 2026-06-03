@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { useTheme } from '@/core/hooks'
 
 defineOptions({ name: 'ProjectCard' })
@@ -61,7 +61,7 @@ function getProjectIcon(item: ProjectItem) {
 </script>
 
 <template>
-  <GiCard title="项目" class="project-card">
+  <gi-card title="项目" class="project-card">
     <el-row :gutter="0" class="project-card__list">
       <el-col
         v-for="item in list"
@@ -88,7 +88,7 @@ function getProjectIcon(item: ProjectItem) {
         </div>
       </el-col>
     </el-row>
-  </GiCard>
+  </gi-card>
 </template>
 
 <style lang="scss" scoped>

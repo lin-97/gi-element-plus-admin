@@ -6,8 +6,10 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const EMAIL_REG: typeof import('./utils/regexp').EMAIL_REG
   const EffectScope: typeof import('vue').EffectScope
   const ElMessage: typeof import('element-plus/es').ElMessage
+  const PHONE_REG: typeof import('./utils/regexp').PHONE_REG
   const acceptHMRUpdate: typeof import('pinia').acceptHMRUpdate
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
   const autoResetRef: typeof import('@vueuse/core').autoResetRef

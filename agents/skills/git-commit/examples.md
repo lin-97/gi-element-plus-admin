@@ -18,11 +18,11 @@ git add backend/app/api/user.py backend/app/crud/user_crud.py frontend/web/src/v
 git commit -m "feat: 用户管理 CRUD 与后端接口" -m "列表分页、表单校验、角色关联"
 ```
 
-## 示例 3：Cursor 技能/规则
+## 示例 3：AI 规范与 skills
 
 ```powershell
-git add .cursor/skills/git-commit/
-git commit -m "chore: 新增 git-commit 提交规范 skill"
+git add agents/ AGENTS.md
+git commit -m "chore: 新增 agents 通用规范与 git-commit skill"
 ```
 
 ## 示例 4：修复 bug
@@ -54,6 +54,6 @@ git commit --amend  # hook 刚失败时禁止
 |----------|-----------|--------------|
 | 新列表页 | feat | feat: 菜单管理列表页 |
 | 修接口 404 | fix | fix: 角色菜单树接口路径 |
-| 抽 hook | refactor | refactor: 抽取 useLogin  composable |
+| 抽 hook | refactor | refactor: 抽取 useLogin composable |
 | 仅改 SCSS | style | style: 登录页科技风背景动效 |
 | 加 skill | chore | chore: 新增 git-commit skill |

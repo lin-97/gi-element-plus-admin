@@ -22,7 +22,7 @@
     "dayjs": "^1.11.13",
     "echarts": "^6.0.0",
     "element-plus": "^2.11.0",
-    "gi-component": "^0.0.47",
+    "gi-component": "^0.0.48",
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",

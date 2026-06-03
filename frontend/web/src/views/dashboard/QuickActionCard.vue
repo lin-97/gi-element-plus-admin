@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 
 defineOptions({ name: 'QuickActionCard' })
@@ -20,7 +20,7 @@ function handleQuickAction(path: string) {
 </script>
 
 <template>
-  <GiCard title="快捷操作" class="quick-action-card">
+  <gi-card title="快捷操作" class="quick-action-card">
     <el-row :gutter="12" style="gap: 12px 0;">
       <el-col
         v-for="item in quickActions"
@@ -44,7 +44,7 @@ function handleQuickAction(path: string) {
         </div>
       </el-col>
     </el-row>
-  </GiCard>
+  </gi-card>
 </template>
 
 <style lang="scss" scoped>

@@ -1,27 +1,38 @@
----
-description: Vue 模板中 Gi 组件全局注册，无需 import
-globs: frontend/web/**/*.vue
-alwaysApply: false
----
-
 # Gi 组件（gi-component）
+
+> **适用范围**：`frontend/web/**/*.vue`  
+> **工具无关**：Cursor、OpenCode、Codex 等 AI 编码助手均应遵循本文
 
 `gi-component` 已在 `frontend/web/src/main.ts` 通过 `app.use(GiComponent)` **全局注册**，模板中可直接使用，**禁止**为组件本身编写 `import { GiXxx } from 'gi-component'`。
 
 ## 模板用法
 
+**模板中统一使用 kebab-case 小写标签**，禁止 PascalCase（如 `<GiForm>`）。
+
 ```vue
 <template>
-  <GiPageLayout>
-    <GiForm v-model="queryForm" :columns="formColumns" />
-    <GiTable :data="tableData" :columns="tableColumns" />
-    <GiDialog v-model="visible" title="编辑">
-      <GiForm v-model="form" :columns="dialogColumns" />
-    </GiDialog>
-    <GiCard bordered title="标题">内容</GiCard>
-  </GiPageLayout>
+  <gi-page-layout>
+    <gi-form v-model="queryForm" :columns="formColumns" />
+    <gi-table :data="tableData" :columns="tableColumns" />
+    <gi-dialog v-model="visible" title="编辑">
+      <gi-form v-model="form" :columns="dialogColumns" />
+    </gi-dialog>
+    <gi-card bordered title="标题">内容</gi-card>
+  </gi-page-layout>
 </template>
 ```
+
+| PascalCase（script/类型） | 模板标签 |
+|---------------------------|----------|
+| `GiPageLayout` | `<gi-page-layout>` |
+| `GiForm` | `<gi-form>` |
+| `GiTable` | `<gi-table>` |
+| `GiDialog` | `<gi-dialog>` |
+| `GiCard` | `<gi-card>` |
+| `GiButton` | `<gi-button>` |
+| `GiDrawer` | `<gi-drawer>` |
+| `GiFlex` / `GiGrid` | `<gi-flex>` / `<gi-grid>` |
+| `GiTag` | `<gi-tag>` |
 
 ## script 中仅类型可 import
 
@@ -54,4 +65,12 @@ import { GiCard, GiForm, GiTable, GiPageLayout, GiDialog } from 'gi-component'
 
 // ✅ 仅类型
 import type { FormColumnItem } from 'gi-component'
+```
+
+```vue
+<!-- ❌ 模板中不要用 PascalCase -->
+<GiForm v-model="form" />
+
+<!-- ✅ 使用 kebab-case -->
+<gi-form v-model="form" />
 ```

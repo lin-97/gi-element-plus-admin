@@ -17,7 +17,7 @@ const route = useRoute()
 const userStore = useUserStore()
 const { isDark, toggleDark } = useTheme()
 
-const formRef = ref<FormInstance>()
+const formRef = useTemplateRef<FormInstance>('formRef')
 const loading = ref(false)
 const rememberMe = ref(false)
 const form = reactive<{ username: string, password: string }>({

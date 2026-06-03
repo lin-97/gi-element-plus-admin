@@ -1,10 +1,7 @@
----
-description: 后端强制开发规范（FastAPI + SQLAlchemy）
-globs: backend/**
-alwaysApply: false
----
-
 # 后端强制规范
+
+> **适用范围**：`backend/**`  
+> **工具无关**：Cursor、OpenCode、Codex 等 AI 编码助手均应遵循本文
 
 ## 通用要求
 

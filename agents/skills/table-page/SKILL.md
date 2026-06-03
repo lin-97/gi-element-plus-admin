@@ -2,11 +2,22 @@
 name: table-page
 description: >-
   基于 views/crud 规范，使用 GiPageLayout、GiForm、GiTable、GiDialog、useTable、FormDialog
-  生成 GI Element Plus Admin 表格/CRUD 列表页。适用于新建列表页、表格页、CRUD 页面、搜索表单、分页表格或
-  frontend/web 中的新增/编辑弹窗。
+  生成 GI Element Plus Admin 表格/CRUD 列表页。
+triggers:
+  - 新建列表页
+  - 表格页
+  - CRUD 页面
+  - 搜索表单
+  - 分页表格
+  - FormDialog
 ---
 
 # GI Admin 表格页（CRUD List Page）
+
+> **Skill ID**：`table-page`  
+> **适用范围**：`frontend/web/**`  
+> **工具无关**：Cursor、OpenCode、Codex 等 AI 编码助手均可加载本文  
+> **前置规范**：同时遵循 `agents/rules/frontend-standards.md`
 
 参考实现：`frontend/web/src/views/crud/index.vue`、`FormDialog.vue`、`apis/student.ts`、`hooks/useTable.ts`。
 
@@ -131,9 +142,9 @@ function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
 </script>
 
 <template>
-  <GiPageLayout>
+  <gi-page-layout>
     <template #header>
-      <GiForm
+      <gi-form
         :model-value="queryForm"
         :columns="formColumns"
         search
@@ -148,7 +159,7 @@ function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
       <el-button type="primary" @click="handleAdd">新增</el-button>
     </template>
 
-    <GiTable
+    <gi-table
       v-loading="loading"
       border
       row-key="id"
@@ -160,10 +171,10 @@ function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
         <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
         <el-button type="danger" link @click="onDelete(row)">删除</el-button>
       </template>
-    </GiTable>
+    </gi-table>
 
     <FormDialog ref="FormDialogRef" @success="refresh" />
-  </GiPageLayout>
+  </gi-page-layout>
 </template>
 
 <style lang="scss" scoped>
@@ -178,7 +189,7 @@ function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
 | `refresh()` | 刷新当前页 |
 | `onDelete(row)` | 单条删除（需配置 `deleteAPI`） |
 | `onBatchDelete()` | 批量删除（表格需开启多选 + `onSelectionChange`） |
-| `pagination` | 直接传给 `GiTable` 的 `:pagination` |
+| `pagination` | 直接传给 `gi-table` 的 `:pagination` |
 
 列表 API 必须返回 `PageResult<T>`（`list`、`total`）
 
@@ -195,7 +206,7 @@ function handleEdit(row: XxxItem) { FormDialogRef.value?.openEdit(row) }
 
 - `openAdd()` / `openEdit(row)` 通过 `defineExpose` 暴露
 - `emit('success')` 通知列表刷新
-- `GiDialog` + `:on-before-ok`，校验通过后调 create/update API
+- `gi-dialog` + `:on-before-ok`，校验通过后调 create/update API
 
 ### 代码骨架
 
@@ -234,7 +245,7 @@ const formColumns: FormColumnItem[] = [
 
 function openAdd() {
   isEdit.value = false
-  currentId.value = undefined
+  currentId.value = ''
   formData.value = createEmptyForm()
   visible.value = true
 }
@@ -267,21 +278,21 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="600px"
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
+    <gi-form
       ref="FormRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
       label-width="80px"
     />
-  </GiDialog>
+  </gi-dialog>
 </template>
 ```
 
@@ -295,7 +306,7 @@ defineExpose({ openAdd, openEdit })
 | `radio-group` | 弹窗内互斥选项 |
 | `textarea` | 多行，`span: 24` 占满行 |
 
-可选字段校验用自定义 `validator`，空值跳过（参考 `optionalPatternValidator`）。
+可选字段正则校验用 `FormRules.pattern`，正则定义见 `@/utils/regexp`（已内置空值不校验）。
 
 ## 生成检查清单
 

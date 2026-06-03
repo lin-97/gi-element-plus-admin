@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import { ElMessage } from 'element-plus'
 import { resetUserPasswordApi } from '@/apis/user'
@@ -8,7 +8,7 @@ defineOptions({ name: 'ResetPasswordDialog' })
 const visible = ref(false)
 const userId = ref<string>()
 const username = ref('')
-const formRef = ref<FormInstance>()
+const formRef = useTemplateRef<FormInstance>('formRef')
 const formData = ref({ password: '', confirmPassword: '' })
 
 const formRules: FormRules = {
@@ -55,7 +55,7 @@ defineExpose({ open })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="`重置密码 - ${username}`"
     width="440px"
@@ -70,5 +70,5 @@ defineExpose({ open })
         <el-input v-model="formData.confirmPassword" type="password" show-password autocomplete="new-password" />
       </el-form-item>
     </el-form>
-  </GiDialog>
+  </gi-dialog>
 </template>

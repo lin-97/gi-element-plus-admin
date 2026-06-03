@@ -2,11 +2,19 @@
 name: git-commit
 description: >-
   按 GI Element Plus Admin 仓库规范将代码提交并可选推送到远程。涵盖变更审查、暂存范围、
-  Conventional 风格中文提交说明、Git 安全约束与 Windows/PowerShell 命令。适用于用户说
-  提交代码、git commit、推送到仓库、帮我 commit、保存到 git 等场景。
+  Conventional 风格中文提交说明、Git 安全约束与跨平台 Shell 命令。
+triggers:
+  - 提交代码
+  - git commit
+  - 推送到仓库
+  - 帮我 commit
+  - 保存到 git
 ---
 
 # Git 提交代码到仓库
+
+> **Skill ID**：`git-commit`  
+> **工具无关**：Cursor、OpenCode、Codex 等 AI 编码助手均可加载本文
 
 ## 前置约束（必须遵守）
 
@@ -27,7 +35,7 @@ description: >-
 |------|------|
 | `frontend/web/` | Vue3 前端（路径别名 `@/` → `src/`） |
 | `backend/` | FastAPI 后端 |
-| `.cursor/` | Cursor rules / skills / commands |
+| `agents/` | AI 通用规范与 skills（本文所在目录） |
 
 提交前以 `.gitignore` 为准；常见**不应提交**：`.env`、`__pycache__`、`node_modules`、`frontend/web/node_modules/.vite/`、本地数据库、`*.pyc`、构建产物 `dist`。
 
@@ -35,7 +43,7 @@ description: >-
 
 ### Step 1：并行收集状态（一次消息内执行）
 
-```powershell
+```bash
 git status
 git diff
 git diff --staged
@@ -68,7 +76,7 @@ git log -5 --oneline
 | `fix` | 缺陷修复 |
 | `refactor` | 重构（无行为变化） |
 | `style` | 样式/UI，不改逻辑 |
-| `chore` | 构建、依赖、配置、skills/rules |
+| `chore` | 构建、依赖、配置、agents/skills |
 | `docs` | 文档（用户明确要求时） |
 
 示例：
@@ -87,20 +95,17 @@ fix: 修复登录后动态路由未加载问题
 
 ### Step 4：暂存并提交（顺序执行）
 
+**Windows PowerShell** 多行说明用多个 `-m`：
+
 ```powershell
 git add <path1> <path2> ...
-git commit -m "<subject>" -m "<body>"
-```
-
-**Windows PowerShell** 多行说明用多个 `-m`（不要依赖 bash HEREDOC）：
-
-```powershell
 git commit -m "feat: 登录页科技风重构" -m "拆分 composable 与场景组件，CSS 粒子背景"
 ```
 
-**Git Bash** 可用 HEREDOC：
+**Git Bash / Linux / macOS** 可用 HEREDOC：
 
 ```bash
+git add <path1> <path2> ...
 git commit -m "$(cat <<'EOF'
 feat: 登录页科技风重构
 
@@ -111,7 +116,7 @@ EOF
 
 ### Step 5：验证
 
-```powershell
+```bash
 git status
 ```
 
@@ -119,7 +124,7 @@ git status
 
 ### Step 6：推送（仅用户明确要求时）
 
-```powershell
+```bash
 git push
 # 新分支首次：
 git push -u origin HEAD
@@ -155,4 +160,4 @@ git push -u origin HEAD
 
 ## 更多示例
 
-见 [examples.md](examples.md)
+见 [examples.md](./examples.md)

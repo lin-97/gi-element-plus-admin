@@ -7,5 +7,6 @@ export default antfu({
   rules: {
     'vue/multi-word-component-names': 'off',
     'no-console': 'off',
+    'e18e/prefer-static-regex': 'off',
   },
 })

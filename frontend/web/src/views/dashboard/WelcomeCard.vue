@@ -1,6 +1,6 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import dayjs from 'dayjs'
+import Dayjs from 'dayjs'
 import { useUserStore } from '@/stores/useUserStore'
 
 defineOptions({ name: 'WelcomeCard' })
@@ -12,7 +12,7 @@ const displayName = computed(
 )
 
 const greeting = computed(() => {
-  const hour = dayjs().hour()
+  const hour = Dayjs().hour()
   if (hour < 12)
     return '上午好'
   if (hour < 18)
@@ -51,7 +51,7 @@ const headerStats: HeaderStatItem[] = [
 </script>
 
 <template>
-  <GiCard class="welcome-card" :header-style="{ display: 'none' }">
+  <gi-card class="welcome-card" :header-style="{ display: 'none' }">
     <div class="welcome-card__inner">
       <div class="welcome-card__info">
         <el-avatar :size="60" :src="userStore.userInfo?.avatar ?? undefined" class="welcome-card__avatar">
@@ -91,7 +91,7 @@ const headerStats: HeaderStatItem[] = [
         </div>
       </div>
     </div>
-  </GiCard>
+  </gi-card>
 </template>
 
 <style lang="scss" scoped>

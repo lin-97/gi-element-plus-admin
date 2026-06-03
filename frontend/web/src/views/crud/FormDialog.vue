@@ -1,19 +1,19 @@
-<script setup lang="ts">
-import type { FormItemRule, FormRules } from 'element-plus'
+﻿<script setup lang="ts">
+import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { ElMessage } from 'element-plus'
 import { createStudentApi, updateStudentApi } from '@/apis/student'
 import { useDict } from '@/hooks/useDict'
+import { EMAIL_REG, PHONE_REG } from '@/utils/regexp'
 
 defineOptions({ name: 'FormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const { dictData } = useDict(['GENDER'] as const)
-
-const PHONE_REG = /^1[3-9]\d{9}$/
-const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
 
 interface StudentFormData {
   name: string
@@ -27,8 +27,8 @@ interface StudentFormData {
 
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<string>()
-const formRef = ref<FormInstance>()
+const currentId = ref('')
+const formRef = useTemplateRef<FormInstance>('formRef')
 const formData = ref<StudentFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑学生' : '新增学生'))
 
@@ -44,20 +44,11 @@ function createEmptyForm(): StudentFormData {
   }
 }
 
-function optionalPatternValidator(pattern: RegExp, message: string): FormItemRule['validator'] {
-  return (_rule, value, callback) => {
-    const text = String(value ?? '').trim()
-    if (!text || pattern.test(text))
-      return callback()
-    callback(new Error(message))
-  }
-}
-
 const formRules: FormRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   studentNo: [{ required: true, message: '请输入学号', trigger: 'blur' }],
-  phone: [{ validator: optionalPatternValidator(PHONE_REG, '请输入正确的11位手机号'), trigger: 'blur' }],
-  email: [{ validator: optionalPatternValidator(EMAIL_REG, '请输入正确的邮箱地址'), trigger: 'blur' }],
+  phone: [{ pattern: PHONE_REG, message: '请输入正确的11位手机号', trigger: 'blur' }],
+  email: [{ pattern: EMAIL_REG, message: '请输入正确的邮箱地址', trigger: 'blur' }],
   address: [{
     validator: (_rule, value, callback) => {
       if (String(value ?? '').length <= 200)
@@ -123,7 +114,7 @@ function toPayload(data: StudentFormData): Partial<StudentItem> {
 
 function openAdd() {
   isEdit.value = false
-  currentId.value = undefined
+  currentId.value = ''
   formData.value = createEmptyForm()
   visible.value = true
 }
@@ -159,7 +150,7 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="600px"
@@ -167,12 +158,12 @@ defineExpose({ openAdd, openEdit })
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
+    <gi-form
       ref="formRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
       label-width="80px"
     />
-  </GiDialog>
+  </gi-dialog>
 </template>

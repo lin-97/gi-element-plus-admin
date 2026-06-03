@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { DictDataItem, DictTypeItem, StatusValue } from '@/apis/dict'
 import { ElMessage } from 'element-plus'
@@ -144,13 +144,13 @@ function onDataSuccess() {
 </script>
 
 <template>
-  <GiPageLayout class="g-page-layout" :collapse="false">
+  <gi-page-layout class="g-page-layout" :collapse="false">
     <template #left>
       <DictTypePane v-model="selectedType" @select="handleTypeSelect" />
     </template>
 
     <template #header>
-      <GiForm
+      <gi-form
         :model-value="dataQueryForm"
         :columns="dataFormColumns"
         search
@@ -172,7 +172,7 @@ function onDataSuccess() {
       </el-space>
     </template>
 
-    <GiTable
+    <gi-table
       v-loading="dataLoading"
       border
       :data="tableData"
@@ -211,7 +211,7 @@ function onDataSuccess() {
           </el-button>
         </el-space>
       </template>
-    </GiTable>
+    </gi-table>
 
     <DictDataFormDialog
       :key="selectedType?.id"
@@ -219,5 +219,5 @@ function onDataSuccess() {
       :type-id="selectedType?.id ?? ''"
       @success="onDataSuccess"
     />
-  </GiPageLayout>
+  </gi-page-layout>
 </template>

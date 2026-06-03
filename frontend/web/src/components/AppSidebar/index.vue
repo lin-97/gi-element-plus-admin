@@ -3,6 +3,8 @@ import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import { useAppStore } from '@/core/stores'
 import { useMenu } from '@/hooks/useMenu'
 
+defineOptions({ name: 'AppSidebar' })
+
 const appStore = useAppStore()
 
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()

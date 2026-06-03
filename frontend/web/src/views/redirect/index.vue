@@ -1,5 +1,8 @@
 <script setup lang="ts">
 /** 用于标签页刷新的中转页 */
+
+defineOptions({ name: 'Redirect' })
+
 const route = useRoute()
 const router = useRouter()
 

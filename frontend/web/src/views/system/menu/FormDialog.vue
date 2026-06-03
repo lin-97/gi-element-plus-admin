@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { MenuFormData, MenuItem, MenuType } from '@/apis/menu'
@@ -8,7 +8,9 @@ import { useDict } from '@/hooks/useDict'
 
 defineOptions({ name: 'SystemMenuFormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const { dictData } = useDict(['STATUS'] as const)
 
@@ -21,8 +23,8 @@ const TYPE_OPTIONS = [
 const visible = ref(false)
 const isEdit = ref(false)
 const isSystemMenu = ref(false)
-const currentId = ref<string>()
-const formRef = ref<FormInstance>()
+const currentId = ref('')
+const formRef = useTemplateRef<FormInstance>('formRef')
 const formData = ref<MenuFormData>(createEmptyForm(2))
 const dialogTitle = computed(() => (isEdit.value ? '编辑菜单' : '新增菜单'))
 
@@ -130,7 +132,7 @@ function toFormData(row: MenuItem): MenuFormData {
 function openAdd(parent?: MenuItem, defaultType: MenuType = 1) {
   isEdit.value = false
   isSystemMenu.value = false
-  currentId.value = undefined
+  currentId.value = ''
   const parentId = parent?.id ?? '0'
   let type: MenuType = defaultType
   if (parent?.type === 1)
@@ -175,7 +177,7 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
@@ -183,12 +185,12 @@ defineExpose({ openAdd, openEdit })
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
+    <gi-form
       ref="formRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
       label-width="96px"
     />
-  </GiDialog>
+  </gi-dialog>
 </template>

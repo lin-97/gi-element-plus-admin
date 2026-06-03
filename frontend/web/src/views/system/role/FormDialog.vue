@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { MenuItem } from '@/apis/menu'
@@ -17,7 +17,9 @@ import { useUserStore } from '@/stores/useUserStore'
 
 defineOptions({ name: 'SystemRoleFormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const userStore = useUserStore()
 const { dictData } = useDict(['STATUS'] as const)
@@ -30,12 +32,17 @@ interface RoleFormData {
   remark: string
 }
 
+interface MenuTreeRef {
+  setCheckedKeys: (keys: string[], leafOnly?: boolean) => void
+  getCheckedKeys: (leafOnly?: boolean) => string[]
+}
+
 const visible = ref(false)
 const isEdit = ref(false)
 const isSystemRole = ref(false)
-const currentId = ref<string>()
-const formRef = ref<FormInstance>()
-const menuTreeRef = ref()
+const currentId = ref('')
+const formRef = useTemplateRef<FormInstance>('formRef')
+const menuTreeRef = useTemplateRef<MenuTreeRef>('menuTreeRef')
 const menuTreeData = ref<MenuItem[]>([])
 const checkedMenuIds = ref<string[]>([])
 const formData = ref<RoleFormData>(createEmptyForm())
@@ -124,7 +131,7 @@ function toFormData(row: RoleItem): RoleFormData {
 async function openAdd() {
   isEdit.value = false
   isSystemRole.value = false
-  currentId.value = undefined
+  currentId.value = ''
   formData.value = createEmptyForm()
   checkedMenuIds.value = []
   visible.value = true
@@ -198,7 +205,7 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
@@ -207,7 +214,7 @@ defineExpose({ openAdd, openEdit })
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiPageLayout
+    <gi-page-layout
       :size="340"
       :collapse="false"
       :bordered="false"
@@ -215,7 +222,7 @@ defineExpose({ openAdd, openEdit })
       style="height: min(60vh, 480px); min-height: 320px;margin: 0"
     >
       <template #left>
-        <GiForm
+        <gi-form
           ref="formRef"
           v-model="formData"
           :columns="formColumns"
@@ -236,8 +243,8 @@ defineExpose({ openAdd, openEdit })
           default-expand-all
         />
       </el-scrollbar>
-    </GiPageLayout>
-  </GiDialog>
+    </gi-page-layout>
+  </gi-dialog>
 </template>
 
 <style scoped lang="scss">

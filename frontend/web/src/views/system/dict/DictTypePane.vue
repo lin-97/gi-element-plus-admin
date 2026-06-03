@@ -8,7 +8,7 @@ import DictTypeFormDialog from './DictTypeFormDialog.vue'
 defineOptions({ name: 'DictTypePane' })
 
 const emit = defineEmits<{
-  select: [type?: DictTypeItem]
+  (e: 'select', type?: DictTypeItem): void
 }>()
 
 const selectedType = defineModel<DictTypeItem | undefined>()

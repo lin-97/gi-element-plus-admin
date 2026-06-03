@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { DictTypeItem } from '@/apis/dict'
@@ -8,7 +8,9 @@ import { useDict } from '@/hooks/useDict'
 
 defineOptions({ name: 'DictTypeFormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const { dictData } = useDict(['STATUS'] as const)
 
@@ -22,8 +24,8 @@ interface DictTypeFormData {
 
 const visible = ref(false)
 const isEdit = ref(false)
-const currentId = ref<string>()
-const formRef = ref<FormInstance>()
+const currentId = ref('')
+const formRef = useTemplateRef<FormInstance>('formRef')
 const formData = ref<DictTypeFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑字典类型' : '新增字典类型'))
 
@@ -67,7 +69,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
 
 function openAdd() {
   isEdit.value = false
-  currentId.value = undefined
+  currentId.value = ''
   formData.value = createEmptyForm()
   visible.value = true
 }
@@ -113,7 +115,7 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
@@ -121,12 +123,12 @@ defineExpose({ openAdd, openEdit })
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
+    <gi-form
       ref="formRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
       label-width="90px"
     />
-  </GiDialog>
+  </gi-dialog>
 </template>

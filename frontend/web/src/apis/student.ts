@@ -5,7 +5,7 @@ export type GenderValue = '1' | '2'
 export interface StudentItem {
   id: string
   name: string
-  student_no?: string
+  studentNo?: string
   gender?: GenderValue
   age?: number
   phone?: string
@@ -17,7 +17,7 @@ export interface StudentItem {
 
 export interface StudentListQuery extends PageParams {
   name?: string
-  student_no?: string
+  studentNo?: string
   gender?: GenderValue
   age?: number
 }

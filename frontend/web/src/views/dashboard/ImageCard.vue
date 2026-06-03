@@ -1,17 +1,17 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import homeDesignImg from '@/assets/images/home-design.svg'
 
 defineOptions({ name: 'ImageCard' })
 </script>
 
 <template>
-  <GiCard class="image-card" :header-style="{ display: 'none' }">
+  <gi-card class="image-card" :header-style="{ display: 'none' }">
     <img
       :src="homeDesignImg"
       alt="工作台插图"
       class="image-card__img"
     >
-  </GiCard>
+  </gi-card>
 </template>
 
 <style lang="scss" scoped>

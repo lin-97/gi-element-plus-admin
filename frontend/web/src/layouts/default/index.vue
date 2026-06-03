@@ -5,6 +5,8 @@ import AppTabs from '@/components/AppTabs/index.vue'
 import PageTransition from '@/components/PageTransition/index.vue'
 import { useAppStore } from '@/core/stores'
 
+defineOptions({ name: 'DefaultLayout' })
+
 const appStore = useAppStore()
 </script>
 

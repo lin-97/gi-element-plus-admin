@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { MenuItem } from '@/apis/menu'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteMenuApi, getMenuTreeApi } from '@/apis/menu'
@@ -85,7 +85,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <GiPageLayout class="g-page-layout">
+  <gi-page-layout class="g-page-layout">
     <template #tool>
       <el-space>
         <gi-button type="add" @click="handleAddRoot">
@@ -156,5 +156,5 @@ onMounted(() => {
     </el-table>
 
     <FormDialog ref="FormDialogRef" @success="onFormSuccess" />
-  </GiPageLayout>
+  </gi-page-layout>
 </template>

@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import type { FormItemRule, FormRules } from 'element-plus'
+﻿<script setup lang="ts">
+import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { RoleOption } from '@/apis/role'
 import type { SysUserItem } from '@/apis/user'
@@ -7,15 +7,15 @@ import { ElMessage } from 'element-plus'
 import { getRoleOptionsApi } from '@/apis/role'
 import { AVATAR_MAX_LENGTH, createUserApi, updateUserApi } from '@/apis/user'
 import { useDict } from '@/hooks/useDict'
+import { EMAIL_REG, PHONE_REG } from '@/utils/regexp'
 
 defineOptions({ name: 'SystemUserFormDialog' })
 
-const emit = defineEmits<{ success: [] }>()
+const emit = defineEmits<{
+  (e: 'success'): void
+}>()
 
 const { dictData } = useDict(['STATUS'] as const)
-
-const PHONE_REG = /^1[3-9]\d{9}$/
-const EMAIL_REG = /^[\w.%+-]+@[\w.-]+\.[a-z]{2,}$/i
 
 interface UserFormData {
   username: string
@@ -33,8 +33,8 @@ interface UserFormData {
 const visible = ref(false)
 const isEdit = ref(false)
 const isSuperAdmin = ref(false)
-const currentId = ref<string>()
-const formRef = ref<FormInstance>()
+const currentId = ref('')
+const formRef = useTemplateRef<FormInstance>('formRef')
 const roleOptions = ref<RoleOption[]>([])
 const formData = ref<UserFormData>(createEmptyForm())
 const dialogTitle = computed(() => (isEdit.value ? '编辑用户' : '新增用户'))
@@ -54,15 +54,6 @@ function createEmptyForm(): UserFormData {
   }
 }
 
-function optionalPatternValidator(pattern: RegExp, message: string): FormItemRule['validator'] {
-  return (_rule, value, callback) => {
-    const text = String(value ?? '').trim()
-    if (!text || pattern.test(text))
-      return callback()
-    callback(new Error(message))
-  }
-}
-
 const formRules = computed<FormRules>(() => ({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: isEdit.value
@@ -71,8 +62,8 @@ const formRules = computed<FormRules>(() => ({
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, message: '密码至少6位', trigger: 'blur' },
       ],
-  phone: [{ validator: optionalPatternValidator(PHONE_REG, '请输入正确的11位手机号'), trigger: 'blur' }],
-  email: [{ validator: optionalPatternValidator(EMAIL_REG, '请输入正确的邮箱地址'), trigger: 'blur' }],
+  phone: [{ pattern: PHONE_REG, message: '请输入正确的11位手机号', trigger: 'blur' }],
+  email: [{ pattern: EMAIL_REG, message: '请输入正确的邮箱地址', trigger: 'blur' }],
   avatar: [{ max: AVATAR_MAX_LENGTH, message: `头像URL不能超过${AVATAR_MAX_LENGTH}个字符`, trigger: 'blur' }],
   roleIds: isSuperAdmin.value
     ? []
@@ -159,7 +150,7 @@ function toFormData(row: SysUserItem): UserFormData {
 function openAdd() {
   isEdit.value = false
   isSuperAdmin.value = false
-  currentId.value = undefined
+  currentId.value = ''
   formData.value = createEmptyForm()
   loadRoleOptions()
   visible.value = true
@@ -219,7 +210,7 @@ defineExpose({ openAdd, openEdit })
 </script>
 
 <template>
-  <GiDialog
+  <gi-dialog
     v-model="visible"
     :title="dialogTitle"
     width="calc(100% - 20px)"
@@ -227,12 +218,12 @@ defineExpose({ openAdd, openEdit })
     destroy-on-close
     :on-before-ok="handleBeforeOk"
   >
-    <GiForm
+    <gi-form
       ref="formRef"
       v-model="formData"
       :columns="formColumns"
       :rules="formRules"
       label-width="90px"
     />
-  </GiDialog>
+  </gi-dialog>
 </template>

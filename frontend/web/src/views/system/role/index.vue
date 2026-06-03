@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { RoleItem, StatusValue } from '@/apis/role'
 import { ElMessage } from 'element-plus'
@@ -113,9 +113,9 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
 </script>
 
 <template>
-  <GiPageLayout class="g-page-layout">
+  <gi-page-layout class="g-page-layout">
     <template #header>
-      <GiForm
+      <gi-form
         :model-value="queryForm"
         :columns="formColumns"
         search
@@ -137,7 +137,7 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
       </el-space>
     </template>
 
-    <GiTable
+    <gi-table
       v-loading="loading"
       border
       :data="tableData"
@@ -171,8 +171,8 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
           </el-button>
         </el-space>
       </template>
-    </GiTable>
+    </gi-table>
 
     <FormDialog ref="FormDialogRef" @success="refresh" />
-  </GiPageLayout>
+  </gi-page-layout>
 </template>

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { useUserStore } from '@/stores/useUserStore'
 
@@ -45,7 +45,7 @@ const messages = [
 </script>
 
 <template>
-  <GiCard class="message-card">
+  <gi-card class="message-card">
     <template #title>
       <span>消息</span>
     </template>
@@ -77,7 +77,7 @@ const messages = [
         <span class="message-card__time">{{ item.time }}</span>
       </div>
     </div>
-  </GiCard>
+  </gi-card>
 </template>
 
 <style lang="scss" scoped>
