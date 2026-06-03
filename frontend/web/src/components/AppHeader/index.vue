@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Expand, Fold } from '@element-plus/icons-vue'
 import { Icon } from '@iconify/vue'
 import { useFullscreen } from '@vueuse/core'
 import { ElMessageBox } from 'element-plus'

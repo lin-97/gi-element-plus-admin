@@ -124,18 +124,18 @@ export function useTable<F>(options: Options<F>) {
   }
 
   const selectedKeys = ref<string[]>([])
-  const onSelectionChange = (rows: T[]) => {
-    selectedKeys.value = rows.map(row => row[options.rowKey as keyof T])
+  const onSelectionChange = (rows: F[]) => {
+    selectedKeys.value = rows.map(row => row[options.rowKey as keyof F] as unknown as string)
   }
 
   // 删除单个数据
-  const onDelete = (row: T) => {
+  const onDelete = (row: F) => {
     if (!options.deleteAPI) {
       ElMessage.error('deleteAPI没有配置')
       return
     }
     const deleteAPI = options.deleteAPI
-    handleDelete(() => deleteAPI([row[options.rowKey as keyof T] as unknown as string]))
+    handleDelete(() => deleteAPI([row[options.rowKey as keyof F] as unknown as string]))
   }
 
   // 批量删除数据
