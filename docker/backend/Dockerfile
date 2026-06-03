@@ -32,14 +32,12 @@ WORKDIR /app
 
 RUN useradd --create-home --uid 1001 --shell /usr/sbin/nologin appuser \
     && mkdir -p /app/logs /app/static/upload /app/env \
-    && chown -R appuser:appuser /app
+    && chown -R appuser:appuser /app/logs /app/static/upload /app/env
 
-COPY --from=builder /build/.venv /app/.venv
-COPY backend/app ./app
-COPY backend/main.py backend/alembic.ini backend/banner.txt ./
-COPY backend/static ./static
-
-RUN chown -R appuser:appuser /app
+COPY --from=builder --chown=appuser:appuser /build/.venv /app/.venv
+COPY --chown=appuser:appuser backend/app ./app
+COPY --chown=appuser:appuser backend/main.py backend/alembic.ini backend/banner.txt ./
+COPY --chown=appuser:appuser backend/static ./static
 
 USER appuser
 
