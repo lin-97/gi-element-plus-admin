@@ -1,49 +1,23 @@
-# syntax=docker/dockerfile:1.7
+# 使用python:3.13-slim 镜像作为基础镜像
+FROM python:3.13-slim
 
-FROM python:3.12-slim AS builder
+# 使用 LABEL 替代 MAINTAINER
+LABEL maintainer="lin-97@qq.com"
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+# 设置时区
+ENV TZ Asia/Shanghai
 
-ENV UV_COMPILE_BYTECODE=1 \
-    UV_LINK_MODE=copy \
-    UV_PYTHON_DOWNLOADS=never
+# 设置容器内工作目录
+WORKDIR /home
 
-WORKDIR /build
+# 将当前主机目录全部文件复制至容器工作目录
+COPY ./backend/requirements.txt .
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# 安装依赖
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-COPY backend/pyproject.toml backend/uv.lock ./
+# 暴露端口
+EXPOSE 8001
 
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
-
-
-FROM python:3.12-slim AS runtime
-
-ENV TZ=Asia/Shanghai \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    ENVIRONMENT=prod \
-    PATH="/app/.venv/bin:$PATH"
-
-WORKDIR /app
-
-RUN useradd --create-home --uid 1001 --shell /usr/sbin/nologin appuser \
-    && mkdir -p /app/logs /app/static/upload /app/env \
-    && chown -R appuser:appuser /app/logs /app/static/upload /app/env
-
-COPY --from=builder --chown=appuser:appuser /build/.venv /app/.venv
-COPY --chown=appuser:appuser backend/app ./app
-COPY --chown=appuser:appuser backend/main.py backend/alembic.ini backend/banner.txt ./
-COPY --chown=appuser:appuser backend/static ./static
-
-USER appuser
-
-EXPOSE 8000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3).read()" || exit 1
-
-CMD ["uvicorn", "main:create_app", "--host", "0.0.0.0", "--port", "8000", "--factory"]
+# 运行应用
+CMD ["python", "main.py", "run", "--env=prod"]
