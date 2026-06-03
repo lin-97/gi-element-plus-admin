@@ -19,23 +19,27 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
       <span v-if="!appStore.isMenuCollapse" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
-    <el-menu
-      :default-active="selectedKeys[0]"
-      :collapse="appStore.isMenuCollapse"
-      :unique-opened="appStore.isMenuAccordion"
-      @select="handleMenuItemClick"
-    >
-      <AppMenuItem
-        v-for="item in menuList"
-        :key="item.path"
-        :item="item"
-      />
-    </el-menu>
+    <el-scrollbar class="app-sidebar__scroll">
+      <el-menu
+        :default-active="selectedKeys[0]"
+        :collapse="appStore.isMenuCollapse"
+        :unique-opened="appStore.isMenuAccordion"
+        @select="handleMenuItemClick"
+      >
+        <AppMenuItem
+          v-for="item in menuList"
+          :key="item.path"
+          :item="item"
+        />
+      </el-menu>
+    </el-scrollbar>
   </aside>
 </template>
 
 <style lang="scss" scoped>
 .app-sidebar {
+  display: flex;
+  flex-direction: column;
   width: 220px;
   height: 100%;
   background: var(--el-bg-color);
@@ -47,11 +51,17 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     width: 64px;
   }
 
-  :deep(.el-menu) {
-    border-right: none;
+  &__scroll {
+    flex: 1;
+    min-height: 0;
+
+    :deep(.el-menu) {
+      border-right: none;
+    }
   }
 
   &__logo {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;

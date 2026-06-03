@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import { ColorPicker } from 'vue-color-kit'
+import { useTheme } from '@/core/hooks'
 import { useAppStore } from '@/core/stores'
 import { PRESET_THEME_COLORS } from '@/core/utils/theme'
 import 'vue-color-kit/dist/vue-color-kit.css'
@@ -9,11 +11,17 @@ defineOptions({ name: 'AppSettingDrawer' })
 const visible = defineModel({ default: false })
 
 const appStore = useAppStore()
+const { isDark } = useTheme()
 
 const presetColors = [...PRESET_THEME_COLORS]
 
 function handleChangeColor(color: { hex: string }) {
   appStore.themeColor = color.hex
+}
+
+function handleReset() {
+  appStore.resetSetting()
+  isDark.value = false
 }
 </script>
 
@@ -49,6 +57,16 @@ function handleChangeColor(color: { hex: string }) {
       界面设置
     </el-divider>
     <el-descriptions :column="1">
+      <el-descriptions-item label="暗黑模式">
+        <el-switch v-model="isDark" inline-prompt>
+          <template #active-action>
+            <Icon icon="custom:moon-fill" width="12" height="12" />
+          </template>
+          <template #inactive-action>
+            <Icon icon="custom:sun-fill" width="12" height="12" />
+          </template>
+        </el-switch>
+      </el-descriptions-item>
       <el-descriptions-item label="显示页签">
         <el-switch v-model="appStore.isShowTabs" />
       </el-descriptions-item>
@@ -61,7 +79,7 @@ function handleChangeColor(color: { hex: string }) {
     </el-descriptions>
 
     <template #footer>
-      <el-button type="primary" style="width: 100%" @click="appStore.resetSetting()">
+      <el-button type="primary" style="width: 100%" @click="handleReset">
         恢复默认配置
       </el-button>
     </template>

@@ -7,8 +7,9 @@ export function useTheme() {
     valueDark: 'dark',
     valueLight: '',
     storageKey: 'theme',
-    // 初始值
     initialValue: 'light',
+    // 默认 true 会在切换时全局禁用 transition，导致 el-switch 等组件无动画
+    disableTransition: false,
   })
 
   const toggleDark = useToggle(isDark)
