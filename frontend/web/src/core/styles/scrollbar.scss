@@ -1,0 +1,39 @@
+// 全局滚动条（WebKit + Firefox），随 Element Plus 主题变量适配亮/暗色
+
+@mixin scrollbar-thumb {
+  background-color: var(--el-border-color-darker);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background-color 0.2s ease;
+}
+
+@mixin scrollbar-thumb-hover {
+  background-color: var(--el-text-color-placeholder);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--el-border-color-darker) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  @include scrollbar-thumb;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  @include scrollbar-thumb-hover;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}

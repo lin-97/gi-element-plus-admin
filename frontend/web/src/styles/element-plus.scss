@@ -1,7 +1,13 @@
-.el-dialog {
-  --el-dialog-bg-color: var(--color-bg-2);
-}
+html {
+  .el-dialog {
+    --el-dialog-bg-color: var(--color-bg-2);
+  }
 
-html .el-drawer {
-  --el-drawer-bg-color: var(--color-bg-2);
+  .el-drawer {
+    --el-drawer-bg-color: var(--color-bg-2);
+  }
+
+  .el-tabs__nav-wrap::after {
+    height: 1px;
+  }
 }
