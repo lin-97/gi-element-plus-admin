@@ -52,7 +52,7 @@ jobs:
           NODE_ENV: production
           VITE_APP_TITLE: GI Element Plus Admin
           VITE_BASE: /gi-element-plus-admin/
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'http://43.250.173.170:29891/api/v1' }}
+          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://aizhongyi.abrdns.com/api/v1' }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

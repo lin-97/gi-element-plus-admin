@@ -52,10 +52,28 @@ const elementIcon = computed(() => {
   return getElementIcon(icon)
 })
 const hasIcon = computed(() => iconType.value !== 'none')
+
+const elIconSize = computed(() => {
+  if (typeof size === 'number')
+    return size
+  if (typeof size === 'string' && /^\d+$/.test(size))
+    return Number(size)
+  return undefined
+})
+
+const iconWrapStyle = computed(() => {
+  if (wrap || iconType.value === 'element')
+    return undefined
+  if (typeof size === 'number')
+    return { fontSize: `${size}px` }
+  if (typeof size === 'string' && size !== '1em')
+    return { fontSize: size }
+  return undefined
+})
 </script>
 
 <template>
-  <el-icon v-if="wrap && hasIcon">
+  <el-icon v-if="wrap && hasIcon" :size="elIconSize">
     <span
       v-if="iconType === 'svg'"
       class="app-menu-icon__svg"
@@ -70,7 +88,7 @@ const hasIcon = computed(() => iconType.value !== 'none')
     />
     <component :is="elementIcon" v-else />
   </el-icon>
-  <span v-else-if="hasIcon" class="app-menu-icon">
+  <span v-else-if="hasIcon" class="app-menu-icon" :style="iconWrapStyle">
     <span
       v-if="iconType === 'svg'"
       class="app-menu-icon__svg"
@@ -83,7 +101,9 @@ const hasIcon = computed(() => iconType.value !== 'none')
       :width="size"
       :height="size"
     />
-    <component :is="elementIcon" v-else />
+    <el-icon v-else :size="elIconSize">
+      <component :is="elementIcon" />
+    </el-icon>
   </span>
 </template>
 
