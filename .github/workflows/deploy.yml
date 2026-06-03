@@ -52,7 +52,8 @@ jobs:
           NODE_ENV: production
           VITE_APP_TITLE: GI Element Plus Admin
           VITE_BASE: /gi-element-plus-admin/
-          VITE_API_BASE_URL: ${{ vars.VITE_API_BASE_URL || 'https://aizhongyi.abrdns.com/api/v1' }}
+          # 勿用仓库 Variables 覆盖为旧 HTTP 地址，否则 GitHub Pages(HTTPS) 会 Mixed Content 拦截
+          VITE_API_BASE_URL: https://aizhongyi.abrdns.com/api/v1
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
