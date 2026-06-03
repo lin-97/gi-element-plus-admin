@@ -68,21 +68,23 @@ watch(activeTab, () => {
 
 <template>
   <gi-page-layout class="system-icon-page g-page-layout">
-    <template #tool>
-      <el-input
-        v-model="keyword"
-        class="system-icon-page__search"
-        placeholder="搜索图标名称，如 user、setting"
-        clearable
-      >
-        <template #prefix>
-          <Icon icon="icon-park-outline:search" width="16" height="16" />
-        </template>
-      </el-input>
-      <span class="system-icon-page__count">{{ resultCountText }}</span>
-    </template>
-
-    <gi-tabs v-model="activeTab" :options="tabOptions" inner />
+    <gi-tabs v-model="activeTab" :options="tabOptions" inner>
+      <template #extra>
+        <el-space alignment="center">
+          <el-input
+            v-model="keyword"
+            class="system-icon-page__search"
+            placeholder="搜索图标名称，如 user、setting"
+            clearable
+          >
+            <template #prefix>
+              <Icon icon="icon-park-outline:search" width="16" height="16" />
+            </template>
+          </el-input>
+          <span class="system-icon-page__count">{{ resultCountText }}</span>
+        </el-space>
+      </template>
+    </gi-tabs>
 
     <div class="system-icon-page__body">
       <div class="system-icon-page__list">
@@ -102,12 +104,6 @@ watch(activeTab, () => {
 </template>
 
 <style scoped lang="scss">
-.system-icon-page {
-  :deep(.el-splitter-panel) {
-    flex: 1;
-  }
-}
-
 .system-icon-page__search {
   width: 280px;
 }
@@ -115,10 +111,7 @@ watch(activeTab, () => {
 .system-icon-page__count {
   font-size: 13px;
   color: var(--el-text-color-secondary);
-  margin-left: 8px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .system-icon-page__body {
@@ -133,7 +126,7 @@ watch(activeTab, () => {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding-top: 12px;
+  padding: 12px 0;
 }
 
 .system-icon-page__pager {
