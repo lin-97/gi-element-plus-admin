@@ -118,6 +118,45 @@ async def run_alembic_upgrade() -> None:
         await create_tables()
         log.info("表结构初始化完成")
 
+    await apply_schema_patches()
+
+
+async def apply_schema_patches() -> None:
+    """无 Alembic 迁移时的增量结构补丁（幂等）"""
+    if not settings.SQL_DB_ENABLE or not await _core_table_exists():
+        return
+
+    async with async_engine.begin() as conn:
+
+        def patch(sync_conn) -> None:
+            if not inspect(sync_conn).has_table(MenuModel.__tablename__):
+                return
+            cols = inspect(sync_conn).get_columns(MenuModel.__tablename__)
+            icon_col = next((c for c in cols if c["name"] == "icon"), None)
+            if not icon_col:
+                return
+
+            db_type = settings.DATABASE_TYPE
+            col_type = icon_col["type"]
+            type_name = type(col_type).__name__.upper()
+
+            if db_type == "mysql":
+                length = getattr(col_type, "length", None)
+                if type_name == "VARCHAR" and length is not None and length <= 255:
+                    sync_conn.execute(
+                        text(
+                            "ALTER TABLE sys_menu MODIFY COLUMN icon TEXT "
+                            "COMMENT '菜单图标（Element Plus 图标名或 SVG 字符串）'"
+                        )
+                    )
+                    log.info("已扩展 sys_menu.icon 列为 TEXT")
+            elif db_type == "postgres":
+                if type_name in {"VARCHAR", "CHARACTER VARYING"}:
+                    sync_conn.execute(text("ALTER TABLE sys_menu ALTER COLUMN icon TYPE TEXT"))
+                    log.info("已扩展 sys_menu.icon 列为 TEXT")
+
+        await conn.run_sync(patch)
+
 
 class InitializeData:
     def __init__(self) -> None:

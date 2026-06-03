@@ -19,7 +19,7 @@ class MenuCreateSchema(CamelModel):
         validation_alias=AliasChoices("order", "sort"),
     )
     permission: str | None = None
-    icon: str | None = None
+    icon: str | None = Field(default=None, max_length=8000)
     route_name: str | None = None
     route_path: str | None = Field(
         default=None,
@@ -67,7 +67,7 @@ class MenuOutSchema(CamelModel):
     type: int
     order: int = Field(serialization_alias="sort", validation_alias=AliasChoices("order", "sort"))
     permission: str | None = None
-    icon: str | None = None
+    icon: str | None = Field(default=None, max_length=8000)
     route_name: str | None = None
     route_path: str | None = Field(
         default=None,

@@ -70,7 +70,18 @@ const formColumns = computed<FormColumnItem[]>(() => {
   if (formData.value.type !== 3) {
     cols.push(
       { field: 'path', label: '路径', type: 'input' },
-      { field: 'icon', label: '图标', type: 'input' },
+      {
+        field: 'icon',
+        label: '图标',
+        type: 'textarea',
+        span: 24,
+        props: {
+          rows: 4,
+          maxlength: 8000,
+          showWordLimit: true,
+          placeholder: 'Iconify（如 icon-park-outline:user、custom:setting）、Element Plus 图标名（如 Monitor）或完整 SVG 字符串',
+        },
+      },
     )
   }
   if (formData.value.type === 1) {

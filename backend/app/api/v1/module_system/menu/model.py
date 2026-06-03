@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import JSON, Boolean, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.common.enums import PermissionFilterStrategy
@@ -21,7 +21,7 @@ class MenuModel(ModelMixin):
     )
     order: Mapped[int] = mapped_column(Integer, default=999, comment="显示排序，数值越小越靠前")
     permission: Mapped[str | None] = mapped_column(String(100), comment="权限标识")
-    icon: Mapped[str | None] = mapped_column(String(50), comment="菜单图标")
+    icon: Mapped[str | None] = mapped_column(Text, comment="菜单图标（Element Plus 图标名或 SVG 字符串）")
     route_name: Mapped[str | None] = mapped_column(String(100), comment="路由名称")
     route_path: Mapped[str | None] = mapped_column(String(200), comment="路由路径")
     component_path: Mapped[str | None] = mapped_column(String(200), comment="前端组件路径")
