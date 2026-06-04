@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { useClipboard } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 
 defineOptions({ name: 'SystemIconGrid' })
@@ -65,7 +66,9 @@ function displayName(fullName: string) {
   border-radius: var(--el-border-radius-base);
   background: var(--el-bg-color);
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     border-color: var(--el-color-primary-light-5);

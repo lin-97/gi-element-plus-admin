@@ -87,6 +87,7 @@ function formatAsyncRoutes(menus: AsyncRouteItem[]) {
         showInTabs: item.showInTabs,
         activeMenu: item.activeMenu,
         alwaysShow: item.alwaysShow,
+        sort: item.sort,
       },
     }
   })

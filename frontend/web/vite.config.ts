@@ -52,13 +52,10 @@ export default defineConfig(({ mode }) => {
         imports: [
           'vue',
           'vue-router',
-          'pinia',
-          '@vueuse/core',
           {
             vue: ['useTemplateRef', 'onWatcherCleanup', 'useId'],
           },
         ],
-        dirs: ['src/stores', 'src/utils', 'src/hooks'],
         dts: 'src/auto-import.d.ts',
         resolvers: [ElementPlusResolver()],
       }),

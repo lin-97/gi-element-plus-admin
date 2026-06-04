@@ -20,7 +20,7 @@ const typeList = ref<DictTypeItem[]>([])
 const searchName = ref('')
 const statusFilter = ref<StatusValue | ''>('')
 
-const statusSegmentedOptions: { label: string, value: StatusValue | '' }[] = [
+const statusOptions: { label: string, value: StatusValue | '' }[] = [
   { label: '全部', value: '' },
   { label: '启用', value: '1' },
   { label: '禁用', value: '0' },
@@ -116,50 +116,35 @@ defineExpose({ reload: loadTypes })
 
 <template>
   <div v-loading="loading" class="dict-type-pane">
-    <el-input
-      v-model="searchName"
-      placeholder="输入字典名称搜索"
-      clearable
-      @keyup.enter="handleSearch"
-      @clear="handleSearch"
-    >
+    <el-input v-model="searchName" placeholder="输入字典名称搜索" clearable @keyup.enter="handleSearch" @clear="handleSearch">
       <template #append>
         <el-button :icon="Search" @click="handleSearch" />
       </template>
     </el-input>
 
-    <el-space wrap>
-      <gi-button type="add" @click="handleAdd">
+    <el-row>
+      <gi-button type="add" class="g-flex-1" @click="handleAdd">
         新增
       </gi-button>
-      <el-button type="primary" plain :disabled="!selectedType" @click="handleEdit">
+      <el-button type="primary" plain class="g-flex-1" :disabled="!selectedType" @click="handleEdit">
         编辑
       </el-button>
-      <el-button
-        type="danger"
-        plain
-        :disabled="!selectedType || selectedType.isSystem"
-        @click="handleDelete"
-      >
+      <el-button type="danger" plain class="g-flex-1" :disabled="!selectedType || selectedType.isSystem" @click="handleDelete">
         删除
       </el-button>
-    </el-space>
+    </el-row>
 
-    <el-segmented
-      v-model="statusFilter"
-      block
-      :options="statusSegmentedOptions"
-      @change="handleStatusChange"
-    />
+    <el-radio-group v-model="statusFilter" class="dict-type-pane__status" @change="handleStatusChange">
+      <el-radio-button v-for="item in statusOptions" :key="item.label" :value="item.value">
+        {{ item.label }}
+      </el-radio-button>
+    </el-radio-group>
 
     <el-scrollbar class="dict-type-pane__scroll">
       <ul v-if="typeList.length" class="dict-type-pane__list">
         <li
-          v-for="item in typeList"
-          :key="item.id"
-          class="dict-type-pane__item"
-          :class="{ 'is-active': selectedType?.id === item.id }"
-          @click="handleSelect(item)"
+          v-for="item in typeList" :key="item.id" class="dict-type-pane__item"
+          :class="{ 'is-active': selectedType?.id === item.id }" @click="handleSelect(item)"
         >
           <span class="dict-type-pane__name">{{ item.name }}</span>
           <span class="dict-type-pane__code">({{ item.code }})</span>
@@ -181,6 +166,19 @@ defineExpose({ reload: loadTypes })
   height: 100%;
   padding: 16px;
   box-sizing: border-box;
+}
+
+.dict-type-pane__status {
+  display: flex;
+  width: 100%;
+
+  :deep(.el-radio-button) {
+    flex: 1;
+  }
+
+  :deep(.el-radio-button__inner) {
+    width: 100%;
+  }
 }
 
 .dict-type-pane__scroll {

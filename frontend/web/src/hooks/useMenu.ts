@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { eachTree } from 'xe-utils'
 import { useRouteListener } from '@/core/hooks'
 import { useRouteStore } from '@/core/stores'
-import { filterTree, isExternal } from '@/utils'
+import { filterSortTree, isExternal } from '@/utils'
 
 /**
  * 菜单管理 Hooks
@@ -29,21 +29,21 @@ export function useMenu() {
     // 深拷贝路由配置，防止修改原始数据
     const cloneRoutes = JSON.parse(JSON.stringify(routeStore.routes)) as RouteRecordRaw[]
 
-    // 过滤出非隐藏的菜单（meta.hidden !== false）
-    const showMenuList = filterTree(cloneRoutes, i => i.meta?.hidden === false) as RouteRecordRaw[]
+    const sortedMenuList = filterSortTree(cloneRoutes, i => i.meta?.hidden === false)
 
     // 遍历处理菜单树，展平只有一个子项的菜单项
-    eachTree(showMenuList, (i) => {
+    eachTree(sortedMenuList, (i) => {
       if (i?.children?.length === 1 && i?.meta?.alwaysShow !== true) {
         if (i.meta) {
           i.meta.title = i.meta?.title || i.children?.[0]?.meta?.title
           i.meta.icon = i.meta?.icon || i.children?.[0]?.meta?.icon
+          i.meta.sort = i.meta?.sort ?? i.children?.[0]?.meta?.sort
         }
         i.path = i.children?.[0]?.path
         delete i.children
       }
     })
-    return showMenuList
+    return filterSortTree(sortedMenuList, () => true)
   })
 
   const selectedKeys = ref<string[]>([])
