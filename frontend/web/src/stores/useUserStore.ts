@@ -32,10 +32,24 @@ export const useUserStore = defineStore('user', () => {
 
   async function login(params: { username: string, password: string }) {
     resetRouteState()
-    const res = await loginApi(params)
-    token.value = res.token
-    await generateRoutes()
-    return res
+    token.value = ''
+    userInfo.value = null
+    permissionStore.setRoles([])
+    permissionStore.setPermissions([])
+    try {
+      const res = await loginApi(params)
+      token.value = res.token
+      await generateRoutes()
+      return res
+    }
+    catch (error) {
+      token.value = ''
+      userInfo.value = null
+      permissionStore.setRoles([])
+      permissionStore.setPermissions([])
+      resetRouteState()
+      throw error
+    }
   }
 
   async function fetchUserInfo() {

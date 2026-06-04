@@ -20,6 +20,7 @@ const { isDark, toggleDark } = useTheme()
 const formRef = useTemplateRef<FormInstance>('formRef')
 const loading = ref(false)
 const rememberMe = ref(false)
+const errorMessage = ref('')
 const form = reactive<{ username: string, password: string }>({
   username: 'admin',
   password: '123456',
@@ -56,8 +57,25 @@ onMounted(() => {
   }
 })
 
+function getLoginErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    if (error.message === 'Network Error')
+      return '无法连接服务器，请检查网络或后端服务是否可用'
+    if (error.message)
+      return error.message
+  }
+  return '登录失败，请稍后重试'
+}
+
 async function handleLogin() {
-  await formRef.value?.validate()
+  errorMessage.value = ''
+  try {
+    await formRef.value?.validate()
+  }
+  catch {
+    return
+  }
+
   loading.value = true
   try {
     await userStore.login(form)
@@ -69,6 +87,11 @@ async function handleLogin() {
     ElMessage.success('登录成功')
     const redirect = (route.query.redirect as string) || appConfig.homePath
     await router.push(redirect)
+  }
+  catch (error) {
+    const message = getLoginErrorMessage(error)
+    errorMessage.value = message
+    ElMessage.error(message)
   }
   finally {
     loading.value = false
@@ -154,6 +177,16 @@ async function handleLogin() {
             登录以继续使用您的工作空间
           </p>
         </header>
+
+        <el-alert
+          v-if="errorMessage"
+          class="login-page__error"
+          :title="errorMessage"
+          type="error"
+          show-icon
+          :closable="true"
+          @close="errorMessage = ''"
+        />
 
         <el-form
           ref="formRef"
@@ -404,6 +437,10 @@ async function handleLogin() {
 
   &__form-header {
     margin-bottom: 32px;
+  }
+
+  &__error {
+    margin-bottom: 16px;
   }
 
   &__form-title {
