@@ -5,7 +5,7 @@ import { ElMessageBox } from 'element-plus'
 import AppBreadcrumb from '@/components/AppBreadcrumb/index.vue'
 import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import AppMenuToggle from '@/components/AppMenuToggle/index.vue'
-import AppSettingDrawer from '@/components/AppSettingDrawer/index.vue'
+import { openAppSettingDrawer } from '@/components/AppSettingDrawer/open'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
 import { useAppStore } from '@/core/stores'
@@ -25,7 +25,6 @@ const userStore = useUserStore()
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 
-const settingVisible = ref(false)
 const isTopMode = computed(() => mode === 'top')
 
 const breakpoints = useBreakpoints(breakpointsTailwind)
@@ -99,7 +98,7 @@ async function handleLogout() {
             type="primary"
             text
             circle
-            @click="settingVisible = true"
+            @click="openAppSettingDrawer()"
           >
             <Icon icon="custom:setting" width="18" height="18" />
           </el-button>
@@ -124,8 +123,6 @@ async function handleLogout() {
         </template>
       </el-dropdown>
     </el-space>
-
-    <AppSettingDrawer v-model="settingVisible" />
   </header>
 </template>
 

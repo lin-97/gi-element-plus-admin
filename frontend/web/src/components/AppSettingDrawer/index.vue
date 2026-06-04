@@ -8,7 +8,9 @@ import 'vue-color-kit/dist/vue-color-kit.css'
 
 defineOptions({ name: 'AppSettingDrawer' })
 
-const visible = defineModel({ default: false })
+const emit = defineEmits<{
+  (e: 'closed'): void
+}>()
 
 const appStore = useAppStore()
 const { isDark } = useTheme()
@@ -19,14 +21,13 @@ function handleChangeColor(color: { hex: string }) {
   appStore.themeColor = color.hex
 }
 
-function handleReset() {
-  appStore.resetSetting()
-  isDark.value = false
-}
+onUnmounted(() => {
+  emit('closed')
+})
 </script>
 
 <template>
-  <el-drawer v-model="visible" title="系统设置" direction="rtl" size="320px" :append-to-body="true">
+  <div class="app-setting-drawer">
     <el-divider content-position="center">
       布局模式
     </el-divider>
@@ -77,22 +78,18 @@ function handleReset() {
         <el-switch v-model="appStore.isMenuAccordion" />
       </el-descriptions-item>
     </el-descriptions>
-
-    <template #footer>
-      <el-button type="primary" style="width: 100%" @click="handleReset">
-        恢复默认配置
-      </el-button>
-    </template>
-  </el-drawer>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 :deep(.el-descriptions__body) {
   background-color: transparent;
 }
+
 :deep(.el-descriptions__cell) {
   display: flex;
   align-items: center;
+
   .el-descriptions__content {
     flex: 1;
     display: flex;
