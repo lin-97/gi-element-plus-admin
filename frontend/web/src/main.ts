@@ -2,6 +2,7 @@ import GiComponent, { Drawer } from 'gi-component'
 import { createApp } from 'vue'
 import directives from '@/core/directives'
 import pinia from '@/stores'
+import { removeAppLoading } from '@/utils/app-loading'
 import App from './App.vue'
 import router from './router'
 import 'gi-component/dist/gi.css'
@@ -23,3 +24,7 @@ app.use(directives)
 Object.assign(Drawer._context, app._context)
 
 app.mount('#app')
+
+router.isReady().finally(() => {
+  removeAppLoading()
+})
