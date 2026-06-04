@@ -5,7 +5,13 @@ import { useMenu } from '@/hooks/useMenu'
 
 defineOptions({ name: 'AppSidebar' })
 
+const { drawer = false } = defineProps<{
+  drawer?: boolean
+}>()
+
 const appStore = useAppStore()
+
+const isCollapsed = computed(() => !drawer && appStore.isMenuCollapse)
 
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 </script>
@@ -13,16 +19,16 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 <template>
   <aside
     class="app-sidebar"
-    :class="{ 'app-sidebar--collapsed': appStore.isMenuCollapse }"
+    :class="{ 'app-sidebar--collapsed': isCollapsed, 'app-sidebar--drawer': drawer }"
   >
     <div class="app-sidebar__logo">
-      <span v-if="!appStore.isMenuCollapse" class="app-sidebar__logo-text">GI Admin</span>
+      <span v-if="!isCollapsed" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
     <el-scrollbar class="app-sidebar__scroll">
       <el-menu
         :default-active="selectedKeys[0]"
-        :collapse="appStore.isMenuCollapse"
+        :collapse="isCollapsed"
         :unique-opened="appStore.isMenuAccordion"
         @select="handleMenuItemClick"
       >
@@ -49,6 +55,11 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 
   &--collapsed {
     width: 64px;
+  }
+
+  &--drawer {
+    width: 100%;
+    border-right: none;
   }
 
   &__scroll {

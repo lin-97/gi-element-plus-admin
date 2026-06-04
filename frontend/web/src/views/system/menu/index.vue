@@ -119,6 +119,12 @@ onMounted(() => {
       </el-table-column>
       <el-table-column prop="path" label="路径" min-width="160" show-overflow-tooltip />
       <el-table-column prop="component" label="组件" min-width="140" show-overflow-tooltip />
+      <el-table-column label="图标" width="72" align="center">
+        <template #default="{ row }">
+          <AppMenuIcon v-if="row.icon" :icon="row.icon" :size="18" />
+          <span v-else>-</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="permission" label="权限标识" min-width="140" show-overflow-tooltip />
       <el-table-column prop="sort" label="排序" width="72" align="center" />
       <el-table-column label="状态" width="80" align="center">

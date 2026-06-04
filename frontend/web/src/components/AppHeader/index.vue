@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { useFullscreen } from '@vueuse/core'
+import { breakpointsTailwind, useBreakpoints, useFullscreen } from '@vueuse/core'
 import { ElMessageBox } from 'element-plus'
 import AppBreadcrumb from '@/components/AppBreadcrumb/index.vue'
 import AppMenuItem from '@/components/AppMenuItem/index.vue'
+import AppMenuToggle from '@/components/AppMenuToggle/index.vue'
 import AppSettingDrawer from '@/components/AppSettingDrawer/index.vue'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
@@ -27,6 +28,10 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 const settingVisible = ref(false)
 const isTopMode = computed(() => mode === 'top')
 
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isXsScreen = breakpoints.smaller('sm')
+const isMdScreen = breakpoints.smaller('md')
+
 async function handleLogout() {
   await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
     confirmButtonText: '确定',
@@ -42,7 +47,8 @@ async function handleLogout() {
   <header class="app-header" :class="{ 'app-header--top': isTopMode }">
     <div class="app-header__left">
       <template v-if="isTopMode">
-        <span class="app-header__logo">GI Admin</span>
+        <span v-if="!isMdScreen" class="app-header__logo">GI Admin</span>
+        <AppMenuToggle v-if="isMdScreen" />
         <el-menu
           mode="horizontal"
           :default-active="selectedKeys[0]"
@@ -58,26 +64,14 @@ async function handleLogout() {
         </el-menu>
       </template>
       <template v-else>
-        <el-button
-          type="primary"
-          bg
-          text
-          circle
-          @click="appStore.setMenuCollapse(!appStore.isMenuCollapse)"
-        >
-          <Icon
-            :icon="appStore.isMenuCollapse ? 'custom:menu-unfold' : 'custom:menu-fold'"
-            width="18"
-            height="18"
-          />
-        </el-button>
-        <AppBreadcrumb />
+        <AppMenuToggle />
+        <AppBreadcrumb v-if="!isXsScreen" />
       </template>
     </div>
 
     <el-space :size="8">
       <el-space :size="4">
-        <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'">
+        <el-tooltip v-if="!isXsScreen" :content="isFullscreen ? '退出全屏' : '全屏'">
           <el-button type="primary" text circle @click="toggleFullscreen">
             <Icon
               :icon="isFullscreen ? 'custom:off-screen' : 'custom:full-screen'"

@@ -160,6 +160,7 @@ async function handleLogin() {
           class="login-page__form"
           :model="form"
           :rules="rules"
+          size="large"
           label-position="top"
           @submit.prevent="handleLogin"
         >
@@ -442,6 +443,12 @@ async function handleLogin() {
       &.is-focus {
         box-shadow: 0 0 0 1px var(--login-primary) inset;
       }
+    }
+
+    :deep(.el-button) {
+      height: 46px;
+      border-radius: 8px;
+      font-size: 15px;
     }
   }
 
