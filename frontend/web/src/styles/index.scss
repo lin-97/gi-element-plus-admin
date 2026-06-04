@@ -29,6 +29,15 @@ body,
   border-radius: 4px;
 }
 
+.gi-square-switch.el-switch {
+  .el-switch__core {
+    border-radius: 2px;
+    .el-switch__action {
+      border-radius: 2px;
+    }
+  }
+}
+
 .g-flex-1 {
   flex: 1;
 }

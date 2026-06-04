@@ -31,7 +31,7 @@ const formColumns = computed<FormColumnItem[]>(() => [
 ])
 
 const tableColumns: TableColumnItem[] = [
-  { type: 'selection', width: 48, align: 'center' },
+  { type: 'selection', width: 48, align: 'center', fixed: 'left' },
   { prop: 'id', label: 'ID', width: 80 },
   { prop: 'name', label: '姓名' },
   { prop: 'studentNo', label: '学号' },
@@ -44,8 +44,12 @@ const tableColumns: TableColumnItem[] = [
     width: 120,
     align: 'center',
     slotName: 'action',
+    fixed: 'right',
   },
 ]
+
+/** 与 GTableSetting 内 getColumnKey 规则一致：不允许在列设置中隐藏 */
+const disabledColumnKeys = ['id', 'name', 'action']
 
 const {
   tableData,
@@ -102,40 +106,47 @@ function handleEdit(row: StudentItem) {
       />
     </template>
 
-    <template #tool>
-      <el-space>
-        <gi-button v-hasPerm="['crud:add']" type="add" @click="handleAdd">
-          新增
-        </gi-button>
-        <el-button
-          v-hasPerm="['crud:delete']"
-          type="danger"
-          :disabled="!selectedKeys.length"
-          @click="onBatchDelete"
-        >
-          批量删除
-        </el-button>
-      </el-space>
-    </template>
-
-    <gi-table
-      v-loading="loading"
-      border
-      :data="tableData"
+    <g-table-setting
       :columns="tableColumns"
-      row-key="id"
-      :pagination="pagination"
-      @selection-change="onSelectionChange"
+      :disabled-column-keys="disabledColumnKeys"
+      @refresh="refresh"
     >
-      <template #action="{ row }">
-        <el-button v-hasPerm="['crud:edit']" type="primary" link @click="handleEdit(row)">
-          编辑
-        </el-button>
-        <el-button v-hasPerm="['crud:delete']" type="danger" link @click="onDelete(row)">
-          删除
-        </el-button>
+      <template #toolbar-left>
+        <el-space wrap>
+          <gi-button v-hasPerm="['crud:add']" type="add" @click="handleAdd">
+            新增
+          </gi-button>
+          <el-button
+            v-hasPerm="['crud:delete']"
+            type="danger"
+            :disabled="!selectedKeys.length"
+            @click="onBatchDelete"
+          >
+            批量删除
+          </el-button>
+        </el-space>
       </template>
-    </gi-table>
+      <template #default="{ settingColumns, tableProps }">
+        <gi-table
+          v-loading="loading"
+          v-bind="tableProps"
+          :data="tableData"
+          :columns="settingColumns"
+          row-key="id"
+          :pagination="pagination"
+          @selection-change="onSelectionChange"
+        >
+          <template #action="{ row }">
+            <el-button v-hasPerm="['crud:edit']" type="primary" link @click="handleEdit(row)">
+              编辑
+            </el-button>
+            <el-button v-hasPerm="['crud:delete']" type="danger" link @click="onDelete(row)">
+              删除
+            </el-button>
+          </template>
+        </gi-table>
+      </template>
+    </g-table-setting>
 
     <FormDialog ref="FormDialogRef" @success="refresh" />
   </gi-page-layout>
