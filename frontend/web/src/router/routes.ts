@@ -40,14 +40,14 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: '/icon',
     name: 'Icon',
     component: Layout,
-    meta: { title: '图标管理', hidden: false, icon: 'icon-park-outline:instagram', sort: 99 },
+    meta: { title: '', hidden: false, icon: 'icon-park-outline:instagram', sort: 99 },
     redirect: '/icon',
     children: [
       {
         path: '/icon/index',
         name: 'IconIndex',
         component: () => import('@/views/icon/index.vue'),
-        meta: { title: '', hidden: false, icon: 'icon-park-outline:instagram' },
+        meta: { title: '图标列表', hidden: false, icon: 'icon-park-outline:instagram' },
       },
     ],
   },
@@ -55,14 +55,14 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: '/about',
     name: 'About',
     component: Layout,
-    meta: { title: '关于项目', hidden: false, icon: 'icon-park-outline:info', sort: 100 },
+    meta: { title: '', hidden: false, icon: 'icon-park-outline:info', sort: 100 },
     redirect: '/about',
     children: [
       {
         path: '/about/index',
         name: 'AboutIndex',
         component: () => import('@/views/about/index.vue'),
-        meta: { title: '', hidden: false, icon: 'icon-park-outline:info' },
+        meta: { title: '关于项目', hidden: false, icon: 'icon-park-outline:info' },
       },
     ],
   },
