@@ -62,6 +62,7 @@ onBeforeUnmount(() => {
 
 <template>
   <el-button
+    class="g-square-button"
     type="primary"
     bg
     text

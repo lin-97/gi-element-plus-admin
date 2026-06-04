@@ -71,7 +71,7 @@ async function handleLogout() {
     <el-space :size="8">
       <el-space :size="4">
         <el-tooltip v-if="!isXsScreen" :content="isFullscreen ? '退出全屏' : '全屏'">
-          <el-button type="primary" text circle @click="toggleFullscreen">
+          <el-button class="g-square-button" type="primary" text circle @click="toggleFullscreen">
             <Icon
               :icon="isFullscreen ? 'custom:off-screen' : 'custom:full-screen'"
               width="18"
@@ -81,6 +81,7 @@ async function handleLogout() {
         </el-tooltip>
         <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
           <el-button
+            class="g-square-button"
             type="primary"
             text
             circle
@@ -95,6 +96,7 @@ async function handleLogout() {
         </el-tooltip>
         <el-tooltip content="系统设置">
           <el-button
+            class="g-square-button"
             type="primary"
             text
             circle
@@ -171,10 +173,6 @@ async function handleLogout() {
     align-items: center;
     cursor: pointer;
   }
-}
-
-:deep(.el-button) {
-  border-radius: 4px;
 }
 
 .el-button--primary.is-text {

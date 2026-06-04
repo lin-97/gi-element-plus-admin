@@ -16,11 +16,15 @@ body,
   background-color: var(--el-fill-color-light);
 }
 
-.layout__content .gi-page-layout__tool {
-  justify-content: start;
-}
-
 .g-page-layout {
   width: auto !important;
   margin: var(--margin) !important;
+  .gi-page-layout__tool {
+    justify-content: start;
+  }
+}
+
+.g-square-button.el-button,
+.g-square-button.el-button.is-circle {
+  border-radius: 4px;
 }
