@@ -3,7 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 const Layout = () => import('@/layouts/AppLayout.vue')
 
 /** 静态路由（无需权限） */
-export const constantRoutes: RouteRecordRaw[] = [
+export const CONSTANT_ROUTES: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',

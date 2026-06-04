@@ -1,10 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { setupRouterGuard } from './guard'
-import { constantRoutes } from './routes'
+import { CONSTANT_ROUTES } from './routes'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.VITE_BASE),
-  routes: constantRoutes,
+  routes: CONSTANT_ROUTES,
   scrollBehavior: () => ({ left: 0, top: 0 }),
 })
 
