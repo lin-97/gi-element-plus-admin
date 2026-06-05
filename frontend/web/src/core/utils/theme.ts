@@ -51,7 +51,7 @@ function getDarkColor(hex: string, rate = 0.8) {
 function buildPaletteCss(color: string, dark: boolean) {
   const themeColor = dark ? getDarkColor(color) : color
   const b_color = dark ? '#000' : '#fff'
-  const percentages = [100, 70, 50, 30, 20, 10]
+  const percentages = dark ? [100, 80, 70, 60, 50, 30] as const : [100, 70, 50, 30, 20, 10] as const
   const lines = [
     `--el-color-primary: color-mix(in srgb, ${themeColor} ${percentages[0]}%, ${b_color});`,
     `--el-color-primary-light-3: color-mix(in srgb, ${themeColor} ${percentages[1]}%, ${b_color});`,
