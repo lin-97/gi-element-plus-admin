@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import type { TableColumnItem } from 'gi-component'
 import { Icon } from '@iconify/vue'
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
@@ -43,6 +44,9 @@ const TABLE_SIZE_OPTIONS: { label: string, value: TableSettingSize }[] = [
   { label: '大型', value: 'large' },
 ]
 const ICON_SIZE_BIND = { width: 16, height: 16 }
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMdScreen = breakpoints.smaller('md')
 
 const stripe = ref(false)
 const size = ref<TableSettingSize>('default')
@@ -228,28 +232,28 @@ const settingColumns = computed<TableColumnItem[]>(() => {
             <Icon icon="custom:reload" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
-        <el-tooltip content="导出" placement="top">
+        <el-tooltip v-if="!isMdScreen" content="导出" placement="top">
           <el-button class="g-square-button" bg text circle @click="handleExport">
             <Icon icon="icon-park-outline:download" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
-        <el-tooltip content="斑马纹" placement="top">
+        <el-tooltip v-if="!isMdScreen" content="斑马纹" placement="top">
           <el-button class="g-square-button" bg text circle @click="stripe = !stripe">
             <Icon icon="icon-park-outline:format-brush" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
-        <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'" placement="top">
+        <el-tooltip v-if="!isMdScreen" :content="isFullscreen ? '退出全屏' : '全屏'" placement="top">
           <el-button class="g-square-button" bg text circle @click="toggleFullscreen">
             <Icon v-if="isFullscreen" icon="custom:off-screen" v-bind="ICON_SIZE_BIND" />
             <Icon v-else icon="custom:full-screen" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
-        <el-tooltip content="显示边框" placement="top">
+        <el-tooltip v-if="!isMdScreen" content="显示边框" placement="top">
           <el-button class="g-square-button" bg text circle @click="toggleBorder">
             <Icon icon="icon-park-outline:square" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
-        <el-dropdown trigger="click" @command="handleSizeCommand">
+        <el-dropdown v-if="!isMdScreen" trigger="click" @command="handleSizeCommand">
           <span class="el-dropdown-link">
             <el-tooltip content="表格尺寸" placement="top">
               <el-button class="g-square-button" bg text circle>
@@ -342,7 +346,7 @@ const settingColumns = computed<TableColumnItem[]>(() => {
     position: fixed;
     inset: 0;
     z-index: 2000;
-    padding: 12px;
+    padding: var(--padding);
     box-sizing: border-box;
   }
 
@@ -353,7 +357,7 @@ const settingColumns = computed<TableColumnItem[]>(() => {
     gap: 8px;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
 
   &__toolbar-left {
@@ -443,7 +447,6 @@ const settingColumns = computed<TableColumnItem[]>(() => {
     gap: 2px;
     align-items: center;
     margin-left: auto;
-    padding-right: 10px;
   }
 
   &__pin {

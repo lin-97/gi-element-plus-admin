@@ -115,10 +115,16 @@ async function handleLogout() {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
+            <el-dropdown-item>
+              <template #icon>
+                <Icon icon="icon-park-outline:avatar" width="16" height="16" />
+              </template>
+              个人中心
+            </el-dropdown-item>
             <el-dropdown-item @click="handleLogout">
-              <el-icon>
-                <Icon icon="icon-park-outline:logout" width="16" height="16" />
-              </el-icon>
+              <template #icon>
+                <Icon icon="icon-park-outline:power" width="16" height="16" />
+              </template>
               退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -174,7 +180,6 @@ async function handleLogout() {
     cursor: pointer;
   }
 }
-
 .el-button--primary.is-text {
   --el-button-text-color: var(--el-color-text-primary);
 }
