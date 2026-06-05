@@ -262,7 +262,7 @@ async function handleLogin() {
     top: 16px;
     right: 16px;
     z-index: 10;
-    color: var(--el-color-text-primary);
+    color: var(--el-text-color-primary);
   }
 
   &__brand {

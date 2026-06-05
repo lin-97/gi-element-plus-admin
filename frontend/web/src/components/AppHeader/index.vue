@@ -43,15 +43,22 @@ async function handleLogout() {
 </script>
 
 <template>
-  <header class="app-header" :class="{ 'app-header--top': isTopMode }">
+  <header
+    class="app-header"
+    :class="{
+      'app-header--top': isTopMode,
+      'g-area-dark': isTopMode && appStore.isMenuDark,
+    }"
+  >
     <div class="app-header__left">
       <template v-if="isTopMode">
-        <span v-if="!isMdScreen" class="app-header__logo">GI Admin</span>
+        <span v-if="!isMdScreen" class="app-header__logo app__logo">GI Admin</span>
         <AppMenuToggle v-if="isMdScreen" />
         <el-menu
           mode="horizontal"
           :default-active="selectedKeys[0]"
           :unique-opened="appStore.isMenuAccordion"
+          :popper-class="appStore.isMenuDark ? 'g-area-dark' : ''"
           class="app-header__menu"
           @select="handleMenuItemClick"
         >
@@ -181,6 +188,6 @@ async function handleLogout() {
   }
 }
 .el-button--primary.is-text {
-  --el-button-text-color: var(--el-color-text-primary);
+  --el-button-text-color: var(--el-text-color-primary);
 }
 </style>

@@ -19,9 +19,13 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 <template>
   <aside
     class="app-sidebar"
-    :class="{ 'app-sidebar--collapsed': isCollapsed, 'app-sidebar--drawer': drawer }"
+    :class="{
+      'app-sidebar--collapsed': isCollapsed,
+      'app-sidebar--drawer': drawer,
+      'g-area-dark': appStore.isMenuDark,
+    }"
   >
-    <div class="app-sidebar__logo">
+    <div class="app-sidebar__logo app__logo">
       <span v-if="!isCollapsed" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
@@ -30,6 +34,7 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
         :default-active="selectedKeys[0]"
         :collapse="isCollapsed"
         :unique-opened="appStore.isMenuAccordion"
+        :popper-class="appStore.isMenuDark ? 'g-area-dark' : ''"
         @select="handleMenuItemClick"
       >
         <AppMenuItem
@@ -85,7 +90,6 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     &-text {
       font-size: 18px;
       font-weight: 600;
-      color: var(--el-color-primary);
       white-space: nowrap;
     }
   }

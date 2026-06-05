@@ -139,6 +139,6 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
 }
 
 .app-tabs__reload {
-  color: var(--el-color-text-primary);
+  color: var(--el-text-color-primary);
 }
 </style>

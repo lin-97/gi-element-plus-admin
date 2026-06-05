@@ -59,7 +59,7 @@ onUnmounted(() => {
     </el-divider>
     <el-descriptions :column="1">
       <el-descriptions-item label="暗黑模式">
-        <el-switch v-model="isDark" inline-prompt>
+        <el-switch v-model="isDark" class="g-theme-switch" inline-prompt>
           <template #active-action>
             <Icon icon="custom:moon-fill" width="12" height="12" />
           </template>
@@ -76,6 +76,9 @@ onUnmounted(() => {
       </el-descriptions-item>
       <el-descriptions-item label="手风琴模式">
         <el-switch v-model="appStore.isMenuAccordion" />
+      </el-descriptions-item>
+      <el-descriptions-item label="深色菜单">
+        <el-switch v-model="appStore.isMenuDark" />
       </el-descriptions-item>
     </el-descriptions>
   </div>
