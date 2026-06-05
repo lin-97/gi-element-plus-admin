@@ -1,15 +1,11 @@
-import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import AutoImport from 'unplugin-auto-import/vite'
-import IconsResolver from 'unplugin-icons/resolver'
-import Icons from 'unplugin-icons/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
 import vitePluginCompression from 'vite-plugin-compression'
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import VueDevTools from 'vite-plugin-vue-devtools'
 
 export default defineConfig(({ mode }) => {
@@ -63,22 +59,7 @@ export default defineConfig(({ mode }) => {
         dirs: ['src/components'],
         extensions: ['vue', 'tsx'],
         dts: 'src/components.d.ts',
-        resolvers: [
-          ElementPlusResolver({ importStyle: 'sass' }),
-          IconsResolver({
-            prefix: 'icon',
-            enabledCollections: ['ep'],
-          }),
-        ],
-      }),
-      Icons({
-        compiler: 'vue3',
-        autoInstall: true,
-        defaultClass: 'iconify-icon',
-      }),
-      createSvgIconsPlugin({
-        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
-        symbolId: 'icon-[dir]-[name]',
+        resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
       }),
       vitePluginCompression({
         verbose: true,
