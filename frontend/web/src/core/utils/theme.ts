@@ -23,94 +23,60 @@ export const PRESET_THEME_COLORS = [
   '#6d4c41',
 ] as const
 
-// Element Plus 暗色模式背景色，用于生成 primary-light 色阶
-const EP_DARK_BG_COLOR = '#141414'
-
 const THEME_STYLE_ID = 'app-theme-vars'
 
-function hexToRgb(hex: string) {
-  const normalized = hex.replace('#', '')
-  const value = normalized.length === 3
-    ? normalized.split('').map(c => c + c).join('')
-    : normalized
+const THEME_VAR_KEYS = [
+  '--el-color-primary',
+  '--el-color-primary-light-3',
+  '--el-color-primary-light-5',
+  '--el-color-primary-light-7',
+  '--el-color-primary-light-8',
+  '--el-color-primary-light-9',
+  '--el-color-primary-dark-2',
+] as const
 
-  const num = Number.parseInt(value, 16)
-  return {
-    r: (num >> 16) & 255,
-    g: (num >> 8) & 255,
-    b: num & 255,
-  }
-}
-
-function rgbToHex(r: number, g: number, b: number) {
-  const toHex = (n: number) => Math.round(n).toString(16).padStart(2, '0')
+/** 获取暗色主题色 */
+function getDarkColor(hex: string, rate = 0.8) {
+  let r = Number.parseInt(hex.slice(1, 3), 16) as number
+  let g = Number.parseInt(hex.slice(3, 5), 16) as number
+  let b = Number.parseInt(hex.slice(5, 7), 16) as number
+  // 公式：new = src*rate + 255*(1-rate)
+  r = Math.round(r * rate + 255 * (1 - rate))
+  g = Math.round(g * rate + 255 * (1 - rate))
+  b = Math.round(b * rate + 255 * (1 - rate))
+  const toHex = (n: number) => n.toString(16).padStart(2, '0')
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
 }
 
-/** 与 Sass color.mix 一致：mix(base, mixIn, weight)，weight 为 mixIn 占比 */
-function mixColor(base: string, mixIn: string, weight: number) {
-  const c1 = hexToRgb(base)
-  const c2 = hexToRgb(mixIn)
-  const w = Math.min(Math.max(weight, 0), 1)
-  return rgbToHex(
-    c1.r * (1 - w) + c2.r * w,
-    c1.g * (1 - w) + c2.g * w,
-    c1.b * (1 - w) + c2.b * w,
-  )
-}
-
-interface PrimaryPalette {
-  primary: string
-  light: Record<number, string>
-  dark2: string
-}
-
-/** 按 Element Plus 规则生成 primary 色阶 */
-function generatePrimaryPalette(color: string, mode: 'light' | 'dark'): PrimaryPalette {
-  const lightMixBase = mode === 'light' ? '#ffffff' : EP_DARK_BG_COLOR
-  const darkMixBase = mode === 'light' ? '#000000' : '#ffffff'
-
-  const light: Record<number, string> = {}
-  for (let i = 1; i <= 9; i++) {
-    light[i] = mixColor(color, lightMixBase, i * 0.1)
-  }
-
-  return {
-    primary: color,
-    light,
-    dark2: mixColor(color, darkMixBase, 0.2),
-  }
-}
-
-function paletteToCssBlock(palette: PrimaryPalette): string {
+function buildPaletteCss(color: string, dark: boolean) {
+  const themeColor = dark ? getDarkColor(color) : color
+  const b_color = dark ? '#000' : '#fff'
+  const percentages = [100, 70, 50, 30, 20, 10]
   const lines = [
-    `--el-color-primary: ${palette.primary};`,
-    ...Array.from({ length: 9 }, (_, i) =>
-      `--el-color-primary-light-${i + 1}: ${palette.light[i + 1]};`),
-    `--el-color-primary-dark-2: ${palette.dark2};`,
+    `--el-color-primary: color-mix(in srgb, ${themeColor} ${percentages[0]}%, ${b_color});`,
+    `--el-color-primary-light-3: color-mix(in srgb, ${themeColor} ${percentages[1]}%, ${b_color});`,
+    `--el-color-primary-light-5: color-mix(in srgb, ${themeColor} ${percentages[2]}%, ${b_color});`,
+    `--el-color-primary-light-7: color-mix(in srgb, ${themeColor} ${percentages[3]}%, ${b_color});`,
+    `--el-color-primary-light-8: color-mix(in srgb, ${themeColor} ${percentages[4]}%, ${b_color});`,
+    `--el-color-primary-light-9: color-mix(in srgb, ${themeColor} ${percentages[5]}%, ${b_color});`,
+    `--el-color-primary-dark-2: color-mix(in srgb, ${themeColor} 80%, ${dark ? '#fff' : '#000'});`,
   ]
   return lines.join('\n  ')
 }
 
-function buildThemeStyle(color: string): string {
-  const lightPalette = generatePrimaryPalette(color, 'light')
-  const darkPalette = generatePrimaryPalette(color, 'dark')
-
+function buildThemeStyle(color: string) {
   return `:root {
-  ${paletteToCssBlock(lightPalette)}
+  ${buildPaletteCss(color, false)}
 }
 html.dark {
-  ${paletteToCssBlock(darkPalette)}
+  ${buildPaletteCss(color, true)}
 }`
 }
 
 function clearLegacyInlineThemeVars() {
   const el = document.documentElement
-  el.style.removeProperty('--el-color-primary')
-  for (let i = 1; i <= 9; i++) {
-    el.style.removeProperty(`--el-color-primary-light-${i}`)
-  }
-  el.style.removeProperty('--el-color-primary-dark-2')
+  for (const key of THEME_VAR_KEYS)
+    el.style.removeProperty(key)
 }
 
 /** 将主题色应用到 Element Plus CSS 变量（亮色 / 暗色双 palette） */

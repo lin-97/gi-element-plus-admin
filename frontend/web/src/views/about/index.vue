@@ -24,6 +24,15 @@ const devDependencies = toDepList(packageJson.devDependencies)
 <template>
   <div class="about-page">
     <gi-card title="项目信息" class="about-page__info g-mb">
+      <template #extra>
+        <el-space>
+          <el-row justify="center" align="middle" :style="{ width: '24px', height: '24px', color: '#fff', backgroundColor: `var(--el-color-primary-dark-2)` }" />
+          <el-row justify="center" align="middle" :style="{ width: '24px', height: '24px', color: '#fff', backgroundColor: `var(--el-color-primary)` }" />
+          <el-row v-for="i in [3, 5, 7, 8, 9]" :key="i" justify="center" align="middle" :style="{ width: '24px', height: '24px', color: '#fff', backgroundColor: `var(--el-color-primary-light-${i})` }">
+            {{ i }}
+          </el-row>
+        </el-space>
+      </template>
       <el-descriptions :column="1" border class="about-page__descriptions">
         <el-descriptions-item label="项目名称">
           {{ packageJson.name }}
