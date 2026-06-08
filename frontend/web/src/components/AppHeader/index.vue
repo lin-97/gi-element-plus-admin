@@ -5,6 +5,7 @@ import { ElMessageBox } from 'element-plus'
 import AppBreadcrumb from '@/components/AppBreadcrumb/index.vue'
 import AppMenuItem from '@/components/AppMenuItem/index.vue'
 import AppMenuToggle from '@/components/AppMenuToggle/index.vue'
+import { openAppNoticeDrawer } from '@/components/AppNoticeDrawer/open'
 import { openAppSettingDrawer } from '@/components/AppSettingDrawer/open'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
@@ -101,13 +102,26 @@ async function handleLogout() {
             />
           </el-button>
         </el-tooltip>
+        <el-tooltip content="通知中心">
+          <el-badge :value="8" type="success" is-dot :offset="[-4, 8]">
+            <el-button
+              class="g-square-button"
+              type="primary"
+              text
+              circle
+              @click="openAppNoticeDrawer"
+            >
+              <Icon icon="custom:notice" width="18" height="18" />
+            </el-button>
+          </el-badge>
+        </el-tooltip>
         <el-tooltip content="系统设置">
           <el-button
             class="g-square-button"
             type="primary"
             text
             circle
-            @click="openAppSettingDrawer()"
+            @click="openAppSettingDrawer"
           >
             <Icon icon="custom:setting" width="18" height="18" />
           </el-button>
