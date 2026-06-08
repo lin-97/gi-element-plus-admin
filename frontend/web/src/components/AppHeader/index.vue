@@ -118,7 +118,7 @@ async function handleLogout() {
           <el-avatar :size="28" :src="userStore.userInfo?.avatar ?? undefined">
             <Icon icon="icon-park-outline:user" width="18" height="18" />
           </el-avatar>
-          <span>{{ userStore.userInfo?.nickname || '用户' }}</span>
+          <span class="app-header__user-name">{{ userStore.userInfo?.nickname || '用户' }}</span>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -185,6 +185,10 @@ async function handleLogout() {
     gap: 8px;
     align-items: center;
     cursor: pointer;
+
+    &-name {
+      font-weight: 500;
+    }
   }
 }
 .el-button--primary.is-text {
