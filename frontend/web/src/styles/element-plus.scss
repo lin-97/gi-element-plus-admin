@@ -10,4 +10,8 @@ html {
   .el-tabs__nav-wrap::after {
     height: 1px;
   }
+
+  .el-menu-item.is-active {
+    background-color: var(--el-fill-color-light);
+  }
 }

@@ -5,7 +5,13 @@ import { useMenu } from '@/hooks/useMenu'
 
 defineOptions({ name: 'AppSidebar' })
 
+const { drawer = false } = defineProps<{
+  drawer?: boolean
+}>()
+
 const appStore = useAppStore()
+
+const isCollapsed = computed(() => !drawer && appStore.isMenuCollapse)
 
 const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 </script>
@@ -13,17 +19,22 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
 <template>
   <aside
     class="app-sidebar"
-    :class="{ 'app-sidebar--collapsed': appStore.isMenuCollapse }"
+    :class="{
+      'app-sidebar--collapsed': isCollapsed,
+      'app-sidebar--drawer': drawer,
+      'g-area-dark': appStore.isMenuDark,
+    }"
   >
-    <div class="app-sidebar__logo">
-      <span v-if="!appStore.isMenuCollapse" class="app-sidebar__logo-text">GI Admin</span>
+    <div class="app-sidebar__logo app__logo">
+      <span v-if="!isCollapsed" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
     <el-scrollbar class="app-sidebar__scroll">
       <el-menu
         :default-active="selectedKeys[0]"
-        :collapse="appStore.isMenuCollapse"
+        :collapse="isCollapsed"
         :unique-opened="appStore.isMenuAccordion"
+        :popper-class="appStore.isMenuDark ? 'g-area-dark' : ''"
         @select="handleMenuItemClick"
       >
         <AppMenuItem
@@ -51,6 +62,11 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     width: 64px;
   }
 
+  &--drawer {
+    width: 100%;
+    border-right: none;
+  }
+
   &__scroll {
     flex: 1;
     min-height: 0;
@@ -74,7 +90,6 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     &-text {
       font-size: 18px;
       font-weight: 600;
-      color: var(--el-color-primary);
       white-space: nowrap;
     }
   }

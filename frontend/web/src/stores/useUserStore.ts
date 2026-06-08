@@ -7,7 +7,7 @@ import { useRouteStore } from '@/core/stores/useRouteStore'
 import { useTabsStore } from '@/core/stores/useTabsStore'
 import router from '@/router'
 import { resetRoutesLoadedFlag } from '@/router/route-load-state'
-import { constantRoutes } from '@/router/routes'
+import { CONSTANT_ROUTES } from '@/router/routes'
 
 export const useUserStore = defineStore('user', () => {
   const routeStore = useRouteStore()
@@ -25,17 +25,31 @@ export const useUserStore = defineStore('user', () => {
 
   function resetRouteState() {
     routeStore.resetDynamicRoutes()
-    routeStore.setRoutes({ constantRoutes, asyncData: [] })
+    routeStore.setRoutes({ constantRoutes: CONSTANT_ROUTES, asyncData: [] })
     tabsStore.reset()
     resetRoutesLoadedFlag()
   }
 
   async function login(params: { username: string, password: string }) {
     resetRouteState()
-    const res = await loginApi(params)
-    token.value = res.token
-    await generateRoutes()
-    return res
+    token.value = ''
+    userInfo.value = null
+    permissionStore.setRoles([])
+    permissionStore.setPermissions([])
+    try {
+      const res = await loginApi(params)
+      token.value = res.token
+      await generateRoutes()
+      return res
+    }
+    catch (error) {
+      token.value = ''
+      userInfo.value = null
+      permissionStore.setRoles([])
+      permissionStore.setPermissions([])
+      resetRouteState()
+      throw error
+    }
   }
 
   async function fetchUserInfo() {
@@ -66,7 +80,7 @@ export const useUserStore = defineStore('user', () => {
     await fetchUserInfo()
     const data = await getRoutesApi()
     routeStore.resetDynamicRoutes()
-    routeStore.setRoutes({ constantRoutes, asyncData: data })
+    routeStore.setRoutes({ constantRoutes: CONSTANT_ROUTES, asyncData: data })
     return true
   }
 
@@ -75,7 +89,7 @@ export const useUserStore = defineStore('user', () => {
     await generateRoutes()
     const current = router.currentRoute.value
     if (current.name && !router.hasRoute(current.name as string)) {
-      await router.replace(constantRoutes[0]?.path || '/')
+      await router.replace(CONSTANT_ROUTES[0]?.path || '/')
     }
     return true
   }

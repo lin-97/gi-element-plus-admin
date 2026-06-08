@@ -47,5 +47,10 @@ export const customIcons: CustomIconSet = {
       width: 48,
       height: 48,
     },
+    'table-size': {
+      body: '<path d="M24 12V36M18 17 24 12 30 17M30 31 24 36 18 31" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 5H42" fill="none" stroke="currentColor" stroke-width="4"/><path d="M6 43H42" fill="none" stroke="currentColor" stroke-width="4"/>',
+      width: 48,
+      height: 48,
+    },
   },
 }

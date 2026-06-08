@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import AppHeader from '@/components/AppHeader/index.vue'
 import AppSidebar from '@/components/AppSidebar/index.vue'
 import AppTabs from '@/components/AppTabs/index.vue'
@@ -8,11 +9,14 @@ import { useAppStore } from '@/core/stores'
 defineOptions({ name: 'DefaultLayout' })
 
 const appStore = useAppStore()
+
+const breakpoints = useBreakpoints(breakpointsTailwind)
+const isMobile = breakpoints.smaller('md')
 </script>
 
 <template>
   <div class="layout">
-    <AppSidebar />
+    <AppSidebar v-if="!isMobile" />
     <div class="layout__main">
       <AppHeader />
       <AppTabs v-if="appStore.isShowTabs" />

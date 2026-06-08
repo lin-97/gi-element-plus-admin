@@ -117,7 +117,7 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
         </el-dropdown>
       </template>
       <template #right-extra>
-        <el-button text circle class="app-tabs__reload" @click="tabsStore.reloadPage()">
+        <el-button text circle class="g-square-button app-tabs__reload" @click="tabsStore.reloadPage()">
           <Icon icon="custom:reload" width="17" height="17" />
         </el-button>
       </template>
@@ -139,7 +139,6 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
 }
 
 .app-tabs__reload {
-  border-radius: 4px;
-  color: var(--el-color-text-primary);
+  color: var(--el-text-color-primary);
 }
 </style>

@@ -16,11 +16,61 @@ body,
   background-color: var(--el-fill-color-light);
 }
 
-.layout__content .gi-page-layout__tool {
-  justify-content: start;
-}
-
 .g-page-layout {
   width: auto !important;
   margin: var(--margin) !important;
+  .gi-page-layout__tool {
+    justify-content: start;
+  }
+}
+
+.g-square-button.el-button,
+.g-square-button.el-button.is-circle {
+  border-radius: 4px;
+}
+
+.gi-square-switch.el-switch {
+  .el-switch__core {
+    border-radius: 2px;
+    .el-switch__action {
+      border-radius: 2px;
+    }
+  }
+}
+
+.g-flex-1 {
+  flex: 1;
+}
+
+// useDark disableTransition 会注入 * { transition: none }，此处用更高优先级恢复主题开关动画
+.g-theme-switch.el-switch {
+  .el-switch__core,
+  .el-switch__action,
+  .el-switch__inner {
+    transition-property: all !important;
+    transition-duration: 0.3s !important;
+    transition-timing-function: ease !important;
+    transition-delay: 0s !important;
+  }
+}
+
+.g-area-dark {
+  --el-bg-color: #222;
+  --el-border-color: #555;
+  --el-text-color-primary: #fff;
+  --el-text-color-regular: #ccc;
+  --el-text-color-secondary: #999;
+  --el-fill-color-light: #555;
+  --el-fill-color: #444;
+  .el-menu {
+    --el-menu-bg-color: var(--el-bg-color);
+    --el-menu-text-color: #ccc;
+    --el-menu-hover-bg-color: #444;
+    --el-menu-hover-text-color: #fff;
+    --el-menu-active-color: #fff;
+    --el-menu-active-bg-color: #fff;
+  }
+  .app__logo {
+    color: #fff !important;
+  }
 }

@@ -2,11 +2,89 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GI Element Plus Admin</title>
+    <title>%VITE_APP_TITLE%</title>
+    <style>
+      #app-loading {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        background-color: #f5f7fa;
+        transition:
+          opacity 0.35s ease,
+          visibility 0.35s ease;
+      }
+
+      #app-loading.is-hide {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      .app-loading__logo {
+        width: 48px;
+        height: 48px;
+      }
+
+      .app-loading__spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid rgba(64, 158, 255, 0.18);
+        border-top-color: #409eff;
+        border-radius: 50%;
+        animation: app-loading-spin 0.75s linear infinite;
+      }
+
+      .app-loading__title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #303133;
+        letter-spacing: 0.02em;
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      }
+
+      .app-loading__tip {
+        margin: -8px 0 0;
+        font-size: 13px;
+        color: #909399;
+        font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      }
+
+      @keyframes app-loading-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        #app-loading {
+          background-color: #141414;
+        }
+
+        .app-loading__title {
+          color: rgba(255, 255, 255, 0.85);
+        }
+
+        .app-loading__tip {
+          color: rgba(255, 255, 255, 0.45);
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="app-loading" aria-live="polite" aria-busy="true">
+      <img class="app-loading__logo" src="/favicon.svg" alt="" width="48" height="48" />
+      <div class="app-loading__spinner" aria-hidden="true"></div>
+      <p class="app-loading__title">%VITE_APP_TITLE%</p>
+      <p class="app-loading__tip">正在加载，请稍候…</p>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

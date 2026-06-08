@@ -1,7 +1,9 @@
 import type { RouteRecordRaw } from 'vue-router'
 
+const Layout = () => import('@/layouts/AppLayout.vue')
+
 /** 静态路由（无需权限） */
-export const constantRoutes: RouteRecordRaw[] = [
+export const CONSTANT_ROUTES: RouteRecordRaw[] = [
   {
     path: '/login',
     name: 'Login',
@@ -22,7 +24,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   },
   {
     path: '/',
-    component: () => import('@/layouts/AppLayout.vue'),
+    component: Layout,
     meta: { title: '', hidden: false, icon: 'icon-park-outline:workbench' },
     redirect: '/dashboard',
     children: [
@@ -31,6 +33,36 @@ export const constantRoutes: RouteRecordRaw[] = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: { title: '工作台', affix: true, hidden: false, icon: 'Monitor' },
+      },
+    ],
+  },
+  {
+    path: '/icon',
+    name: 'Icon',
+    component: Layout,
+    meta: { title: '', hidden: false, icon: 'icon-park-outline:instagram', sort: 99 },
+    redirect: '/icon',
+    children: [
+      {
+        path: '/icon/index',
+        name: 'IconIndex',
+        component: () => import('@/views/icon/index.vue'),
+        meta: { title: '图标列表', hidden: false, icon: 'icon-park-outline:instagram' },
+      },
+    ],
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: Layout,
+    meta: { title: '', hidden: false, icon: 'icon-park-outline:info', sort: 100 },
+    redirect: '/about',
+    children: [
+      {
+        path: '/about/index',
+        name: 'AboutIndex',
+        component: () => import('@/views/about/index.vue'),
+        meta: { title: '关于项目', hidden: false, icon: 'icon-park-outline:info' },
       },
     ],
   },

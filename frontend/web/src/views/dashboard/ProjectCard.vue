@@ -151,10 +151,4 @@ function getProjectIcon(item: ProjectItem) {
     color: var(--el-text-color-placeholder);
   }
 }
-
-@media (width <= 992px) {
-  .project-card__item {
-    border-right: none;
-  }
-}
 </style>
