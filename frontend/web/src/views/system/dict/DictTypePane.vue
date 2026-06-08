@@ -184,10 +184,6 @@ defineExpose({ reload: loadTypes })
 .dict-type-pane__scroll {
   flex: 1;
   min-height: 0;
-
-  :deep(.el-scrollbar__view) {
-    padding-right: 4px;
-  }
 }
 
 .dict-type-pane__list {

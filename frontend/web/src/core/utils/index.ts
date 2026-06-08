@@ -1,13 +1,4 @@
-const LEADING_TRAILING_SLASHES_REGEX = /^\/+|\/+$/g
-const WORD_SEPARATOR_REGEX = /[-_]+/
-
-function toPascalCase(segment: string) {
-  return segment
-    .split(WORD_SEPARATOR_REGEX)
-    .filter(Boolean)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join('')
-}
+import { pascalCase } from 'es-toolkit/string'
 
 /**
  * 将路径转换为名称
@@ -17,10 +8,5 @@ function toPascalCase(segment: string) {
  * transformPathToName('system/user/index') // 返回 'SystemUserIndex'
  */
 export function transformPathToName(path: string) {
-  return path
-    .replace(LEADING_TRAILING_SLASHES_REGEX, '')
-    .split('/')
-    .filter(Boolean)
-    .map(toPascalCase)
-    .join('')
+  return pascalCase(path)
 }

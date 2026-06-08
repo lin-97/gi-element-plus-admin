@@ -1,17 +1,21 @@
-html {
-  .el-dialog {
-    --el-dialog-bg-color: var(--color-bg-2);
-  }
+.el-dialog {
+  --el-dialog-bg-color: var(--color-bg-2);
+}
 
-  .el-drawer {
-    --el-drawer-bg-color: var(--color-bg-2);
-  }
+.el-drawer {
+  --el-drawer-bg-color: var(--color-bg-2);
+}
 
-  .el-tabs__nav-wrap::after {
-    height: 1px;
-  }
+.el-drawer__title,
+.el-dialog__title,
+.el-message-box__title {
+  font-weight: 500;
+}
 
-  .el-menu-item.is-active {
-    background-color: var(--el-fill-color-light);
-  }
+.el-tabs__nav-wrap::after {
+  height: 1px;
+}
+
+.el-menu-item.is-active {
+  background-color: var(--el-fill-color-light);
 }

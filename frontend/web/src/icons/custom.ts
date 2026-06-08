@@ -18,7 +18,7 @@ export const customIcons: CustomIconSet = {
       height: 48,
     },
     'full-screen': {
-      body: '<svg data-v-279ec5d5="" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" class="arco-icon arco-icon-fullscreen" stroke-width="4" stroke-linecap="butt" stroke-linejoin="miter" style="font-size: 18px;"><path d="M42 17V9a1 1 0 0 0-1-1h-8M6 17V9a1 1 0 0 1 1-1h8m27 23v8a1 1 0 0 1-1 1h-8M6 31v8a1 1 0 0 0 1 1h8"></path></svg>',
+      body: '<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" class="arco-icon arco-icon-fullscreen" stroke-width="4" stroke-linecap="butt" stroke-linejoin="miter" style="font-size: 18px;"><path d="M42 17V9a1 1 0 0 0-1-1h-8M6 17V9a1 1 0 0 1 1-1h8m27 23v8a1 1 0 0 1-1 1h-8M6 31v8a1 1 0 0 0 1 1h8"></path></svg>',
       width: 48,
       height: 48,
     },

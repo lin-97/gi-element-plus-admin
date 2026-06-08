@@ -3,6 +3,7 @@ import type { TableColumnItem } from 'gi-component'
 import type { MenuItem } from '@/apis/menu'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteMenuApi, getMenuTreeApi } from '@/apis/menu'
+import { transformPathToName } from '@/core/utils'
 import { useUserStore } from '@/stores/useUserStore'
 import FormDialog from './FormDialog.vue'
 
@@ -27,6 +28,7 @@ const tableColumns: TableColumnItem[] = [
   { prop: 'title', label: '标题', minWidth: 160 },
   { prop: 'type', label: '类型', width: 88, align: 'center', slotName: 'type' },
   { prop: 'path', label: '路径', minWidth: 160, showOverflowTooltip: true },
+  { label: '组件名', minWidth: 160, showOverflowTooltip: true, slotName: 'componentName' },
   { prop: 'component', label: '组件', minWidth: 140, showOverflowTooltip: true },
   { prop: 'icon', label: '图标', width: 72, align: 'center', slotName: 'icon' },
   { prop: 'permission', label: '权限标识', minWidth: 140, showOverflowTooltip: true },
@@ -135,6 +137,9 @@ onMounted(() => {
         >
           {{ typeLabel[row.type] ?? row.type }}
         </el-tag>
+      </template>
+      <template #componentName="{ row }">
+        <span>{{ row.path ? transformPathToName(row.path) : '-' }}</span>
       </template>
       <template #icon="{ row }">
         <AppMenuIcon v-if="row.icon" :icon="row.icon" :size="18" />
