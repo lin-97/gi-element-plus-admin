@@ -4,7 +4,6 @@
  * 顶部显示 Logo + 一级菜单，侧边栏显示当前一级菜单下的二级及以下菜单
  */
 import { Icon } from '@iconify/vue'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import AppHeaderActions from '@/components/AppHeaderActions/index.vue'
 import AppMenuIcon from '@/components/AppMenuIcon/index.vue'
 import AppMenuItem from '@/components/AppMenuItem/index.vue'
@@ -13,12 +12,12 @@ import AppTabs from '@/components/AppTabs/index.vue'
 import PageTransition from '@/components/PageTransition/index.vue'
 import { useAppStore } from '@/core/stores'
 import { useMixMenu } from '@/hooks/useMixMenu'
+import { useResponsive } from '@/hooks/useResponsive'
 
 defineOptions({ name: 'MixLayout' })
 
 const appStore = useAppStore()
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isMobile = breakpoints.smaller('md')
+const { isMobile } = useResponsive()
 
 const {
   topMenuList,
@@ -39,15 +38,18 @@ function toggleCollapse() {
 </script>
 
 <template>
-  <div class="layout">
-    <!-- 顶部区域：Logo + 一级菜单 + 工具栏 -->
+  <div class="mix-layout">
     <header
       class="mix-header"
       :class="{ 'g-area-dark': appStore.isMenuDark }"
       :style="{ height: `${appStore.headerHeight}px` }"
     >
       <div class="mix-header__left">
-        <div v-if="!isMobile" class="mix-header__logo app__logo" :style="{ width: appStore.isMenuCollapse ? '64px' : `${appStore.menuWidth}px` }">
+        <div
+          v-if="!isMobile"
+          class="mix-header__logo app__logo"
+          :style="{ width: appStore.isMenuCollapse ? '64px' : `${appStore.menuWidth}px` }"
+        >
           <span v-if="!appStore.isMenuCollapse">GI Admin</span>
           <span v-else>GI</span>
         </div>
@@ -69,16 +71,14 @@ function toggleCollapse() {
             </template>
           </el-menu-item>
         </el-menu>
-        <AppMenuToggle v-else style="margin-left: 16px" />
+        <AppMenuToggle v-else class="mix-header__toggle" />
       </div>
       <div class="mix-header__right">
         <AppHeaderActions />
       </div>
     </header>
 
-    <!-- 下方区域 -->
-    <div class="layout__body">
-      <!-- 侧边栏：当前一级菜单的子菜单 -->
+    <div class="mix-layout__body">
       <aside
         v-if="sideMenuList.length && !isMobile"
         class="mix-sidebar"
@@ -112,10 +112,9 @@ function toggleCollapse() {
         </div>
       </aside>
 
-      <!-- 主内容区 -->
-      <div class="layout__main">
+      <div class="mix-layout__main">
         <AppTabs v-if="appStore.isShowTabs" />
-        <div class="layout__content">
+        <div class="mix-layout__content">
           <PageTransition />
         </div>
       </div>
@@ -124,13 +123,22 @@ function toggleCollapse() {
 </template>
 
 <style lang="scss" scoped>
-.layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--el-fill-color-light);
+@use '../shared' as *;
+
+.mix-layout {
+  @include layout-shell(column);
+
+  &__body {
+    @include layout-body;
+  }
+
+  &__main {
+    @include layout-main;
+  }
+
+  &__content {
+    @include layout-content;
+  }
 }
 
 .mix-header {
@@ -143,10 +151,7 @@ function toggleCollapse() {
   transition: height 0.3s;
   box-sizing: border-box;
 
-  :deep(.el-menu--horizontal) {
-    --el-menu-horizontal-height: 100%;
-    --el-menu-item-height: 100%;
-  }
+  @include horizontal-menu;
 
   &__left {
     height: 100%;
@@ -175,17 +180,14 @@ function toggleCollapse() {
     border-bottom: none;
   }
 
+  &__toggle {
+    margin-left: 16px;
+  }
+
   &__right {
     display: flex;
     align-items: center;
   }
-}
-
-.layout__body {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
 }
 
 .mix-sidebar {
@@ -257,20 +259,5 @@ function toggleCollapse() {
       color: var(--el-color-primary);
     }
   }
-}
-
-.layout__main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.layout__content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
 }
 </style>

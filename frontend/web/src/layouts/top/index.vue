@@ -14,29 +14,23 @@ const appStore = useAppStore()
 </script>
 
 <template>
-  <div class="layout">
+  <div class="top-layout">
     <AppHeader mode="top" />
     <AppTabs v-if="appStore.isShowTabs" />
-    <div class="layout__content">
+    <div class="top-layout__content">
       <PageTransition />
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.layout {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--el-fill-color-light);
-}
+@use '../shared' as *;
 
-.layout__content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.top-layout {
+  @include layout-shell(column);
+
+  &__content {
+    @include layout-content;
+  }
 }
 </style>

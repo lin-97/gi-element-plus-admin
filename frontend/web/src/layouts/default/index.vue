@@ -1,26 +1,24 @@
 <script setup lang="ts">
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import AppHeader from '@/components/AppHeader/index.vue'
 import AppSidebar from '@/components/AppSidebar/index.vue'
 import AppTabs from '@/components/AppTabs/index.vue'
 import PageTransition from '@/components/PageTransition/index.vue'
 import { useAppStore } from '@/core/stores'
+import { useResponsive } from '@/hooks/useResponsive'
 
 defineOptions({ name: 'DefaultLayout' })
 
 const appStore = useAppStore()
-
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isMobile = breakpoints.smaller('md')
+const { isMobile } = useResponsive()
 </script>
 
 <template>
-  <div class="layout">
+  <div class="default-layout">
     <AppSidebar v-if="!isMobile" />
-    <div class="layout__main">
+    <div class="default-layout__main">
       <AppHeader />
       <AppTabs v-if="appStore.isShowTabs" />
-      <div class="layout__content">
+      <div class="default-layout__content">
         <PageTransition />
       </div>
     </div>
@@ -28,26 +26,17 @@ const isMobile = breakpoints.smaller('md')
 </template>
 
 <style lang="scss" scoped>
-.layout {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--el-fill-color-light);
-}
+@use '../shared' as *;
 
-.layout__main {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
-}
+.default-layout {
+  @include layout-shell(row);
 
-.layout__content {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  &__main {
+    @include layout-main;
+  }
+
+  &__content {
+    @include layout-content;
+  }
 }
 </style>

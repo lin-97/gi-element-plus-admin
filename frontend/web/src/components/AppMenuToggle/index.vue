@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core'
 import { Drawer } from 'gi-component'
 import { h, onBeforeUnmount } from 'vue'
 import AppSidebar from '@/components/AppSidebar/index.vue'
 import { useAppStore } from '@/core/stores'
+import { useResponsive } from '@/hooks/useResponsive'
 
 defineOptions({ name: 'AppMenuToggle' })
 
 const appStore = useAppStore()
 const route = useRoute()
-
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isMobile = breakpoints.smaller('md')
+const { isMobile } = useResponsive()
 
 const menuIcon = computed(() => {
   if (isMobile.value)

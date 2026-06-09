@@ -4,13 +4,13 @@
  * 包含：全屏、暗黑模式、通知、设置、用户下拉
  */
 import { Icon } from '@iconify/vue'
-import { breakpointsTailwind, useBreakpoints, useFullscreen } from '@vueuse/core'
-
+import { useFullscreen } from '@vueuse/core'
 import { ElMessageBox } from 'element-plus'
 import { openAppNoticeDrawer } from '@/components/AppNoticeDrawer/open'
 import { openAppSettingDrawer } from '@/components/AppSettingDrawer/open'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
+import { useResponsive } from '@/hooks/useResponsive'
 import { useUserStore } from '@/stores/useUserStore'
 
 defineOptions({ name: 'AppHeaderActions' })
@@ -19,9 +19,7 @@ const router = useRouter()
 const { isDark, toggleDark } = useTheme()
 const userStore = useUserStore()
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
-
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const isXsScreen = breakpoints.smaller('sm')
+const { isXs } = useResponsive()
 
 async function handleLogout() {
   await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
@@ -37,7 +35,7 @@ async function handleLogout() {
 <template>
   <el-space :size="8">
     <el-space :size="4">
-      <el-tooltip v-if="!isXsScreen" :content="isFullscreen ? '退出全屏' : '全屏'">
+      <el-tooltip v-if="!isXs" :content="isFullscreen ? '退出全屏' : '全屏'">
         <el-button class="g-square-button" type="primary" text circle @click="toggleFullscreen">
           <Icon
             :icon="isFullscreen ? 'custom:off-screen' : 'custom:full-screen'"
@@ -87,11 +85,11 @@ async function handleLogout() {
       </el-tooltip>
     </el-space>
     <el-dropdown trigger="click">
-      <span class="app-header__user">
+      <span class="app-header-actions__user">
         <el-avatar :size="28" :src="userStore.userInfo?.avatar ?? undefined">
           <Icon icon="icon-park-outline:user" width="18" height="18" />
         </el-avatar>
-        <span class="app-header__user-name">{{ userStore.userInfo?.nickname || '用户' }}</span>
+        <span class="app-header-actions__user-name">{{ userStore.userInfo?.nickname || '用户' }}</span>
       </span>
       <template #dropdown>
         <el-dropdown-menu>
@@ -114,11 +112,7 @@ async function handleLogout() {
 </template>
 
 <style lang="scss" scoped>
-.el-button--primary.is-text {
-  --el-button-text-color: var(--el-text-color-primary);
-}
-
-.app-header__user {
+.app-header-actions__user {
   display: flex;
   gap: 8px;
   align-items: center;
