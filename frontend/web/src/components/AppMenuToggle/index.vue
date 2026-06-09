@@ -59,23 +59,16 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <el-button
-    class="g-square-button"
-    type="primary"
-    bg
-    text
-    circle
-    @click="handleClick"
-  >
-    <Icon
-      :icon="menuIcon"
-      width="18"
-      height="18"
-    />
+  <el-button class="g-square-button" type="primary" bg text circle @click="handleClick">
+    <Icon :icon="menuIcon" width="18" height="18" />
   </el-button>
 </template>
 
 <style lang="scss">
+.el-button--primary.is-text {
+  --el-button-text-color: var(--el-text-color-primary);
+}
+
 .app-menu-toggle__drawer-body {
   padding: 0 !important;
   height: 100%;

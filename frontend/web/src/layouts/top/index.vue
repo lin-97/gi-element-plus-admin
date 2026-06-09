@@ -14,23 +14,19 @@ const appStore = useAppStore()
 </script>
 
 <template>
-  <div class="top-layout">
+  <gi-flex column class="top-layout">
     <AppHeader mode="top" />
     <AppTabs v-if="appStore.isShowTabs" />
-    <div class="top-layout__content">
+    <gi-flex flex="1" column>
       <PageTransition />
-    </div>
-  </div>
+    </gi-flex>
+  </gi-flex>
 </template>
 
 <style lang="scss" scoped>
-@use '../shared' as *;
-
-.top-layout {
-  @include layout-shell(column);
-
-  &__content {
-    @include layout-content;
-  }
+.gi-flex {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

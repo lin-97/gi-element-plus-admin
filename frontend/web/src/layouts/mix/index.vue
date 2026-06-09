@@ -38,7 +38,7 @@ function toggleCollapse() {
 </script>
 
 <template>
-  <div class="mix-layout">
+  <gi-flex column class="mix-layout">
     <header
       class="mix-header"
       :class="{ 'g-area-dark': appStore.isMenuDark }"
@@ -78,7 +78,7 @@ function toggleCollapse() {
       </div>
     </header>
 
-    <div class="mix-layout__body">
+    <gi-flex flex="1">
       <aside
         v-if="sideMenuList.length && !isMobile"
         class="mix-sidebar"
@@ -112,33 +112,24 @@ function toggleCollapse() {
         </div>
       </aside>
 
-      <div class="mix-layout__main">
+      <gi-flex flex="1" column>
         <AppTabs v-if="appStore.isShowTabs" />
-        <div class="mix-layout__content">
+        <gi-flex flex="1" column>
           <PageTransition />
-        </div>
-      </div>
-    </div>
-  </div>
+        </gi-flex>
+      </gi-flex>
+    </gi-flex>
+  </gi-flex>
 </template>
 
 <style lang="scss" scoped>
-@use '../shared' as *;
+.gi-flex {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
 .mix-layout {
-  @include layout-shell(column);
-
-  &__body {
-    @include layout-body;
-  }
-
-  &__main {
-    @include layout-main;
-  }
-
-  &__content {
-    @include layout-content;
-  }
 }
 
 .mix-header {
@@ -151,7 +142,10 @@ function toggleCollapse() {
   transition: height 0.3s;
   box-sizing: border-box;
 
-  @include horizontal-menu;
+  :deep(.el-menu--horizontal) {
+    --el-menu-horizontal-height: 100%;
+    --el-menu-item-height: 100%;
+  }
 
   &__left {
     height: 100%;

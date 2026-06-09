@@ -13,30 +13,22 @@ const { isMobile } = useResponsive()
 </script>
 
 <template>
-  <div class="default-layout">
+  <gi-flex class="default-layout">
     <AppSidebar v-if="!isMobile" />
-    <div class="default-layout__main">
+    <gi-flex flex="1" column>
       <AppHeader />
       <AppTabs v-if="appStore.isShowTabs" />
-      <div class="default-layout__content">
+      <gi-flex flex="1" column>
         <PageTransition />
-      </div>
-    </div>
-  </div>
+      </gi-flex>
+    </gi-flex>
+  </gi-flex>
 </template>
 
 <style lang="scss" scoped>
-@use '../shared' as *;
-
-.default-layout {
-  @include layout-shell(row);
-
-  &__main {
-    @include layout-main;
-  }
-
-  &__content {
-    @include layout-content;
-  }
+.gi-flex {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 </style>

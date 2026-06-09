@@ -112,6 +112,9 @@ async function handleLogout() {
 </template>
 
 <style lang="scss" scoped>
+  :deep(.el-button--primary.is-text) {
+  --el-button-text-color: var(--el-text-color-primary);
+}
 .app-header-actions__user {
   display: flex;
   gap: 8px;

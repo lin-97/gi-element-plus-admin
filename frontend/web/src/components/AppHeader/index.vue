@@ -59,8 +59,6 @@ const isTopMode = computed(() => mode === 'top')
 </template>
 
 <style lang="scss" scoped>
-@use '@/layouts/shared' as *;
-
 .app-header {
   display: flex;
   align-items: center;
@@ -71,7 +69,10 @@ const isTopMode = computed(() => mode === 'top')
   transition: height 0.3s;
   box-sizing: border-box;
 
-  @include horizontal-menu;
+  :deep(.el-menu--horizontal) {
+    --el-menu-horizontal-height: 100%;
+    --el-menu-item-height: 100%;
+  }
 
   &--top {
     height: auto;
