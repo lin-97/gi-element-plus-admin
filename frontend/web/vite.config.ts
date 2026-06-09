@@ -78,7 +78,7 @@ export default defineConfig(({ mode }) => {
             vue: ['vue', 'vue-router', 'pinia'],
             elementPlus: ['element-plus'],
             echarts: ['echarts', 'vue-echarts'],
-            utils: ['axios', 'dayjs', 'xe-utils', 'lodash-es'],
+            utils: ['axios', 'dayjs', 'xe-utils'],
           },
         },
       },

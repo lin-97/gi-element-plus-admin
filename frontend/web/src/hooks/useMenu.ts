@@ -1,10 +1,9 @@
-import type { RouteRecordRaw } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { eachTree } from 'xe-utils'
 import { useRouteListener } from '@/core/hooks'
 import { useRouteStore } from '@/core/stores'
-import { filterSortTree, isExternal } from '@/utils'
+import { deepClone, filterSortTree, isExternal } from '@/utils'
 
 /**
  * 菜单管理 Hooks
@@ -27,7 +26,7 @@ export function useMenu() {
    */
   const menuList = computed(() => {
     // 深拷贝路由配置，防止修改原始数据
-    const cloneRoutes = JSON.parse(JSON.stringify(routeStore.routes)) as RouteRecordRaw[]
+    const cloneRoutes = deepClone(routeStore.routes)
 
     const sortedMenuList = filterSortTree(cloneRoutes, i => i.meta?.hidden === false)
 

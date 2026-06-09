@@ -206,4 +206,5 @@ Vue SFC 中**自定义** CSS 类名必须采用 **BEM**（Block Element Modifier
 - ❌ `defineEmits` 使用数组/tuple 形式（如 `{ success: [] }`，应使用 `(e: 'success'): void`）
 - ❌ 自定义 class 使用非 BEM 命名（如 `.headerTitle`、`.card-body-item`、`.active-btn`）
 - ❌ BEM 元素链式嵌套（如 `block__a__b`，应扁平为 `block__a-b`）
+- ❌ 使用 `JSON.parse(JSON.stringify())` 做深拷贝（应使用 `@/utils` 的 `deepClone`）
 - ❌ 在用户未要求时添加测试、文档或无关注释

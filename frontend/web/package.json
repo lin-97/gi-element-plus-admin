@@ -24,7 +24,6 @@
     "element-plus": "^2.11.0",
     "es-toolkit": "^1.47.0",
     "gi-component": "^0.0.48",
-    "lodash-es": "^4.17.21",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^3.0.3",
@@ -40,7 +39,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "^7.0.1",
     "@iconify-json/icon-park-outline": "^1.2.4",
-    "@types/lodash-es": "^4.17.12",
     "@types/node": "^24.2.0",
     "@types/nprogress": "^0.2.3",
     "@types/qs": "^6.9.18",

@@ -1,4 +1,4 @@
-import { eachTree, mapTree, orderBy } from 'xe-utils'
+import { clone, eachTree, mapTree, orderBy } from 'xe-utils'
 
 interface TreeNode {
   children?: TreeNode[]
@@ -38,6 +38,11 @@ export function filterSortTree<T extends TreeNode>(
       item.children = orderBy(item.children, SORT_BY_META)
   })
   return sorted
+}
+
+/** 深拷贝（基于 xe-utils clone） */
+export function deepClone<T>(data: T): T {
+  return clone(data, true) as T
 }
 
 /** 判断 path 是否为外链 */

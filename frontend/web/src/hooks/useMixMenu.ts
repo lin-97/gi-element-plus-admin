@@ -1,10 +1,9 @@
-import type { RouteRecordRaw } from 'vue-router'
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { eachTree } from 'xe-utils'
 import { useRouteListener } from '@/core/hooks'
 import { useRouteStore } from '@/core/stores'
-import { filterSortTree, isExternal } from '@/utils'
+import { deepClone, filterSortTree, isExternal } from '@/utils'
 
 /**
  * 混合布局菜单 Hooks
@@ -17,13 +16,13 @@ export function useMixMenu() {
 
   /** 完整的菜单列表（过滤隐藏项，排序） */
   const fullMenuList = computed(() => {
-    const cloneRoutes = JSON.parse(JSON.stringify(routeStore.routes)) as RouteRecordRaw[]
+    const cloneRoutes = deepClone(routeStore.routes)
     return filterSortTree(cloneRoutes, i => i.meta?.hidden === false)
   })
 
   /** 一级菜单列表（展平只有一个子项的菜单，去掉 children） */
   const topMenuList = computed(() => {
-    const cloneRoutes = JSON.parse(JSON.stringify(routeStore.routes)) as RouteRecordRaw[]
+    const cloneRoutes = deepClone(routeStore.routes)
     const showMenuList = filterSortTree(cloneRoutes, i => i.meta?.hidden === false)
     eachTree(showMenuList, (i) => {
       if (i?.children?.length === 1 && i?.meta?.alwaysShow !== true) {
@@ -47,7 +46,7 @@ export function useMixMenu() {
       return []
 
     // 对子菜单做展平处理（和 useMenu 一致：只有一个子项时展平）
-    const children = JSON.parse(JSON.stringify(topItem.children)) as RouteRecordRaw[]
+    const children = deepClone(topItem.children)
     eachTree(children, (i) => {
       if (i?.children?.length === 1 && i?.meta?.alwaysShow !== true) {
         if (i.meta) {
