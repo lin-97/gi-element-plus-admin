@@ -5,5 +5,7 @@
   "isMenuAccordion": false,
   "isMenuCollapse": false,
   "isMenuDark": false,
+  "menuWidth": 220,
+  "headerHeight": 60,
   "layoutMode": "left"
 }

@@ -31,14 +31,19 @@ onUnmounted(() => {
     <el-divider content-position="center">
       布局模式
     </el-divider>
-    <el-radio-group v-model="appStore.layoutMode">
-      <el-radio value="left">
-        侧边栏
-      </el-radio>
-      <el-radio value="top">
-        顶栏
-      </el-radio>
-    </el-radio-group>
+    <el-row justify="center">
+      <el-radio-group v-model="appStore.layoutMode">
+        <el-radio value="left">
+          侧边栏
+        </el-radio>
+        <el-radio value="top">
+          顶栏
+        </el-radio>
+        <el-radio value="mix">
+          混合
+        </el-radio>
+      </el-radio-group>
+    </el-row>
 
     <el-divider content-position="center">
       主题色
@@ -79,6 +84,32 @@ onUnmounted(() => {
       </el-descriptions-item>
       <el-descriptions-item label="深色菜单">
         <el-switch v-model="appStore.isMenuDark" />
+      </el-descriptions-item>
+      <el-descriptions-item label="菜单宽度">
+        <el-input-number
+          v-model="appStore.menuWidth"
+          :min="200"
+          :max="250"
+          :step="5"
+          controls-position="right"
+        >
+          <template #suffix>
+            <span>px</span>
+          </template>
+        </el-input-number>
+      </el-descriptions-item>
+      <el-descriptions-item label="顶栏高度">
+        <el-input-number
+          v-model="appStore.headerHeight"
+          :min="50"
+          :max="60"
+          :step="2"
+          controls-position="right"
+        >
+          <template #suffix>
+            <span>px</span>
+          </template>
+        </el-input-number>
       </el-descriptions-item>
     </el-descriptions>
   </div>

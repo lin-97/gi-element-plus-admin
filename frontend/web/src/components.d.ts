@@ -14,6 +14,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
     AppHeader: typeof import('./components/AppHeader/index.vue')['default']
+    AppHeaderActions: typeof import('./components/AppHeaderActions/index.vue')['default']
     AppMenuIcon: typeof import('./components/AppMenuIcon/index.vue')['default']
     AppMenuItem: typeof import('./components/AppMenuItem/index.vue')['default']
     AppMenuToggle: typeof import('./components/AppMenuToggle/index.vue')['default']
@@ -41,6 +42,7 @@ declare module 'vue' {
     ElFormItem: typeof import('element-plus/es')['ElFormItem']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
+    ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElLink: typeof import('element-plus/es')['ElLink']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
@@ -74,6 +76,7 @@ declare module 'vue' {
 declare global {
   const AppBreadcrumb: typeof import('./components/AppBreadcrumb/index.vue')['default']
   const AppHeader: typeof import('./components/AppHeader/index.vue')['default']
+  const AppHeaderActions: typeof import('./components/AppHeaderActions/index.vue')['default']
   const AppMenuIcon: typeof import('./components/AppMenuIcon/index.vue')['default']
   const AppMenuItem: typeof import('./components/AppMenuItem/index.vue')['default']
   const AppMenuToggle: typeof import('./components/AppMenuToggle/index.vue')['default']
@@ -101,6 +104,7 @@ declare global {
   const ElFormItem: typeof import('element-plus/es')['ElFormItem']
   const ElIcon: typeof import('element-plus/es')['ElIcon']
   const ElInput: typeof import('element-plus/es')['ElInput']
+  const ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
   const ElLink: typeof import('element-plus/es')['ElLink']
   const ElMenu: typeof import('element-plus/es')['ElMenu']
   const ElMenuItem: typeof import('element-plus/es')['ElMenuItem']

@@ -16,6 +16,9 @@ interface NoticeItem {
   time: string
 }
 
+const EXIT_ANIMATION_MS = 500
+const CLEAR_STAGGER_MS = 80
+
 const notices = ref<NoticeItem[]>([
   {
     id: 1,
@@ -89,24 +92,24 @@ const notices = ref<NoticeItem[]>([
   },
 ])
 
-const removingIds = ref<Set<number>>(new Set())
+const isClearingAll = ref(false)
 
 function removeNotice(id: number) {
-  removingIds.value.add(id)
-  setTimeout(() => {
-    notices.value = notices.value.filter(n => n.id !== id)
-    removingIds.value.delete(id)
-  }, 300)
+  if (isClearingAll.value)
+    return
+  notices.value = notices.value.filter(n => n.id !== id)
 }
 
 function clearAll() {
-  notices.value.forEach((notice) => {
-    removingIds.value.add(notice.id)
-  })
+  const list = notices.value
+  if (!list.length || isClearingAll.value)
+    return
+
+  isClearingAll.value = true
   setTimeout(() => {
     notices.value = []
-    removingIds.value.clear()
-  }, 300)
+    isClearingAll.value = false
+  }, (list.length - 1) * CLEAR_STAGGER_MS + EXIT_ANIMATION_MS)
 }
 
 onUnmounted(() => {
@@ -118,25 +121,33 @@ defineExpose({ clearAll })
 
 <template>
   <div class="app-notice-drawer">
-    <el-alert
-      v-for="notice in notices"
+    <div
+      v-for="(notice, index) in notices"
       :key="notice.id"
-      :title="notice.title"
-      :type="notice.type"
-      :closable="true"
-      show-icon
-      @close="removeNotice(notice.id)"
+      class="app-notice-drawer__item"
+      :class="{
+        'app-notice-drawer__item--removing animate__animated animate__fadeOutRight animate__faster': isClearingAll,
+      }"
+      :style="isClearingAll ? { '--remove-delay': `${index * CLEAR_STAGGER_MS}ms` } : undefined"
     >
-      <template #default>
-        <div>{{ notice.message }}</div>
-        <div class="app-notice-drawer__time">
-          {{ notice.time }}
-        </div>
-      </template>
-      <template #close>
-        <Icon icon="icon-park-outline:close" width="16" height="16" />
-      </template>
-    </el-alert>
+      <el-alert
+        :title="notice.title"
+        :type="notice.type"
+        :closable="true"
+        show-icon
+        @close="removeNotice(notice.id)"
+      >
+        <template #default>
+          <div>{{ notice.message }}</div>
+          <div class="app-notice-drawer__time">
+            {{ notice.time }}
+          </div>
+        </template>
+        <template #close>
+          <Icon icon="icon-park-outline:close" width="16" height="16" />
+        </template>
+      </el-alert>
+    </div>
 
     <el-empty v-if="notices.length === 0" description="暂无通知" :image-size="80" />
   </div>
@@ -156,6 +167,14 @@ defineExpose({ clearAll })
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow: hidden;
+}
+
+.app-notice-drawer__item {
+  &--removing {
+    animation-delay: var(--remove-delay, 0ms);
+    pointer-events: none;
+  }
 }
 
 .app-notice-drawer__time {

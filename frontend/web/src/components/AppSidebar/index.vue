@@ -24,12 +24,13 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
       'app-sidebar--drawer': drawer,
       'g-area-dark': appStore.isMenuDark,
     }"
+    :style="{ width: isCollapsed ? '64px' : drawer ? '100%' : `${appStore.menuWidth}px` }"
   >
-    <div class="app-sidebar__logo app__logo">
+    <div class="app-sidebar__logo app__logo" :style="{ height: `${appStore.headerHeight}px` }">
       <span v-if="!isCollapsed" class="app-sidebar__logo-text">GI Admin</span>
       <span v-else class="app-sidebar__logo-text">GI</span>
     </div>
-    <el-scrollbar class="app-sidebar__scroll">
+    <el-scrollbar class="app-sidebar__scroll" :wrap-style="{ overflowX: 'hidden' }">
       <el-menu
         :default-active="selectedKeys[0]"
         :collapse="isCollapsed"
@@ -70,10 +71,15 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
   &__scroll {
     flex: 1;
     min-height: 0;
+    overflow: hidden;
 
     :deep(.el-menu) {
       border-right: none;
     }
+  }
+
+  &--collapsed &__scroll :deep(.el-menu--collapse) {
+    width: 100%;
   }
 
   &__logo {
@@ -81,11 +87,11 @@ const { menuList, selectedKeys, handleMenuItemClick } = useMenu()
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 50px;
     font-size: 18px;
     font-weight: 600;
     color: var(--el-color-primary);
     border-bottom: 1px solid var(--el-border-color);
+    transition: height 0.3s;
 
     &-text {
       font-size: 18px;

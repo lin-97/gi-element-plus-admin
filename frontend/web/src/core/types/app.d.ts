@@ -7,6 +7,8 @@ declare namespace App {
     isMenuCollapse: boolean // 是否折叠菜单
     isMenuAccordion: boolean // 左侧菜单手风琴效果
     isMenuDark: boolean // 菜单深色模式
-    layoutMode: 'left' | 'top' // 系统布局
+    menuWidth: number // 菜单宽度
+    headerHeight: number // 顶栏高度
+    layoutMode: 'left' | 'top' | 'mix' // 系统布局
   }
 }
