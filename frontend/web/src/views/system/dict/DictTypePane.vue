@@ -122,14 +122,14 @@ defineExpose({ reload: loadTypes })
       </template>
     </el-input>
 
-    <el-row>
+    <el-row style="gap: 10px;">
       <gi-button type="add" class="g-flex-1" @click="handleAdd">
         新增
       </gi-button>
-      <el-button type="primary" plain class="g-flex-1" :disabled="!selectedType" @click="handleEdit">
+      <el-button type="primary" class="g-flex-1" :disabled="!selectedType" @click="handleEdit">
         编辑
       </el-button>
-      <el-button type="danger" plain class="g-flex-1" :disabled="!selectedType || selectedType.isSystem" @click="handleDelete">
+      <el-button type="danger" class="g-flex-1" :disabled="!selectedType || selectedType.isSystem" @click="handleDelete">
         删除
       </el-button>
     </el-row>
