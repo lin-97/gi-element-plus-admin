@@ -52,7 +52,6 @@ export function useTable<F>(options: Options<F>) {
     try {
       loading.value = true
       const res = await options.listAPI({ page: pagination.currentPage, size: pagination.pageSize })
-      console.log(res, 'res')
       // 处理返回的数据结构可能是分页或数组的情况
       const data = !Array.isArray(res) ? res.list : res
       tableData.value = data as F[]

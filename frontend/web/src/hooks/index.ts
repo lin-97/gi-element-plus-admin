@@ -1,5 +1,6 @@
 export * from './useChart'
 export * from './useDict'
+export * from './useFormDialog'
 export * from './useMenu'
 export * from './useResponsive'
 export * from './useTable'

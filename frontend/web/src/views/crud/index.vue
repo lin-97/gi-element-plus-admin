@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { deleteStudentApi, getStudentListApi } from '@/apis/student'
@@ -75,10 +75,6 @@ const {
   },
 )
 
-function handleSearch() {
-  search()
-}
-
 function handleReset() {
   queryForm.name = ''
   queryForm.studentNo = ''
@@ -102,7 +98,7 @@ function handleEdit(row: StudentItem) {
       <gi-form
         :model-value="queryForm" :columns="formColumns" search :grid-item-props="{
           span: { xs: 24, sm: 12, md: 12, lg: 8, xl: 6, xxl: 6 },
-        }" @update:model-value="Object.assign(queryForm, $event)" @search="handleSearch" @reset="handleReset"
+        }" @update:model-value="Object.assign(queryForm, $event)" @search="search" @reset="handleReset"
       />
     </template>
 

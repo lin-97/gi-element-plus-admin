@@ -95,15 +95,17 @@ const notices = ref<NoticeItem[]>([
 const isClearingAll = ref(false)
 
 function removeNotice(id: number) {
-  if (isClearingAll.value)
+  if (isClearingAll.value) {
     return
+  }
   notices.value = notices.value.filter(n => n.id !== id)
 }
 
 function clearAll() {
   const list = notices.value
-  if (!list.length || isClearingAll.value)
+  if (!list.length || isClearingAll.value) {
     return
+  }
 
   isClearingAll.value = true
   setTimeout(() => {
@@ -126,7 +128,7 @@ defineExpose({ clearAll })
       :key="notice.id"
       class="app-notice-drawer__item"
       :class="{
-        'app-notice-drawer__item--removing animate__animated animate__fadeOutRight animate__faster': isClearingAll,
+        'app-notice-drawer__item--removing': isClearingAll,
       }"
       :style="isClearingAll ? { '--remove-delay': `${index * CLEAR_STAGGER_MS}ms` } : undefined"
     >
@@ -172,8 +174,20 @@ defineExpose({ clearAll })
 
 .app-notice-drawer__item {
   &--removing {
+    animation: app-notice-drawer-fade-out-right 0.5s ease both;
     animation-delay: var(--remove-delay, 0ms);
     pointer-events: none;
+  }
+}
+
+@keyframes app-notice-drawer-fade-out-right {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
   }
 }
 

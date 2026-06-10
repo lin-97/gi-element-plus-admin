@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { StatusValue } from '@/apis/role'
 import type { SysUserItem } from '@/apis/user'
@@ -78,10 +78,6 @@ function isSuperAdminRow(row: SysUserItem) {
   return !!row.isSuperAdmin
 }
 
-function handleSearch() {
-  search()
-}
-
 function handleReset() {
   queryForm.username = ''
   queryForm.phone = ''
@@ -102,8 +98,9 @@ function handleResetPassword(row: SysUserItem) {
 }
 
 async function handleStatusSwitch(row: SysUserItem, val: string | number | boolean) {
-  if (!row?.id)
+  if (!row?.id) {
     return
+  }
   const status = val as StatusValue
   try {
     await updateUserStatusApi(row.id, status)
@@ -124,7 +121,7 @@ async function handleStatusSwitch(row: SysUserItem, val: string | number | boole
         search
         :grid-item-props="{ span: { xs: 24, sm: 12, md: 12, lg: 8, xl: 6, xxl: 6 } }"
         @update:model-value="Object.assign(queryForm, $event)"
-        @search="handleSearch"
+        @search="search"
         @reset="handleReset"
       />
     </template>

@@ -3,6 +3,7 @@ import type { DictTypeItem, StatusValue } from '@/apis/dict'
 import { Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { deleteDictTypeApi, getDictTypeListApi } from '@/apis/dict'
+import { clearDictCache } from '@/hooks/useDict'
 import DictTypeFormDialog from './DictTypeFormDialog.vue'
 
 defineOptions({ name: 'DictTypePane' })
@@ -96,6 +97,7 @@ async function handleDelete() {
       { type: 'warning' },
     )
     await deleteDictTypeApi([selectedType.value.id])
+    clearDictCache(selectedType.value.code)
     ElMessage.success('删除成功')
     selectedType.value = undefined
     await loadTypes()

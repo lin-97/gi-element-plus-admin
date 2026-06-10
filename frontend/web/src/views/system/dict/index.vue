@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { DictDataItem, DictTypeItem, StatusValue } from '@/apis/dict'
 import { ElMessage } from 'element-plus'
@@ -7,7 +7,7 @@ import {
   getDictDataListApi,
   updateDictDataStatusApi,
 } from '@/apis/dict'
-import { useDict } from '@/hooks/useDict'
+import { clearDictCache, useDict } from '@/hooks/useDict'
 import { useTable } from '@/hooks/useTable'
 import DictDataFormDialog from './DictDataFormDialog.vue'
 import DictTypePane from './DictTypePane.vue'
@@ -73,7 +73,12 @@ const {
     label: dataQueryForm.label || undefined,
     status: dataQueryForm.status,
   }),
-  deleteAPI: deleteDictDataApi,
+  deleteAPI: async (ids) => {
+    await deleteDictDataApi(ids)
+    if (selectedType.value?.code) {
+      clearDictCache(selectedType.value.code)
+    }
+  },
 })
 
 const canAddData = computed(() => selectedType.value?.status === '1')
@@ -126,8 +131,9 @@ function handleDataEdit(row: DictDataItem) {
 }
 
 async function handleDataStatusSwitch(row: DictDataItem, val: string | number | boolean) {
-  if (!row?.id)
+  if (!row?.id) {
     return
+  }
   const status = val as StatusValue
   try {
     await updateDictDataStatusApi(row.id, status)
@@ -217,6 +223,7 @@ function onDataSuccess() {
       :key="selectedType?.id"
       ref="DataFormDialogRef"
       :type-id="selectedType?.id ?? ''"
+      :type-code="selectedType?.code ?? ''"
       @success="onDataSuccess"
     />
   </gi-page-layout>

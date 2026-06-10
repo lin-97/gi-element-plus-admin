@@ -1,10 +1,11 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { GenderValue, StudentItem } from '@/apis/student'
 import { ElMessage } from 'element-plus'
 import { createStudentApi, updateStudentApi } from '@/apis/student'
 import { useDict } from '@/hooks/useDict'
+import { useFormDialog } from '@/hooks/useFormDialog'
 import { EMAIL_REG, PHONE_REG } from '@/utils/regexp'
 
 defineOptions({ name: 'FormDialog' })
@@ -25,12 +26,7 @@ interface StudentFormData {
   address: string
 }
 
-const visible = ref(false)
-const isEdit = ref(false)
-const currentId = ref('')
 const formRef = useTemplateRef<FormInstance>('formRef')
-const formData = ref<StudentFormData>(createEmptyForm())
-const dialogTitle = computed(() => (isEdit.value ? '编辑学生' : '新增学生'))
 
 function createEmptyForm(): StudentFormData {
   return {
@@ -51,8 +47,9 @@ const formRules: FormRules = {
   email: [{ pattern: EMAIL_REG, message: '请输入正确的邮箱地址', trigger: 'blur' }],
   address: [{
     validator: (_rule, value, callback) => {
-      if (String(value ?? '').length <= 200)
+      if (String(value ?? '').length <= 200) {
         return callback()
+      }
       callback(new Error('地址不能超过200字'))
     },
     trigger: 'blur',
@@ -112,39 +109,31 @@ function toPayload(data: StudentFormData): Partial<StudentItem> {
   }
 }
 
-function openAdd() {
-  isEdit.value = false
-  currentId.value = ''
-  formData.value = createEmptyForm()
-  visible.value = true
-}
-
-function openEdit(row: StudentItem) {
-  isEdit.value = true
-  currentId.value = row.id
-  formData.value = toFormData(row)
-  visible.value = true
-}
-
-async function handleBeforeOk() {
-  try {
-    await formRef.value?.formRef?.validate()
-    const payload = toPayload(formData.value)
-    if (isEdit.value && currentId.value) {
-      await updateStudentApi(currentId.value, payload)
+const {
+  visible,
+  formData,
+  dialogTitle,
+  openAdd,
+  openEdit,
+  handleBeforeOk,
+} = useFormDialog<StudentFormData, StudentItem>({
+  formRef,
+  createEmptyForm,
+  toFormData,
+  titles: { add: '新增学生', edit: '编辑学生' },
+  submit: async ({ isEdit, id, data }) => {
+    const payload = toPayload(data)
+    if (isEdit && id) {
+      await updateStudentApi(id, payload)
       ElMessage.success('更新成功')
     }
     else {
       await createStudentApi(payload)
       ElMessage.success('添加成功')
     }
-    emit('success')
-    return true
-  }
-  catch {
-    return false
-  }
-}
+  },
+  onSuccess: () => emit('success'),
+})
 
 defineExpose({ openAdd, openEdit })
 </script>

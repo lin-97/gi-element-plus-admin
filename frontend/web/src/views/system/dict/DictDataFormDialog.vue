@@ -1,15 +1,17 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormRules } from 'element-plus'
 import type { FormColumnItem, FormInstance } from 'gi-component'
 import type { DictDataItem } from '@/apis/dict'
 import { ElMessage } from 'element-plus'
 import { createDictDataApi, updateDictDataApi } from '@/apis/dict'
-import { useDict } from '@/hooks/useDict'
+import { clearDictCache, useDict } from '@/hooks/useDict'
+import { useFormDialog } from '@/hooks/useFormDialog'
 
 defineOptions({ name: 'DictDataFormDialog' })
 
 const props = defineProps<{
   typeId: string
+  typeCode: string
 }>()
 
 const emit = defineEmits<{
@@ -26,12 +28,7 @@ interface DictDataFormData {
   remark: string
 }
 
-const visible = ref(false)
-const isEdit = ref(false)
-const currentId = ref('')
 const formRef = useTemplateRef<FormInstance>('formRef')
-const formData = ref<DictDataFormData>(createEmptyForm())
-const dialogTitle = computed(() => (isEdit.value ? '编辑字典数据' : '新增字典数据'))
 
 function createEmptyForm(): DictDataFormData {
   return { label: '', value: '', status: '1', sort: 0, remark: '' }
@@ -41,6 +38,49 @@ const formRules: FormRules = {
   label: [{ required: true, message: '请输入数据标签', trigger: 'blur' }],
   value: [{ required: true, message: '请输入数据键值', trigger: 'blur' }],
 }
+
+const {
+  visible,
+  formData,
+  dialogTitle,
+  openAdd,
+  openEdit,
+  handleBeforeOk,
+} = useFormDialog<DictDataFormData, DictDataItem>({
+  formRef,
+  createEmptyForm,
+  toFormData: row => ({
+    label: row.label,
+    value: row.value,
+    status: row.status,
+    sort: row.sort ?? 0,
+    remark: row.remark ?? '',
+  }),
+  titles: { add: '新增字典数据', edit: '编辑字典数据' },
+  submit: async ({ isEdit, id, data }) => {
+    if (isEdit && id) {
+      await updateDictDataApi(id, {
+        label: data.label,
+        value: data.value,
+        status: data.status,
+        sort: data.sort,
+        remark: data.remark,
+      })
+      ElMessage.success('更新成功')
+    }
+    else {
+      await createDictDataApi({
+        typeId: props.typeId,
+        ...data,
+      })
+      ElMessage.success('添加成功')
+    }
+    if (props.typeCode) {
+      clearDictCache(props.typeCode)
+    }
+  },
+  onSuccess: () => emit('success'),
+})
 
 const formColumns = computed<FormColumnItem[]>(() => [
   { field: 'label', label: '数据标签', type: 'input' },
@@ -65,54 +105,6 @@ const formColumns = computed<FormColumnItem[]>(() => [
     props: { maxlength: 500, showWordLimit: true, rows: 3 },
   },
 ])
-
-function openAdd() {
-  isEdit.value = false
-  currentId.value = ''
-  formData.value = createEmptyForm()
-  visible.value = true
-}
-
-function openEdit(row: DictDataItem) {
-  isEdit.value = true
-  currentId.value = row.id
-  formData.value = {
-    label: row.label,
-    value: row.value,
-    status: row.status,
-    sort: row.sort ?? 0,
-    remark: row.remark ?? '',
-  }
-  visible.value = true
-}
-
-async function handleBeforeOk() {
-  try {
-    await formRef.value?.formRef?.validate()
-    if (isEdit.value && currentId.value) {
-      await updateDictDataApi(currentId.value, {
-        label: formData.value.label,
-        value: formData.value.value,
-        status: formData.value.status,
-        sort: formData.value.sort,
-        remark: formData.value.remark,
-      })
-      ElMessage.success('更新成功')
-    }
-    else {
-      await createDictDataApi({
-        typeId: props.typeId,
-        ...formData.value,
-      })
-      ElMessage.success('添加成功')
-    }
-    emit('success')
-    return true
-  }
-  catch {
-    return false
-  }
-}
 
 defineExpose({ openAdd, openEdit })
 </script>

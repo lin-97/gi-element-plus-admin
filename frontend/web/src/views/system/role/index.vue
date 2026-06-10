@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import type { FormColumnItem, TableColumnItem } from 'gi-component'
 import type { RoleItem, StatusValue } from '@/apis/role'
 import { ElMessage } from 'element-plus'
@@ -79,10 +79,6 @@ function isSystemRole(row: RoleItem) {
   return row.code === SUPER_ADMIN_ROLE
 }
 
-function handleSearch() {
-  search()
-}
-
 function handleReset() {
   queryForm.code = ''
   queryForm.name = ''
@@ -99,8 +95,9 @@ function handleEdit(row: RoleItem) {
 }
 
 async function handleStatusSwitch(row: RoleItem, val: string | number | boolean) {
-  if (!row?.id)
+  if (!row?.id) {
     return
+  }
   const status = val as StatusValue
   try {
     await updateRoleStatusApi(row.id, status)
@@ -121,7 +118,7 @@ async function handleStatusSwitch(row: RoleItem, val: string | number | boolean)
         search
         :grid-item-props="{ span: { xs: 24, sm: 12, md: 12, lg: 8, xl: 6, xxl: 6 } }"
         @update:model-value="Object.assign(queryForm, $event)"
-        @search="handleSearch"
+        @search="search"
         @reset="handleReset"
       />
     </template>
