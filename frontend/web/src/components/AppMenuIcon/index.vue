@@ -56,7 +56,8 @@ function getElementIcon(name?: string) {
 
 const iconValue = computed(() => icon?.trim() ?? '')
 const sanitizedIconValue = computed(() => {
-  if (iconType.value === 'svg')
+  const type = resolveMenuIconType(icon)
+  if (type === 'svg')
     return sanitizeSvg(iconValue.value)
   return iconValue.value
 })
