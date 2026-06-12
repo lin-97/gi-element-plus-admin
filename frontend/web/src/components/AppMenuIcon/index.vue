@@ -2,16 +2,26 @@
 import type { Component } from 'vue'
 import * as ElementPlusIcons from '@element-plus/icons-vue'
 import { Icon } from '@iconify/vue'
+import DOMPurify from 'dompurify'
 
 defineOptions({ name: 'AppMenuIcon' })
-
-type MenuIconType = 'none' | 'svg' | 'iconify' | 'element'
 
 const { icon, size = '1em', wrap = true } = defineProps<{
   icon?: string
   size?: string | number
   wrap?: boolean
 }>()
+
+type MenuIconType = 'none' | 'svg' | 'iconify' | 'element'
+
+function sanitizeSvg(content: string): string {
+  return DOMPurify.sanitize(content, {
+    ADD_TAGS: ['svg', 'path', 'circle', 'rect', 'line', 'polygon', 'polyline', 'g', 'defs', 'clipPath', 'linearGradient', 'radialGradient', 'stop'],
+    ADD_ATTR: ['fill', 'stroke', 'stroke-width', 'viewBox', 'width', 'height', 'd', 'cx', 'cy', 'r', 'x', 'y', 'rx', 'ry', 'points', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'transform'],
+    FORBID_TAGS: ['script', 'foreignObject', 'iframe', 'embed'],
+    FORBID_ATTR: ['on*'],
+  })
+}
 
 function isSvgIcon(value?: string) {
   const text = value?.trim()
@@ -45,6 +55,11 @@ function getElementIcon(name?: string) {
 }
 
 const iconValue = computed(() => icon?.trim() ?? '')
+const sanitizedIconValue = computed(() => {
+  if (iconType.value === 'svg')
+    return sanitizeSvg(iconValue.value)
+  return iconValue.value
+})
 const iconType = computed(() => resolveMenuIconType(icon))
 const elementIcon = computed(() => {
   if (iconType.value !== 'element')
@@ -77,7 +92,7 @@ const iconWrapStyle = computed(() => {
     <span
       v-if="iconType === 'svg'"
       class="app-menu-icon__svg"
-      v-html="iconValue"
+      v-html="sanitizedIconValue"
     />
     <Icon
       v-else-if="iconType === 'iconify'"
@@ -92,7 +107,7 @@ const iconWrapStyle = computed(() => {
     <span
       v-if="iconType === 'svg'"
       class="app-menu-icon__svg"
-      v-html="iconValue"
+      v-html="sanitizedIconValue"
     />
     <Icon
       v-else-if="iconType === 'iconify'"
