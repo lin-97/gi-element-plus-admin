@@ -11,7 +11,7 @@
       "@/*": ["./src/*"]
     },
     "resolveJsonModule": true,
-    "types": ["vite/client", "element-plus/global"],
+    "types": ["vite/client", "element-plus/global", "gi-component/global"],
     "allowImportingTsExtensions": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
@@ -24,7 +24,6 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "node_modules/gi-component/packages/components.d.ts"
+    "src/**/*.vue"
   ]
 }
