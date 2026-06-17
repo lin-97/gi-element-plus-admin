@@ -39,8 +39,8 @@ importers:
         specifier: ^1.47.0
         version: 1.47.0
       gi-component:
-        specifier: ^0.0.51
-        version: 0.0.51(element-plus@2.14.0(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3))
+        specifier: ^0.0.52
+        version: 0.0.52(element-plus@2.14.0(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3))
       mitt:
         specifier: ^3.0.1
         version: 3.0.1
@@ -2118,8 +2118,8 @@ packages:
   get-tsconfig@4.14.0:
     resolution: {integrity: sha512-yTb+8DXzDREzgvYmh6s9vHsSVCHeC0G3PI5bEXNBHtmshPnO+S5O7qgLEOn0I5QvMy6kpZN8K1NKGyilLb93wA==}
 
-  gi-component@0.0.51:
-    resolution: {integrity: sha512-9+RNG4kopenwRmnpUasS4GR9kKmNk2pJX8GQ1dhoRbq6JONrvnRB02La408c0ouuigOVHOh8v23qWXEYJZsFlQ==}
+  gi-component@0.0.52:
+    resolution: {integrity: sha512-es4fevwUkrRP5Ktpe+cACvxJ2IlRhyfN4UiwFG7VzmXi41lBJObJgsFq//vczFsg1DLm3X/JYZsOuSmM+C1Ecg==}
     peerDependencies:
       element-plus: ^2.11.0
       vue: ^3.4.0
@@ -5387,7 +5387,7 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
-  gi-component@0.0.51(element-plus@2.14.0(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3)):
+  gi-component@0.0.52(element-plus@2.14.0(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3)):
     dependencies:
       element-plus: 2.14.0(vue@3.5.34(typescript@5.9.3))
       vue: 3.5.34(typescript@5.9.3)
