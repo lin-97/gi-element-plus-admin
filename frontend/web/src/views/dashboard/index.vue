@@ -10,17 +10,17 @@ defineOptions({ name: 'Dashboard' })
 
 <template>
   <div class="dashboard">
-    <WelcomeCard class="g-mb" />
+    <WelcomeCard class="g-mb g-radius" />
 
     <el-row :gutter="16" class="dashboard__main">
       <el-col :xs="24" :lg="15">
-        <ProjectCard class="g-mb" />
-        <MessageCard class="g-mb" />
+        <ProjectCard class="g-mb g-radius" />
+        <MessageCard class="g-mb g-radius" />
       </el-col>
 
       <el-col :xs="24" :lg="9">
-        <QuickActionCard class="g-mb" />
-        <ImageCard class="g-mb" />
+        <QuickActionCard class="g-mb g-radius" />
+        <ImageCard class="g-mb g-radius" />
       </el-col>
     </el-row>
   </div>
@@ -35,9 +35,5 @@ defineOptions({ name: 'Dashboard' })
   &__main {
     align-items: flex-start;
   }
-}
-
-:deep(.gi-card-header__title) {
-  font-weight: 600;
 }
 </style>

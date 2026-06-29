@@ -19,6 +19,7 @@ body,
 .g-page-layout {
   width: auto !important;
   margin: var(--margin) !important;
+  border-radius: 4px;
   .gi-page-layout__tool {
     justify-content: start;
   }
@@ -29,13 +30,17 @@ body,
   border-radius: 4px;
 }
 
-.gi-square-switch.el-switch {
+.g-square-switch.el-switch {
   .el-switch__core {
     border-radius: 2px;
     .el-switch__action {
       border-radius: 2px;
     }
   }
+}
+
+.g-radius {
+  border-radius: 4px;
 }
 
 .g-flex-1 {

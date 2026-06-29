@@ -1,9 +1,22 @@
 .el-dialog {
   --el-dialog-bg-color: var(--color-bg-2);
+  border-radius: 8px;
 }
 
 .el-drawer {
   --el-drawer-bg-color: var(--color-bg-2);
+}
+
+:root .el-pagination {
+  --el-pagination-border-radius: 4px;
+}
+
+.el-drawer.rtl {
+  border-radius: 4px 0 0 4px;
+}
+
+.el-drawer.ltr {
+  border-radius: 4px !important;
 }
 
 .el-drawer__title,
@@ -18,4 +31,21 @@
 
 .el-menu-item.is-active {
   background-color: var(--el-fill-color-light);
+}
+
+.el-message-box {
+  border-radius: 8px;
+}
+
+.el-dropdown__popper .el-dropdown-menu {
+  padding: 5px;
+  border-radius: 6px;
+}
+
+.el-dropdown-menu .el-dropdown-menu__item {
+  border-radius: 4px;
+}
+
+.el-dropdown__popper.el-popper {
+  border-radius: 8px;
 }

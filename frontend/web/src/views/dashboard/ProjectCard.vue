@@ -94,8 +94,8 @@ function getProjectIcon(item: ProjectItem) {
 <style lang="scss" scoped>
 .project-card {
   &__list {
-    border-top: 1px solid var(--el-border-color-lighter);
-    border-left: 1px solid var(--el-border-color-lighter);
+    border-top: 1px solid var(--el-border-color);
+    border-left: 1px solid var(--el-border-color);
   }
 
   &__item {
@@ -104,8 +104,8 @@ function getProjectIcon(item: ProjectItem) {
     height: 100%;
     min-height: 140px;
     padding: 16px;
-    border-right: 1px solid var(--el-border-color-lighter);
-    border-bottom: 1px solid var(--el-border-color-lighter);
+    border-right: 1px solid var(--el-border-color);
+    border-bottom: 1px solid var(--el-border-color);
     transition: background-color 0.2s;
 
     &:hover {

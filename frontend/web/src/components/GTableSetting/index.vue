@@ -278,7 +278,7 @@ const settingColumns = computed<TableColumnItem[]>(() => {
           v-if="showColumnSetting"
           placement="bottom-end"
           :width="180"
-          trigger="click"
+          trigger="focus"
           transition="el-zoom-in-top"
         >
           <template #reference>

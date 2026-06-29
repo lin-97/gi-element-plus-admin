@@ -1,4 +1,4 @@
-import GiComponent, { Drawer } from 'gi-component'
+import GiComponent, { Dialog, Drawer } from 'gi-component'
 import { createApp } from 'vue'
 import directives from '@/core/directives'
 import pinia from '@/stores'
@@ -19,7 +19,8 @@ app.use(pinia)
 app.use(GiComponent)
 app.use(directives)
 
-Object.assign(Drawer._context, app._context)
+Drawer._context = app._context
+Dialog._context = app._context
 
 app.mount('#app')
 

@@ -23,7 +23,7 @@ const devDependencies = toDepList(packageJson.devDependencies)
 
 <template>
   <div class="about-page">
-    <gi-card title="项目信息" class="about-page__info g-mb">
+    <gi-card title="项目信息" class="about-page__info g-mb g-radius">
       <template #extra>
         <el-space>
           <el-row justify="center" align="middle" :style="{ width: '24px', height: '24px', color: '#fff', backgroundColor: `var(--el-color-primary-dark-2)` }" />
@@ -55,7 +55,7 @@ const devDependencies = toDepList(packageJson.devDependencies)
 
     <el-row :gutter="16">
       <el-col :xs="24" :lg="12">
-        <gi-card title="生产依赖" class="about-page__deps g-mb">
+        <gi-card title="生产依赖" class="about-page__deps g-mb g-radius">
           <el-table :data="dependencies" border stripe>
             <el-table-column prop="name" label="依赖包" min-width="180" show-overflow-tooltip />
             <el-table-column prop="version" label="版本" width="120" />
@@ -64,7 +64,7 @@ const devDependencies = toDepList(packageJson.devDependencies)
       </el-col>
 
       <el-col :xs="24" :lg="12">
-        <gi-card title="开发依赖" class="about-page__deps g-mb">
+        <gi-card title="开发依赖" class="about-page__deps g-mb g-radius">
           <el-table :data="devDependencies" border stripe>
             <el-table-column prop="name" label="依赖包" min-width="180" show-overflow-tooltip />
             <el-table-column prop="version" label="版本" width="120" />
