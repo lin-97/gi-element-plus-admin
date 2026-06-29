@@ -1,9 +1,17 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 import qs from 'qs'
 import { appConfig } from '@/config'
 import router from '@/router'
 import { useUserStore } from '@/stores/useUserStore'
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    /** 为 true 时不弹出全局错误提示（由调用方自行处理） */
+    skipErrorMessage?: boolean
+  }
+}
 
 /** HTTP 状态码 */
 export enum HttpCode {
@@ -38,6 +46,13 @@ function handleAuthExpired(configUrl?: string) {
   router.push(appConfig.loginPath)
 }
 
+/** 业务失败或 HTTP 错误时统一弹出提示 */
+function showRequestError(message: string, config?: InternalAxiosRequestConfig) {
+  if (!message || config?.skipErrorMessage || shouldSkipAuthRedirect(config?.url))
+    return
+  ElMessage.error(message)
+}
+
 /** 创建 axios 实例 */
 const service: AxiosInstance = axios.create({
   baseURL: appConfig.apiPrefix,
@@ -66,7 +81,9 @@ service.interceptors.response.use(
 
     if (isAuthError(undefined, res.code))
       handleAuthExpired(response.config.url)
-    return Promise.reject(new Error(res.message || '请求失败'))
+    const message = res.message || '请求失败'
+    showRequestError(message, response.config)
+    return Promise.reject(new Error(message))
   },
   (error) => {
     const status = error.response?.status as number | undefined
@@ -79,6 +96,7 @@ service.interceptors.response.use(
       || (typeof detail === 'string' ? detail : Array.isArray(detail) ? detail[0]?.msg : undefined)
       || error.message
       || '网络异常'
+    showRequestError(message, error.config)
     return Promise.reject(new Error(message))
   },
 )

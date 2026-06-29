@@ -142,7 +142,7 @@ defineExpose({ openAdd, openEdit })
   <gi-dialog
     v-model="visible"
     :title="dialogTitle"
-    width="600px"
+    width="calc(100% - 20px)"
     :style="{ maxWidth: '600px' }"
     destroy-on-close
     :on-before-ok="handleBeforeOk"

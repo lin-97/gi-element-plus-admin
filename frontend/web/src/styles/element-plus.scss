@@ -13,10 +13,12 @@
 
 .el-drawer.rtl {
   border-radius: 4px 0 0 4px;
+  overflow: hidden;
 }
 
 .el-drawer.ltr {
-  border-radius: 4px !important;
+  border-radius: 0 4px 4px 0;
+  overflow: hidden;
 }
 
 .el-drawer__title,
