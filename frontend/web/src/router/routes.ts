@@ -23,6 +23,12 @@ export const CONSTANT_ROUTES: RouteRecordRaw[] = [
     meta: { hidden: true, showInTabs: false },
   },
   {
+    path: '/ai-chat',
+    name: 'AiChat',
+    component: () => import('@/views/ai-chat/index.vue'),
+    meta: { title: 'AI 对话', hidden: true, showInTabs: false, activeMenu: '/ai-chat-nav/open' },
+  },
+  {
     path: '/',
     component: Layout,
     meta: { title: '', hidden: false, icon: 'icon-park-outline:workbench' },
@@ -33,6 +39,21 @@ export const CONSTANT_ROUTES: RouteRecordRaw[] = [
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         meta: { title: '工作台', affix: true, hidden: false, icon: 'Monitor' },
+      },
+    ],
+  },
+  {
+    path: '/ai-chat-nav',
+    name: 'AiChatNav',
+    component: Layout,
+    meta: { title: '', hidden: false, icon: 'icon-park-outline:robot', sort: 98 },
+    redirect: '/ai-chat-nav/open',
+    children: [
+      {
+        path: '/ai-chat-nav/open',
+        name: 'AiChatNavOpen',
+        redirect: '/ai-chat',
+        meta: { title: 'AI 对话', hidden: false, icon: 'icon-park-outline:robot' },
       },
     ],
   },

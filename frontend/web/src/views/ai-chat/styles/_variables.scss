@@ -1,0 +1,27 @@
+:root {
+  --ai-chat-accent: #5856d6;
+  --ai-chat-accent-hover: #4745c2;
+  --ai-chat-bg: #ffffff;
+  --ai-chat-panel-bg: rgb(255 255 255 / 38%);
+  --ai-chat-sidebar-bg: var(--color-bg-2);
+  --ai-chat-user-bubble: var(--el-color-primary);
+  --ai-chat-assistant-bubble: #ffffff;
+  --ai-chat-assistant-border: var(--el-border-color-lighter);
+  --ai-chat-glass-border: rgb(255 255 255 / 22%);
+  --ai-chat-glass-shadow: 0 8px 32px rgb(15 23 42 / 8%), 0 2px 8px rgb(15 23 42 / 4%);
+  --ai-chat-glass-shadow-hover: 0 12px 40px rgb(88 86 214 / 14%), 0 4px 12px rgb(15 23 42 / 6%);
+  --ai-chat-input-bottom: 20px;
+  --ai-chat-input-gap: 24px;
+  --ai-chat-input-height: 168px;
+}
+
+html.dark {
+  --ai-chat-bg: #0f172a;
+  --ai-chat-panel-bg: rgb(15 23 42 / 42%);
+  --ai-chat-sidebar-bg: #0b1220;
+  --ai-chat-assistant-bubble: #1e293b;
+  --ai-chat-assistant-border: rgb(255 255 255 / 8%);
+  --ai-chat-glass-border: rgb(255 255 255 / 8%);
+  --ai-chat-glass-shadow: 0 8px 32px rgb(0 0 0 / 20%), 0 2px 8px rgb(0 0 0 / 12%);
+  --ai-chat-glass-shadow-hover: 0 12px 40px rgb(88 86 214 / 18%), 0 4px 12px rgb(0 0 0 / 16%);
+}

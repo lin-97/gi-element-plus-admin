@@ -15,7 +15,7 @@ export const appConfig = {
   /** 404 路径 */
   notFoundPath: '/404',
   /** 页签白名单（不加入系统页签） */
-  tabWhiteList: ['/login', '/404'],
+  tabWhiteList: ['/login', '/404', '/ai-chat'],
   /** 页签白名单路径前缀 */
   tabWhitePrefixList: ['/redirect'],
 }
