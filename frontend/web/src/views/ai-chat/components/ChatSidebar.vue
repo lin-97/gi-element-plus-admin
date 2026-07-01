@@ -8,6 +8,7 @@ defineOptions({ name: 'ChatSidebar' })
 
 const emit = defineEmits<{
   create: []
+  select: []
 }>()
 
 const chatStore = useChatStore()
@@ -18,6 +19,7 @@ function formatTime(timestamp: number) {
 
 function handleSelect(id: string) {
   chatStore.selectSession(id)
+  emit('select')
 }
 
 function handleCreate() {

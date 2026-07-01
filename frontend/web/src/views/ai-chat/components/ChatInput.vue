@@ -29,7 +29,7 @@ function handleSend() {
 }
 
 function handleKeydown(event: Event | KeyboardEvent) {
-  if (!(event instanceof KeyboardEvent))
+  if (!(event instanceof KeyboardEvent) || props.loading)
     return
 
   if (event.key === 'Enter' && (event.ctrlKey || event.metaKey))
@@ -58,7 +58,10 @@ function handleFocusOut() {
   <div class="chat-input">
     <div
       class="chat-input__frame"
-      :class="{ 'is-focused': isFocused }"
+      :class="{
+        'is-focused': isFocused && !props.loading,
+        'is-loading': props.loading,
+      }"
       @focusin="handleFocusIn"
       @focusout="handleFocusOut"
     >
@@ -68,7 +71,8 @@ function handleFocusOut() {
           type="textarea"
           :rows="3"
           resize="none"
-          :disabled="props.disabled || props.loading"
+          :disabled="props.disabled"
+          :readonly="props.loading"
           placeholder="输入消息，Enter 发送，Ctrl + Enter 换行"
           @keydown="handleKeydown"
         />
@@ -151,6 +155,20 @@ function handleFocusOut() {
     border-color: transparent;
     box-shadow: var(--ai-chat-glass-shadow-hover);
     transform: translateY(-2px);
+  }
+
+  &__frame.is-loading {
+    &::before {
+      opacity: 0;
+    }
+
+    :deep(.el-textarea__inner) {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      color: var(--el-text-color-regular);
+      cursor: default;
+    }
   }
 
   &__actions {

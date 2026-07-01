@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { useResizeObserver, useFullscreen } from '@vueuse/core'
+import { useFullscreen, useResizeObserver } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
+import { useResponsive } from '@/hooks/useResponsive'
 import ChatInput from './components/ChatInput.vue'
 import ChatMessageList from './components/ChatMessageList.vue'
 import ChatSettings from './components/ChatSettings.vue'
@@ -23,8 +24,10 @@ const configStore = useChatConfigStore()
 const { isStreaming, send, abort, error } = useChatStream()
 const { isDark, toggleDark } = useTheme()
 const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const { isMobile } = useResponsive()
 
 const settingsVisible = ref(false)
+const sidebarDrawerVisible = ref(false)
 const streamingMessageId = ref<string | null>(null)
 const inputAreaRef = useTemplateRef<HTMLElement>('inputAreaRef')
 const inputAreaHeight = ref(0)
@@ -69,6 +72,14 @@ function goBack() {
 
 function openSettings() {
   settingsVisible.value = true
+}
+
+function openSidebarDrawer() {
+  sidebarDrawerVisible.value = true
+}
+
+function closeSidebarDrawer() {
+  sidebarDrawerVisible.value = false
 }
 
 async function handleSend(text: string) {
@@ -121,12 +132,25 @@ function handleSelectPrompt(text: string) {
 <template>
   <div class="ai-chat-page">
     <div class="ai-chat">
-      <ChatSidebar class="ai-chat__sidebar" />
+      <ChatSidebar v-if="!isMobile" class="ai-chat__sidebar" />
       <div class="ai-chat__main" :style="mainStyle">
         <header class="ai-chat__header">
-          <div class="ai-chat__title-wrap">
-            <span class="ai-chat__title">AI 对话</span>
-            <span class="ai-chat__session-title">{{ currentTitle }}</span>
+          <div class="ai-chat__header-start">
+            <el-tooltip v-if="isMobile" content="对话历史">
+              <el-button
+                class="g-square-button ai-chat__icon-btn"
+                type="primary"
+                text
+                circle
+                @click="openSidebarDrawer"
+              >
+                <Icon icon="icon-park-outline:expand-left" width="18" height="18" />
+              </el-button>
+            </el-tooltip>
+            <div class="ai-chat__title-wrap">
+              <span class="ai-chat__title">AI 对话</span>
+              <span class="ai-chat__session-title">{{ currentTitle }}</span>
+            </div>
           </div>
           <div class="ai-chat__actions">
             <el-tooltip content="返回后台">
@@ -205,6 +229,19 @@ function handleSelectPrompt(text: string) {
     </div>
 
     <ChatSettings v-model="settingsVisible" />
+
+    <gi-drawer
+      v-if="isMobile"
+      v-model="sidebarDrawerVisible"
+      class="ai-chat-sidebar-drawer"
+      title="对话历史"
+      direction="ltr"
+      size="280px"
+      :footer="false"
+      destroy-on-close
+    >
+      <ChatSidebar @select="closeSidebarDrawer" @create="closeSidebarDrawer" />
+    </gi-drawer>
   </div>
 </template>
 
