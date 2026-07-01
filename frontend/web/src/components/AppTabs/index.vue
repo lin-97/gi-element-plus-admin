@@ -9,6 +9,7 @@ import {
   Minus,
 } from '@element-plus/icons-vue'
 import { Icon } from '@iconify/vue'
+import { Dialog } from 'gi-component'
 import { HOME_PATH } from '@/core/config'
 import { useRouteListener } from '@/core/hooks'
 import { useTabsStore } from '@/core/stores/useTabsStore'
@@ -65,6 +66,16 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
       inst.handleClose()
   })
 }
+
+function handleCloseAll() {
+  Dialog.warning({
+    title: '提示',
+    content: '确定要关闭所有页签吗？',
+    onOk: () => {
+      tabsStore.close('all')
+    },
+  })
+}
 </script>
 
 <template>
@@ -109,7 +120,7 @@ function handleContextMenuVisible(visible: boolean, value: string | number) {
               <el-dropdown-item :icon="Minus" @click="tabsStore.close('other', item.value)">
                 关闭其他
               </el-dropdown-item>
-              <el-dropdown-item :icon="Close" @click="tabsStore.close('all')">
+              <el-dropdown-item :icon="Close" @click="handleCloseAll">
                 关闭所有
               </el-dropdown-item>
             </el-dropdown-menu>

@@ -5,7 +5,7 @@
  */
 import { Icon } from '@iconify/vue'
 import { useFullscreen } from '@vueuse/core'
-import { ElMessageBox } from 'element-plus'
+import { Dialog } from 'gi-component'
 import { openAppNoticeDrawer } from '@/components/AppNoticeDrawer/open'
 import { openAppSettingDrawer } from '@/components/AppSettingDrawer/open'
 import { appConfig } from '@/config'
@@ -22,13 +22,15 @@ const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 const { isXs } = useResponsive()
 
 async function handleLogout() {
-  await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
+  Dialog.warning({
+    title: '提示',
+    content: '确定要退出登录吗？',
+    onBeforeOk: async () => {
+      await userStore.logout()
+      router.push(appConfig.loginPath)
+      return true
+    },
   })
-  await userStore.logout()
-  router.push(appConfig.loginPath)
 }
 </script>
 
