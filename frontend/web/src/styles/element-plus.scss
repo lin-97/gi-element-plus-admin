@@ -51,3 +51,7 @@
 .el-dropdown__popper.el-popper {
   border-radius: 8px;
 }
+
+.el-select__selection .el-tag.el-tag--info {
+  border-color: var(--el-tag-border-color);
+}
