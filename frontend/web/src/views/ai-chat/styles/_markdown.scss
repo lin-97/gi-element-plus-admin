@@ -130,30 +130,27 @@
     color: #c7254e;
   }
 
-  :deep(pre),
-  :deep(.shiki),
-  :deep([data-renderer='shiki']) {
+  // 仅修饰代码块容器，不覆盖 Shiki token 内联颜色（流式高亮依赖 span style）
+  :deep([data-markstream-code-block] .code-block-container),
+  :deep(pre.shiki) {
     margin: 0.75em 0;
     border-radius: 8px;
     overflow: auto;
     border: 1px solid #30363d;
     box-shadow: none;
-    color: #e6edf3;
     background-color: #0d1117;
   }
 
-  :deep(pre code),
-  :deep(.shiki code) {
+  :deep([data-markstream-code-block] .code-block-render),
+  :deep(pre.shiki code) {
     font-family: 'Cascadia Code', 'Fira Code', Consolas, 'Courier New', monospace;
     font-size: 13px;
     line-height: 1.6;
     background: transparent !important;
-    color: #e6edf3;
   }
 
-  :deep(.shiki span),
-  :deep([data-renderer='shiki'] span) {
-    filter: brightness(1.12) saturate(1.08);
+  :deep(pre.shiki-fallback code) {
+    color: #e6edf3;
   }
 
   :deep(.katex-display) {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import { useResizeObserver } from '@vueuse/core'
+import { useResizeObserver, useFullscreen } from '@vueuse/core'
 import { ElMessage } from 'element-plus'
 import { appConfig } from '@/config'
 import { useTheme } from '@/core/hooks'
@@ -22,6 +22,7 @@ const chatStore = useChatStore()
 const configStore = useChatConfigStore()
 const { isStreaming, send, abort, error } = useChatStream()
 const { isDark, toggleDark } = useTheme()
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
 
 const settingsVisible = ref(false)
 const streamingMessageId = ref<string | null>(null)
@@ -39,10 +40,13 @@ useResizeObserver(inputAreaRef, (entries) => {
 
 const currentTitle = computed(() => chatStore.currentSession?.title || '新对话')
 
-onMounted(async () => {
-  await initChatMarkdownRuntime()
+onBeforeMount(() => {
+  void initChatMarkdownRuntime()
+})
 
+onMounted(() => {
   const normalized = normalizeModelSlug(configStore.model)
+
   if (normalized !== configStore.model) {
     configStore.applyProvider('openrouter-free')
     configStore.model = normalized
@@ -137,6 +141,21 @@ function handleSelectPrompt(text: string) {
               </el-button>
             </el-tooltip>
             <el-space :size="4">
+              <el-tooltip :content="isFullscreen ? '退出全屏' : '全屏'">
+                <el-button
+                  class="g-square-button ai-chat__icon-btn"
+                  type="primary"
+                  text
+                  circle
+                  @click="toggleFullscreen()"
+                >
+                  <Icon
+                    :icon="isFullscreen ? 'custom:off-screen' : 'custom:full-screen'"
+                    width="18"
+                    height="18"
+                  />
+                </el-button>
+              </el-tooltip>
               <el-tooltip :content="isDark ? '亮色模式' : '暗黑模式'">
                 <el-button
                   class="g-square-button ai-chat__icon-btn"

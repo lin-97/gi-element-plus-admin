@@ -6,6 +6,7 @@ import {
   CHAT_CODE_THEME,
   CHAT_MARKDOWN_LANGS,
   CHAT_PARSE_OPTIONS,
+  initChatMarkdownRuntime,
 } from '../utils/markdown'
 import 'markstream-vue/index.css'
 import 'katex/dist/katex.min.css'
@@ -19,15 +20,29 @@ const props = defineProps<{
   streaming?: boolean
 }>()
 
+const markdownReady = ref(false)
+
+onBeforeMount(async () => {
+  await initChatMarkdownRuntime()
+  markdownReady.value = true
+})
+
 const showWaiting = computed(() => {
   return props.role === 'assistant'
     && props.streaming
     && !props.content.trim()
 })
 
+/** 有正文后再挂载 Markdown，避免隐藏态初始化导致 Shiki 不生效 */
 const showMarkdown = computed(() => {
-  return props.role === 'assistant'
-    && (props.streaming || props.content.trim().length > 0)
+  return props.role === 'assistant' && props.content.trim().length > 0
+})
+
+/** 流式结束切换 key，强制以 final 态重挂载并恢复高亮 */
+const markdownRenderKey = computed(() => {
+  return props.streaming
+    ? `${props.messageId}:streaming`
+    : `${props.messageId}:final`
 })
 </script>
 
@@ -42,11 +57,10 @@ const showMarkdown = computed(() => {
       :class="{ 'chat-bubble__assistant--waiting': showWaiting }"
     >
       <MarkdownRender
-        v-if="showMarkdown"
-        :key="props.messageId"
+        v-if="showMarkdown && markdownReady"
+        :key="markdownRenderKey"
         :index-key="props.messageId"
         class="markstream-vue chat-bubble__markdown"
-        :class="{ 'chat-bubble__markdown--hidden': showWaiting }"
         mode="chat"
         code-renderer="shiki"
         :code-block-stream="true"
@@ -110,17 +124,6 @@ const showMarkdown = computed(() => {
 
     &--waiting {
       min-height: 48px;
-    }
-  }
-
-  &__markdown {
-    &--hidden {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      opacity: 0;
-      pointer-events: none;
     }
   }
 
