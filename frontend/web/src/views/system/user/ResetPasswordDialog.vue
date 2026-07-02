@@ -64,10 +64,22 @@ defineExpose({ open })
   >
     <el-form ref="formRef" :model="formData" :rules="formRules" label-width="90px">
       <el-form-item label="新密码" prop="password">
-        <el-input v-model="formData.password" type="password" show-password autocomplete="new-password" />
+        <el-input
+          v-model="formData.password"
+          type="password"
+          show-password
+          autocomplete="new-password"
+          placeholder="请输入新密码，至少6位"
+        />
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input v-model="formData.confirmPassword" type="password" show-password autocomplete="new-password" />
+        <el-input
+          v-model="formData.confirmPassword"
+          type="password"
+          show-password
+          autocomplete="new-password"
+          placeholder="请再次输入新密码"
+        />
       </el-form-item>
     </el-form>
   </gi-dialog>

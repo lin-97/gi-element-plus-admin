@@ -250,7 +250,7 @@ const settingColumns = computed<TableColumnItem[]>(() => {
         </el-tooltip>
         <el-tooltip v-if="!isMdScreen" content="显示边框" placement="top">
           <el-button class="g-square-button" bg text circle @click="toggleBorder">
-            <Icon icon="icon-park-outline:square" v-bind="ICON_SIZE_BIND" />
+            <Icon icon="icon-park-outline:grid-four" v-bind="ICON_SIZE_BIND" />
           </el-button>
         </el-tooltip>
         <el-dropdown v-if="!isMdScreen" trigger="click" @command="handleSizeCommand">

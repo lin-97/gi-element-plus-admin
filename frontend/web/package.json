@@ -14,7 +14,7 @@
     "lint:style:fix": "stylelint \"**/*.{vue,scss,css}\" --cache --fix"
   },
   "dependencies": {
-    "@element-plus/icons-vue": "^2.3.1",
+    "@element-plus/icons-vue": "^2.3.2",
     "@iconify/vue": "^5.0.0",
     "@types/dompurify": "^3.2.0",
     "@vueuse/core": "^13.6.0",
@@ -22,7 +22,7 @@
     "dayjs": "^1.11.13",
     "dompurify": "^3.4.9",
     "echarts": "^6.0.0",
-    "element-plus": "^2.11.0",
+    "element-plus": "^2.14.2",
     "es-toolkit": "^1.47.0",
     "gi-component": "^0.0.58",
     "katex": "^0.16.22",
@@ -50,6 +50,7 @@
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitejs/plugin-vue-jsx": "^5.0.1",
     "@vue/tsconfig": "^0.7.0",
+    "cspell": "^10.0.1",
     "eslint": "^9.30.0",
     "eslint-plugin-format": "^2.0.1",
     "postcss": "^8.5.6",

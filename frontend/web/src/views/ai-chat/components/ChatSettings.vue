@@ -49,7 +49,6 @@ function handleClose() {
     width="calc(100vw - 20px)"
     :style="{ maxWidth: '680px' }"
     destroy-on-close
-    :footer="false"
   >
     <el-alert
       type="warning"
@@ -133,7 +132,7 @@ function handleClose() {
       </el-form-item>
     </el-form>
 
-    <div class="chat-settings__footer">
+    <template #footer>
       <el-space>
         <el-button type="success" text bg :loading="testing" @click="handleTestConnection">
           测试连接
@@ -142,7 +141,7 @@ function handleClose() {
           关闭
         </el-button>
       </el-space>
-    </div>
+    </template>
   </gi-dialog>
 </template>
 
@@ -152,13 +151,5 @@ function handleClose() {
   font-size: 12px;
   line-height: 1.5;
   color: var(--el-text-color-secondary);
-}
-
-.chat-settings__footer {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+  "import": ["./frontend/web/cspell.json"],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/pnpm-lock.yaml",
+    "**/.vite/**"
+  ]
+}

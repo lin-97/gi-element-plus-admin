@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// cspell:ignore katex
 import MarkdownRender from 'markstream-vue'
 import {
   CHAT_CODE_BLOCK_PROPS,
