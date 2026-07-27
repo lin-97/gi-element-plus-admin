@@ -19,9 +19,9 @@ from app.config.setting import settings
 from app.core.base_model import MappedBase
 from app.core.database import async_db_session, async_engine, create_tables
 from app.core.logger import log
-from app.utils.import_util import ImportUtil
 from app.core.security import get_password_hash
 from app.plugin.module_student.student.model import StudentModel
+from app.utils.import_util import ImportUtil
 
 
 def ensure_database_exists() -> None:

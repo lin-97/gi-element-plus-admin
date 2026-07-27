@@ -1,4 +1,3 @@
-from sqlalchemy import select
 
 from app.api.v1.module_system.auth.schema import AuthSchema
 from app.api.v1.module_system.compat import is_system_menu
