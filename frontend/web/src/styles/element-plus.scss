@@ -12,13 +12,21 @@
 }
 
 .el-drawer.rtl {
-  border-radius: 4px 0 0 4px;
+  border-radius: 8px;
   overflow: hidden;
+  right: 10px;
+  top: 10px;
+  bottom: 10px;
+  height: auto;
 }
 
 .el-drawer.ltr {
-  border-radius: 0 4px 4px 0;
+  border-radius: 8px;
   overflow: hidden;
+  left: 10px;
+  top: 10px;
+  bottom: 10px;
+  height: auto;
 }
 
 .el-drawer__title,
